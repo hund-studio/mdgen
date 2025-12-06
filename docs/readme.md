@@ -10,7 +10,7 @@ The entire process happens client-side: **no installation or compilation is requ
 
 To begin compiling your documentation:
 
-1. Go to (mdgen.hund.studio)[https://mdgen.hund.studio].
+1. Go to [mdgen.hund.studio](https://mdgen.hund.studio).
 2. Select the **folder** (not a single file) containing your Markdown documentation.
 3. Download the generated static HTML.
 
