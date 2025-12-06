@@ -129,19 +129,23 @@ function App() {
   return (
     <>
       <div id="tool" className={`${styles["wrapper"]} ${styles["buttons"]} ${styles["vertical"]}`}>
-        <button onClick={directoryPicker}>
-          {root ? <>Change directory</> : <>Pick a directory</>}
-        </button>
-        {(() => {
-          if (!root) return;
+        <img src="/availability.svg" alt="availability" className={`${styles["availability"]}`} />
+        <div className={`${styles["buttons"]} ${styles["vertical"]}`}>
+          <button onClick={directoryPicker}>
+            {root ? <>Change directory</> : <>Pick a directory</>}
+          </button>
+          {(() => {
+            if (!root) return;
 
-          return (
-            <div className={`${styles["buttons"]}`}>
-              <button onClick={() => setPreview(true)}>Open preview</button>
-              <button onClick={downloadGenerated}>⤓ Download HTML</button>
-            </div>
-          );
-        })()}
+            return (
+              <div className={`${styles["buttons"]}`}>
+                <button onClick={() => setPreview(true)}>Open preview</button>
+                <button onClick={downloadGenerated}>⤓ Download HTML</button>
+              </div>
+            );
+          })()}
+        </div>
+        <div>hund.studio</div>
       </div>
       {(() => {
         if (!preview) return;

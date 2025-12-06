@@ -3,7 +3,7 @@
   padding: 1rem;
   box-sizing: border-box;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .buttons {
@@ -61,4 +61,9 @@
     flex: 1;
     background-color: white;
   }
+}
+
+.availability {
+  width: 445px;
+  max-width: 100%;
 }
