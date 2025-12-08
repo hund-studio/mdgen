@@ -173,18 +173,15 @@ function App() {
             );
           })()}
         </div>
-        <div>
-          <a href="https://hund.studio" target="_blank" className={`${styles["small"]}`}>
+        <div className={`${styles["small"]}`}>
+          <a href="https://hund.studio" target="_blank">
             hund.studio
           </a>{" "}
           -{" "}
-          <a
-            href="https://github.com/hund-studio/mdgen"
-            target="_blank"
-            className={`${styles["small"]}`}
-          >
+          <a href="https://github.com/hund-studio/mdgen" target="_blank">
             GitHub
-          </a>
+          </a>{" "}
+          - 0.0.0-beta
         </div>
       </div>
       {(() => {

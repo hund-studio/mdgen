@@ -60,7 +60,7 @@ const PreviewModal: FC<{
               className={`${styles["button--thin"]} ${styles["button--dark"]} ${styles["button"]}`}
               onClick={loadRootDirectory}
             >
-              ⟲ Refresh
+              🔃 Refresh
             </button>
           </div>
           <div className={`${styles["url"]}`}>/{path}</div>
@@ -69,7 +69,7 @@ const PreviewModal: FC<{
               className={`${styles["button--thin"]} ${styles["button--dark"]} ${styles["button"]}`}
               onClick={downloadGenerated}
             >
-              ⤓ Download HTML
+              📄 Download HTML
             </button>
             <button
               className={`${styles["button--thin"]} ${styles["button--dark"]} ${styles["button"]}`}
