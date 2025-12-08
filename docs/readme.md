@@ -18,8 +18,11 @@ To begin compiling your documentation:
 
 The tool is currently in its beta phase (developed in just a couple of days), but it will soon be expanded to include:
 
-- The ability to upload **custom CSS and styles**.
-- Support for **additional Markdown features** (currently limited to basic functionality).
+- [ ] The ability to upload **custom CSS and styles** through the use of a `.mdgen` directory;
+- [ ] Additional dark/light color scheme;
+- [ ] Fuzzy search functionality;
+- [x] Automatic refresh on file change **(limited browser support)**;
+- [x] Support for **additional Markdown features**:
   - [x] remark-gfm
     - [x] Tables
     - [x] Checkboxes
