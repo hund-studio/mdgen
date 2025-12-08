@@ -27,6 +27,22 @@
       }
     }
   }
+
+  &--dark {
+    background: darkslategray;
+    color: #84ffff;
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: 84ffff;
+        color: darkslategray;
+      }
+    }
+  }
+
+  &--thin {
+    min-height: 32px;
+  }
 }
 
 //
@@ -56,6 +72,7 @@
   background: darkslategray;
   padding: 0.25em 0.5em;
   border-radius: 0.15em;
+  color: #84ffff;
 }
 
 .modal {

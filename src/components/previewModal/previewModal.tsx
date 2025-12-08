@@ -19,12 +19,14 @@ const PreviewModal: FC<{
   const { tree, current } = context;
 
   let path = current;
-  path.replace(/^[/]+|[/]+$/g, "");
+  path = path.replace(/^[/]+|[/]+$/g, "");
   path = path.replace(/^\.\//, "");
+  path = path.replace(/(^|\/)\.\.\//g, "$1");
   if (!path.length) path = "index.html";
 
   const getCurrentElement = (list: (typeof tree)["children"]) => {
     const fragments = path.split("/");
+
     let match: PageRenderTree | undefined;
 
     for (const fragment of fragments) {
@@ -54,16 +56,25 @@ const PreviewModal: FC<{
       <div className={`${styles["modal-content"]}`}>
         <div className={`${styles["modal-heading"]}`}>
           <div className={`${styles["buttons"]}`}>
-            <button className={`${styles["button"]}`} onClick={loadRootDirectory}>
+            <button
+              className={`${styles["button--thin"]} ${styles["button--dark"]} ${styles["button"]}`}
+              onClick={loadRootDirectory}
+            >
               ⟲ Refresh
             </button>
           </div>
           <div className={`${styles["url"]}`}>/{path}</div>
           <div className={`${styles["buttons"]}`}>
-            <button className={`${styles["button"]}`} onClick={downloadGenerated}>
+            <button
+              className={`${styles["button--thin"]} ${styles["button--dark"]} ${styles["button"]}`}
+              onClick={downloadGenerated}
+            >
               ⤓ Download HTML
             </button>
-            <button className={`${styles["button"]}`} onClick={onClose}>
+            <button
+              className={`${styles["button--thin"]} ${styles["button--dark"]} ${styles["button"]}`}
+              onClick={onClose}
+            >
               Close
             </button>
           </div>

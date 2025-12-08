@@ -20,3 +20,6 @@ The tool is currently in its beta phase (developed in just a couple of days), bu
 
 - The ability to upload **custom CSS and styles**.
 - Support for **additional Markdown features** (currently limited to basic functionality).
+  - [x] remark-gfm
+    - [x] Tables
+    - [x] Checkboxes
