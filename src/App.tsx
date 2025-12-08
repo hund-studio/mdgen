@@ -1,6 +1,6 @@
 import { renderToString } from "react-dom/server";
 import { saveAs } from "file-saver";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import JSZip from "jszip";
 import Page from "./templates/page/page";
 import PreviewModal from "./components/previewModal/previewModal";
@@ -17,6 +17,7 @@ export type AssetTree = { name: string; buffer: ArrayBuffer };
 export type PageRenderTree = DirectoryTree | PageTree | AssetTree;
 
 function App() {
+  const observerRef = useRef<any>(null);
   const [root, setRoot] = useState<FileSystemDirectoryHandle>();
   const [generated, setGenerated] = useState<Blob>();
   const [preview, setPreview] = useState(false);
@@ -99,7 +100,16 @@ function App() {
   };
 
   useEffect(() => {
+    if (!root) return;
+
+    const observer = new FileSystemObserver(loadRootDirectory);
+    observerRef.current = observer;
+    observer.observe(root);
     loadRootDirectory();
+
+    return () => {
+      observer.disconnect();
+    };
   }, [root]);
 
   const loadRootDirectory = () => {
