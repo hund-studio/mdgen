@@ -18,6 +18,7 @@ To begin compiling your documentation:
 
 The tool is currently in its beta phase (developed in just a couple of days), but it will soon be expanded to include:
 
+- [ ] Currently, the default file used for each directory is `index.md`; it would be better to use `readme.md` and, if not found, then fall back to `index.md`;
 - [ ] The ability to upload **custom CSS and styles** through the use of a `.mdgen` directory;
 - [ ] Additional dark/light color scheme;
 - [ ] Fuzzy search functionality;
