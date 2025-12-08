@@ -1,6 +1,39 @@
+// elements
+
+.button {
+  background: #f1f3f4;
+  border-radius: 0.35em;
+  border: 0;
+  font: inherit;
+  padding: 0.5em 0.75em;
+  cursor: pointer;
+  min-height: 46px;
+  color: black;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: lightcyan;
+    }
+  }
+
+  &--3d {
+    box-shadow: 0px 2px 2px rgba(96, 96, 96, 0.1);
+    border: 2px solid #dfdfdf;
+
+    @media (hover: hover) {
+      &:hover {
+        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0);
+        transform: translateY(2px);
+      }
+    }
+  }
+}
+
+//
+
 .wrapper {
   height: 100%;
-  padding: 1rem;
+  padding: 0.5rem;
   box-sizing: border-box;
   align-items: center;
   justify-content: space-between;
@@ -30,7 +63,7 @@
   top: 0;
   bottom: 0;
   display: flex;
-  padding: 1rem;
+  padding: 0.5rem;
   background: #00000025;
   height: 100%;
   width: 100%;
@@ -66,4 +99,11 @@
 .availability {
   width: 445px;
   max-width: 100%;
+  border-radius: 0.5em;
+  box-shadow: 0px 2px 2px rgba(96, 96, 96, 0.1);
+  border: 2px solid #dfdfdf;
+}
+
+.small {
+  font-size: 0.85em;
 }

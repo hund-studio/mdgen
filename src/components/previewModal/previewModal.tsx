@@ -54,12 +54,18 @@ const PreviewModal: FC<{
       <div className={`${styles["modal-content"]}`}>
         <div className={`${styles["modal-heading"]}`}>
           <div className={`${styles["buttons"]}`}>
-            <button onClick={loadRootDirectory}>⟲ Refresh</button>
+            <button className={`${styles["button"]}`} onClick={loadRootDirectory}>
+              ⟲ Refresh
+            </button>
           </div>
           <div className={`${styles["url"]}`}>/{path}</div>
           <div className={`${styles["buttons"]}`}>
-            <button onClick={downloadGenerated}>⤓ Download HTML</button>
-            <button onClick={onClose}>Close</button>
+            <button className={`${styles["button"]}`} onClick={downloadGenerated}>
+              ⤓ Download HTML
+            </button>
+            <button className={`${styles["button"]}`} onClick={onClose}>
+              Close
+            </button>
           </div>
         </div>
         <div className={`${styles["modal-preview"]}`}>

@@ -129,23 +129,53 @@ function App() {
   return (
     <>
       <div id="tool" className={`${styles["wrapper"]} ${styles["buttons"]} ${styles["vertical"]}`}>
-        <img src="/availability.svg" alt="availability" className={`${styles["availability"]}`} />
+        <a
+          target="_blank"
+          href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showDirectoryPicker"
+        >
+          <img src="/availability.svg" alt="availability" className={`${styles["availability"]}`} />
+        </a>
         <div className={`${styles["buttons"]} ${styles["vertical"]}`}>
-          <button onClick={directoryPicker}>
-            {root ? <>Change directory</> : <>Pick a directory</>}
+          <button
+            className={`${styles["button"]} ${styles["button--3d"]}`}
+            onClick={directoryPicker}
+          >
+            📁 {root ? <>Change directory</> : <>Pick a directory</>}
           </button>
           {(() => {
             if (!root) return;
 
             return (
               <div className={`${styles["buttons"]}`}>
-                <button onClick={() => setPreview(true)}>Open preview</button>
-                <button onClick={downloadGenerated}>⤓ Download HTML</button>
+                <button
+                  className={`${styles["button"]} ${styles["button--3d"]}`}
+                  onClick={() => setPreview(true)}
+                >
+                  🔍 Open preview
+                </button>
+                <button
+                  className={`${styles["button"]} ${styles["button--3d"]}`}
+                  onClick={downloadGenerated}
+                >
+                  📄 Download HTML
+                </button>
               </div>
             );
           })()}
         </div>
-        <div>hund.studio</div>
+        <div>
+          <a href="https://hund.studio" target="_blank" className={`${styles["small"]}`}>
+            hund.studio
+          </a>{" "}
+          -{" "}
+          <a
+            href="https://github.com/hund-studio/mdgen"
+            target="_blank"
+            className={`${styles["small"]}`}
+          >
+            GitHub
+          </a>
+        </div>
       </div>
       {(() => {
         if (!preview) return;
