@@ -172,6 +172,23 @@ function App() {
               </div>
             );
           })()}
+          {(() => {
+            if (!!root) return;
+
+            return (
+              <div className={`${styles["card"]} ${styles["buttons"]} ${styles["vertical"]}`}>
+                <p className={`${styles["small"]} ${styles["nom"]}`}>Download a starter example:</p>
+                <div className={`${styles["buttons"]} ${styles["center"]}`}>
+                  <a href="/basic.zip" download className={`${styles["a"]}`}>
+                    Basic doc
+                  </a>
+                  <a href="/blog.zip" download className={`${styles["a"]}`}>
+                    Blog
+                  </a>
+                </div>
+              </div>
+            );
+          })()}
         </div>
         <div className={`${styles["small"]}`}>
           <a href="https://hund.studio" target="_blank">

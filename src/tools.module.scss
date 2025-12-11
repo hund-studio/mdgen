@@ -1,5 +1,18 @@
 // elements
 
+.a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.1em;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: lightcyan;
+    }
+  }
+}
+
 .button {
   background: #f1f3f4;
   border-radius: 0.35em;
@@ -62,6 +75,10 @@
   &.vertical {
     flex-direction: column;
   }
+
+  &.center {
+    justify-content: center;
+  }
 }
 
 .url {
@@ -123,4 +140,16 @@
 
 .small {
   font-size: 0.85em;
+}
+
+.nom {
+  margin: 0;
+}
+
+.card {
+  margin: 1em;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  border-radius: 0.5em;
 }
