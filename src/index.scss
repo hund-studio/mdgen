@@ -38,8 +38,13 @@ body,
   padding-bottom: 1.5rem;
   padding-top: 1.5rem;
   user-select: none;
-  min-width: 200px;
+  min-width: 280px;
   box-sizing: border-box;
+
+  a {
+    color: inherit;
+    text-decoration: inherit;
+  }
 
   & > nav {
     position: sticky;
@@ -60,22 +65,73 @@ body,
   ul {
     display: flex;
     flex-direction: column;
+    gap: 0.25em;
 
-    & > * {
+    & > li:not(.dropdown) > a {
+      border-bottom-right-radius: 0.25rem;
+      border-top-right-radius: 0.25rem;
+      padding: 0.5em 0 0.5em 0.5em;
+
+      &.active {
+        border-left: 1px solid rgb(112, 112, 233);
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          background-color: lightcyan;
+        }
+      }
+    }
+
+    & > li,
+    & > li > a {
       display: flex;
       flex-direction: column;
+      justify-content: center;
       min-height: 1.5em;
     }
 
-    & > li {
-      border-left: 1px solid lightgray;
-      padding-left: 0.5em;
-    }
-
-    & > details {
-      & > ul {
+    & > .dropdown {
+      .dropdown {
         padding-left: 1em;
       }
+    }
+
+    ul {
+      & > li:not(.dropdown) {
+        border-left: 1px solid rgb(234, 234, 234);
+      }
+    }
+  }
+
+  .dropdown {
+    &-label {
+      padding: 0.5em 0.5em;
+      background: rgb(234, 234, 234);
+      border-top-right-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+
+      @media (hover: hover) {
+        &:hover {
+          background: rgb(227, 227, 227);
+        }
+      }
+
+      &-caret {
+        height: 24px;
+        width: 24px;
+        background-size: 24px 24px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24"><path fill="rgba(0,0,0,0.5)" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path></svg>');
+        content: "";
+      }
+    }
+
+    &-content {
+      overflow: hidden;
     }
   }
 }

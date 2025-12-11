@@ -80,7 +80,7 @@ const PreviewModal: FC<{
           </div>
         </div>
         <div className={`${styles["modal-preview"]}`}>
-          <Page sidebar={tree} content={element?.content || "Not found"} />
+          <Page path={path} sidebar={tree} content={element?.content || "Not found"} />
         </div>
       </div>
     </div>

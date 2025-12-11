@@ -11,8 +11,8 @@ import HTMLTemplate from "./static/static.html?raw";
 import JSBundle from "./static/assets/main.js?raw";
 import CSSBundle from "./static/assets/static.css?raw";
 
-export type DirectoryTree = { name: string; children: PageRenderTree[] };
-export type PageTree = { name: string; href: string; content: string };
+export type DirectoryTree = { name: string; path: string; children: PageRenderTree[] };
+export type PageTree = { name: string; href: string; content: string; title: string | null };
 export type AssetTree = { name: string; buffer: ArrayBuffer };
 export type PageRenderTree = DirectoryTree | PageTree | AssetTree;
 
@@ -29,6 +29,7 @@ function App() {
   ) => {
     const tree: PageRenderTree = {
       name: directoryHandle.name,
+      path: parentHref,
       children: [],
     };
 
@@ -40,10 +41,16 @@ function App() {
             const textContent = await file.text();
             let href = handle.name.replace(/\.[^/.]+$/, ".html");
             if (parentHref) href = [parentHref, href].join("/");
+            let title: string | null = null;
+            const [firstLine] = textContent.split("\n");
+            if (firstLine?.startsWith("#")) {
+              title = firstLine.replace(/^#\s*/, "").trim();
+            }
             tree.children.push({
-              name: handle.name.replace(/\.[^/.]+$/, ".html"),
-              href,
               content: textContent,
+              href,
+              name: handle.name.replace(/\.[^/.]+$/, ".html"),
+              title,
             });
           } else {
             const bufferContent = await file.arrayBuffer();
@@ -54,10 +61,33 @@ function App() {
           }
           break;
         case "directory":
-          tree.children.push(await generateDirectoryTree(handle, handle.name));
+          const directoryPath = (() => {
+            if (!!parentHref.length) {
+              return [parentHref, handle.name].join("/");
+            }
+
+            return handle.name;
+          })();
+          tree.children.push(await generateDirectoryTree(handle, directoryPath));
           break;
       }
     }
+
+    tree.children.sort((a, b) => {
+      const isADirectory = "children" in a;
+      const isBDirectory = "children" in b;
+
+      if (!isADirectory && isBDirectory) return -1;
+
+      if (isADirectory && !isBDirectory) return 1;
+
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
 
     return tree;
   };
@@ -82,11 +112,18 @@ function App() {
         continue;
       }
       const template = Handlebars.compile(HTMLTemplate);
+      const pageTree = tree || generatedTree;
       parentDirectory.file(
         entry.name,
         template({
-          body: renderToString(<Page sidebar={tree || generatedTree} content={entry.content} />),
-          data: JSON.stringify(tree || generatedTree),
+          body: renderToString(
+            <Page
+              path={[pageTree.path, entry.name].join("/")}
+              sidebar={pageTree}
+              content={entry.content}
+            />
+          ),
+          data: JSON.stringify(pageTree),
           content: entry.content,
         })
       );

@@ -1,20 +1,36 @@
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import Link from "../link/link";
+import { motion } from "motion/react";
 
-export type DirectoryTree = { name: string; children: SidebarTree[] };
-export type PageTree = { name: string; href: string };
+export type DirectoryTree = { name: string; path: string; children: SidebarTree[] };
+export type PageTree = { name: string; href: string; title: string | null };
 export type AssetTree = { name: string };
 type SidebarTree = DirectoryTree | PageTree | AssetTree;
 
-const PageEntry: FC<{ tree: PageTree }> = ({ tree }) => {
+const PageEntry: FC<{ tree: PageTree; path: string }> = ({ tree, path }) => {
+  const normalizedPath = decodeURIComponent(path.replace(/\/$/, ""));
+  const treeHref = tree.href ? decodeURIComponent(tree.href) : null;
+
+  let activeClass = "";
+
+  if (treeHref) {
+    if (normalizedPath === treeHref) {
+      activeClass = "active";
+    } else if (normalizedPath.startsWith(treeHref.replace("index.html", ""))) {
+      activeClass = "active";
+    }
+  }
+
   return (
     <li>
-      <Link href={tree.href}>{tree.name}</Link>
+      <Link className={activeClass} href={tree.href}>
+        {tree.title || tree.name}
+      </Link>
     </li>
   );
 };
 
-const AssetEntry: FC<{ tree: AssetTree }> = ({ tree }) => {
+const AssetEntry: FC<{ tree: AssetTree; path: string }> = ({ tree }) => {
   return (
     <li>
       <span>{tree.name}</span>
@@ -22,33 +38,52 @@ const AssetEntry: FC<{ tree: AssetTree }> = ({ tree }) => {
   );
 };
 
-const DirectoryEntry: FC<{ tree: DirectoryTree }> = ({ tree }) => {
+const DirectoryEntry: FC<{ tree: DirectoryTree; path: string }> = ({ tree, path }) => {
+  const [open, setOpen] = useState(false);
+
+  const active = (() => {
+    if (path === tree.path) return "active";
+  })();
+
   return (
-    <details>
-      <summary>{tree.name}</summary>
-      <ul>
-        <Entries tree={tree} />
-      </ul>
-    </details>
+    <li className="dropdown">
+      <div className="dropdown-label" onClick={() => setOpen((prev) => !prev)}>
+        {tree.name}
+        <motion.div
+          initial={!active ? { rotate: 180 } : { rotate: 0 }}
+          animate={open ? { rotate: 0 } : { rotate: 180 }}
+          className="dropdown-label-caret"
+        />
+      </div>
+      <motion.div
+        className="dropdown-content"
+        initial={!active ? { height: 0 } : { height: "auto" }}
+        animate={open ? { height: "auto" } : { height: 0 }}
+      >
+        <ul>
+          <Entries path={path} tree={tree} />
+        </ul>
+      </motion.div>
+    </li>
   );
 };
 
-const Entries: FC<{ tree: DirectoryTree }> = ({ tree }) => {
+const Entries: FC<{ tree: DirectoryTree; path: string }> = ({ tree, path }) => {
   return tree.children.map((entry, index) => {
-    if ("children" in entry) return <DirectoryEntry tree={entry} key={index} />;
-    if (!("href" in entry)) return <AssetEntry tree={entry} key={index} />;
-    return <PageEntry tree={entry} key={index} />;
+    if ("children" in entry) return <DirectoryEntry path={path} tree={entry} key={index} />;
+    if (!("href" in entry)) return <AssetEntry path={path} tree={entry} key={index} />;
+    return <PageEntry path={path} tree={entry} key={index} />;
   });
 };
 
-const Sidebar: FC<{ tree: DirectoryTree }> = ({ tree }) => {
+const Sidebar: FC<{ tree: DirectoryTree; path: string }> = ({ tree, path }) => {
   if (!tree.children.length) return;
 
   return (
     <aside className="page-aside">
       <nav>
         <ul>
-          <Entries tree={tree} />
+          <Entries path={path} tree={tree} />
         </ul>
       </nav>
     </aside>
