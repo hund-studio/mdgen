@@ -16,8 +16,6 @@ const PageEntry: FC<{ tree: PageTree; path: string }> = ({ tree, path }) => {
   if (treeHref) {
     if (normalizedPath === treeHref) {
       activeClass = "active";
-    } else if (normalizedPath.startsWith(treeHref.replace("index.html", ""))) {
-      activeClass = "active";
     }
   }
 
@@ -39,25 +37,24 @@ const AssetEntry: FC<{ tree: AssetTree; path: string }> = ({ tree }) => {
 };
 
 const DirectoryEntry: FC<{ tree: DirectoryTree; path: string }> = ({ tree, path }) => {
-  const [open, setOpen] = useState(false);
+  const normalizedPath = decodeURIComponent(path.replace(/\/$/, ""));
+  const isActiveOrContainsActive = normalizedPath.startsWith(tree.path);
 
-  const active = (() => {
-    if (path === tree.path) return "active";
-  })();
+  const [open, setOpen] = useState(isActiveOrContainsActive);
 
   return (
     <li className="dropdown">
       <div className="dropdown-label" onClick={() => setOpen((prev) => !prev)}>
         {tree.name}
         <motion.div
-          initial={!active ? { rotate: 180 } : { rotate: 0 }}
+          initial={!isActiveOrContainsActive ? { rotate: 180 } : { rotate: 0 }}
           animate={open ? { rotate: 0 } : { rotate: 180 }}
           className="dropdown-label-caret"
         />
       </div>
       <motion.div
         className="dropdown-content"
-        initial={!active ? { height: 0 } : { height: "auto" }}
+        initial={!isActiveOrContainsActive ? { height: 0 } : { height: "auto" }}
         animate={open ? { height: "auto" } : { height: 0 }}
       >
         <ul>
