@@ -1,6 +1,6 @@
+import { motion } from "motion/react";
 import { useState, type FC } from "react";
 import Link from "../link/link";
-import { motion } from "motion/react";
 
 export type DirectoryTree = { name: string; path: string; children: SidebarTree[] };
 export type PageTree = { name: string; href: string; title: string | null };
@@ -8,7 +8,7 @@ export type AssetTree = { name: string };
 type SidebarTree = DirectoryTree | PageTree | AssetTree;
 
 const PageEntry: FC<{ tree: PageTree; path: string }> = ({ tree, path }) => {
-  const normalizedPath = decodeURIComponent(path.replace(/\/$/, ""));
+  const normalizedPath = decodeURIComponent(path.replace(/\/$/, "").replace(/^\//, ""));
   const treeHref = tree.href ? decodeURIComponent(tree.href) : null;
 
   let activeClass = "";
@@ -37,7 +37,7 @@ const AssetEntry: FC<{ tree: AssetTree; path: string }> = ({ tree }) => {
 };
 
 const DirectoryEntry: FC<{ tree: DirectoryTree; path: string }> = ({ tree, path }) => {
-  const normalizedPath = decodeURIComponent(path.replace(/\/$/, ""));
+  const normalizedPath = decodeURIComponent(path.replace(/\/$/, "").replace(/^\//, ""));
   const isActiveOrContainsActive = normalizedPath.startsWith(tree.path);
 
   const [open, setOpen] = useState(isActiveOrContainsActive);
