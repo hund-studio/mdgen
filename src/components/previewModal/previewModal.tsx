@@ -41,7 +41,7 @@ const PreviewModal: FC<
       }
 
       match = pool.find((entry) => {
-        if (entry.name !== fragment) return false;
+        if (entry.slug !== fragment) return false;
         return true;
       });
     }

@@ -37,9 +37,9 @@ Future implementations that will utilize the `.mdgen` folder include:
 
 The tool is currently in its beta phase (developed in just a couple of days), but it will soon be expanded to include:
 
-- [ ] Currently, the default file used for each directory is `index.md`; it would be better to use `readme.md` and, if not found, then fall back to `index.md`;
 - [ ] Additional dark/light color scheme;
 - [ ] Fuzzy search functionality;
+- [x] Currently, the default file used for each directory is `index.md`; it would be better to use `readme.md` and, if not found, then fall back to `index.md`;
 - [x] The ability to upload **custom CSS and styles** through the use of a `.mdgen` directory;
 - [x] Automatic refresh on file change **(limited browser support)**;
 - [x] Support for **additional Markdown features**:

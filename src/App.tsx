@@ -10,11 +10,29 @@ import Page from "./templates/page/page";
 import PreviewModal from "./components/previewModal/previewModal";
 import PreviewProvider from "./context/preview";
 import styles from "./tools.module.scss";
+import slugify from "slugify";
 
-export type DirectoryTree = { name: string; path: string; children: PageRenderTree[] };
-export type PageTree = { name: string; href: string; content: string; title: string | null };
-export type AssetTree = { name: string; buffer: ArrayBuffer };
+export type DirectoryTree = {
+  name: string;
+  slug: string;
+  path: string;
+  children: PageRenderTree[];
+};
+export type PageTree = {
+  name: string;
+  slug: string;
+  href: string;
+  content: string;
+  title: string | null;
+};
+export type AssetTree = {
+  name: string;
+  slug: string;
+  buffer: ArrayBuffer;
+};
 export type PageRenderTree = DirectoryTree | PageTree | AssetTree;
+
+const slugOptions = { lower: true };
 
 function App() {
   const observerRef = useRef<any>(null);
@@ -28,19 +46,24 @@ function App() {
     directoryHandle: FileSystemDirectoryHandle,
     parentHref: string = ""
   ) => {
+    let hasIndex = false;
+
     const tree: PageRenderTree = {
       name: directoryHandle.name,
+      slug: slugify(directoryHandle.name, slugOptions),
       path: parentHref,
       children: [],
     };
 
     for await (const handle of directoryHandle.values()) {
+      const slugName = slugify(handle.name, slugOptions);
       switch (handle.kind) {
         case "file":
           const file = await handle.getFile();
-          if (handle.name.endsWith(".md")) {
+          if (slugName.endsWith(".md")) {
+            if (slugName === "index.md") hasIndex = true;
             const textContent = await file.text();
-            let href = handle.name.replace(/\.[^/.]+$/, ".html");
+            let href = slugName.replace(/\.[^/.]+$/, ".html");
             if (parentHref) href = [parentHref, href].join("/");
             let title: string | null = null;
             const [firstLine] = textContent.split("\n");
@@ -50,30 +73,48 @@ function App() {
             tree.children.push({
               content: textContent,
               href,
-              name: handle.name.replace(/\.[^/.]+$/, ".html"),
+              name: slugName.replace(/\.[^/.]+$/, ".html"),
+              slug: slugName.replace(/\.[^/.]+$/, ".html"),
               title,
             });
           } else {
             const bufferContent = await file.arrayBuffer();
             tree.children.push({
-              name: handle.name,
+              name: slugName,
+              slug: slugName,
               buffer: bufferContent,
             });
           }
           break;
         case "directory":
-          if (handle.name.startsWith(".")) continue;
+          if (slugName.startsWith(".")) continue;
 
           const directoryPath = (() => {
             if (!!parentHref.length) {
-              return [parentHref, handle.name].join("/");
+              return [parentHref, slugName].join("/");
             }
 
-            return handle.name;
+            return slugName;
           })();
           tree.children.push(await generateDirectoryTree(handle, directoryPath));
           break;
       }
+    }
+
+    if (!hasIndex) {
+      tree.children = tree.children.map((entry) => {
+        if (entry.name === "readme.html")
+          if ("content" in entry) {
+            return {
+              ...entry,
+              name: "index.html",
+              slug: "index.html",
+              href: entry.href.replace("readme.html", "index.html"),
+            };
+          }
+
+        return entry;
+      });
     }
 
     tree.children.sort((a, b) => {
@@ -147,7 +188,7 @@ function App() {
 
     for (const entry of generatedTree.children) {
       if ("children" in entry) {
-        const root = parentDirectory.folder(entry.name);
+        const root = parentDirectory.folder(entry.slug);
         if (!root) continue;
         renderDirectoryTree(entry, root);
         continue;
