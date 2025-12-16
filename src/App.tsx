@@ -1,15 +1,15 @@
 import { renderToString } from "react-dom/server";
 import { saveAs } from "file-saver";
 import { useEffect, useRef, useState } from "react";
+import CSSBundle from "./static/assets/static.css?raw";
+import Handlebars from "handlebars";
+import HTMLTemplate from "./static/static.html?raw";
+import JSBundle from "./static/assets/main.js?raw";
 import JSZip from "jszip";
 import Page from "./templates/page/page";
 import PreviewModal from "./components/previewModal/previewModal";
 import PreviewProvider from "./context/preview";
 import styles from "./tools.module.scss";
-import Handlebars from "handlebars";
-import HTMLTemplate from "./static/static.html?raw";
-import JSBundle from "./static/assets/main.js?raw";
-import CSSBundle from "./static/assets/static.css?raw";
 
 export type DirectoryTree = { name: string; path: string; children: PageRenderTree[] };
 export type PageTree = { name: string; href: string; content: string; title: string | null };

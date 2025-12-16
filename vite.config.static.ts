@@ -34,6 +34,10 @@ export default defineConfig({
         entryFileNames: "assets/main.js",
         assetFileNames: "assets/[name][extname]",
       },
+      onwarn(warning, warn) {
+        if (warning.code === "MODULE_LEVEL_DIRECTIVE") return;
+        warn(warning);
+      },
     },
   },
 });
