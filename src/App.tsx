@@ -22,6 +22,7 @@ function App() {
   const [generated, setGenerated] = useState<Blob>();
   const [preview, setPreview] = useState(false);
   const [tree, setTree] = useState<Awaited<ReturnType<typeof generateDirectoryTree>>>();
+  const [config, setConfig] = useState<Awaited<ReturnType<typeof generateCustomConfig>>>();
 
   const generateDirectoryTree = async (
     directoryHandle: FileSystemDirectoryHandle,
@@ -61,6 +62,8 @@ function App() {
           }
           break;
         case "directory":
+          if (handle.name.startsWith(".")) continue;
+
           const directoryPath = (() => {
             if (!!parentHref.length) {
               return [parentHref, handle.name].join("/");
@@ -92,13 +95,55 @@ function App() {
     return tree;
   };
 
+  const generateCustomConfig = async (directoryHandle: FileSystemDirectoryHandle) => {
+    const config: { brand: null | { file: File; name: string }; style: null | string } = {
+      brand: null,
+      style: null,
+    };
+
+    for await (const handle of directoryHandle.values()) {
+      if (handle.kind !== "directory") continue;
+      if (handle.name !== ".mdgen") continue;
+
+      const handleValues = handle.values();
+
+      for await (const handle of handleValues) {
+        switch (handle.name) {
+          case "style.css": {
+            if (handle.kind !== "file") break;
+            const file = await handle.getFile();
+            config.style = await file.text();
+            break;
+          }
+          case "logo.svg":
+          case "logo.png":
+          case "brand.svg":
+          case "brand.png": {
+            if (handle.kind !== "file") break;
+            config.brand = {
+              name: handle.name,
+              file: await handle.getFile(),
+            };
+            break;
+          }
+        }
+      }
+    }
+
+    return config;
+  };
+
   const renderDirectoryTree = async (
     generatedTree: Awaited<ReturnType<typeof generateDirectoryTree>>,
     parentDirectory: JSZip
   ) => {
     const assets = parentDirectory.folder("assets");
+
     assets?.file("main.js", JSBundle);
     assets?.file("static.css", CSSBundle);
+
+    if (config?.brand) assets?.file(config.brand.name, config.brand.file);
+    if (config?.style) assets?.file("custom.css", config.style);
 
     for (const entry of generatedTree.children) {
       if ("children" in entry) {
@@ -123,11 +168,11 @@ function App() {
               content={entry.content}
             />
           ),
-          data: JSON.stringify(pageTree),
           content: entry.content,
+          data: JSON.stringify(pageTree),
+          style: !!config?.style,
         })
       );
-      // tree[handle.name] = await generateDirectory(handle);
     }
   };
 
@@ -151,9 +196,13 @@ function App() {
 
   const loadRootDirectory = () => {
     if (!root) return;
-    generateDirectoryTree(root).then(async (generatedTree) => {
-      setTree(generatedTree);
-    });
+
+    (async () => {
+      const config = await generateCustomConfig(root);
+      setConfig(config);
+      const tree = await generateDirectoryTree(root);
+      setTree(tree);
+    })();
   };
 
   const generateDirectoryZIP = async (tree: DirectoryTree) => {
@@ -248,7 +297,12 @@ function App() {
               onClose={() => setPreview(false)}
               loadRootDirectory={loadRootDirectory}
               downloadGenerated={downloadGenerated}
-            />
+            >
+              {(() => {
+                if (!config?.style) return;
+                return <style>{config.style}</style>;
+              })()}
+            </PreviewModal>
           </PreviewProvider>
         );
       })()}

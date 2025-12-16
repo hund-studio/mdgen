@@ -1,14 +1,16 @@
 import { previewContext } from "../../context/preview";
-import { use, type FC } from "react";
+import { use, type FC, type PropsWithChildren } from "react";
 import Page from "../../templates/page/page";
 import styles from "../../tools.module.scss";
 import type { PageRenderTree } from "../../App";
 
-const PreviewModal: FC<{
-  onClose: VoidFunction;
-  loadRootDirectory: VoidFunction;
-  downloadGenerated: VoidFunction;
-}> = ({ onClose, loadRootDirectory, downloadGenerated }) => {
+const PreviewModal: FC<
+  PropsWithChildren<{
+    onClose: VoidFunction;
+    loadRootDirectory: VoidFunction;
+    downloadGenerated: VoidFunction;
+  }>
+> = ({ children, onClose, loadRootDirectory, downloadGenerated }) => {
   const context = use(previewContext);
 
   if (!context) {
@@ -80,6 +82,7 @@ const PreviewModal: FC<{
           </div>
         </div>
         <div className={`${styles["modal-preview"]}`}>
+          {children}
           <Page path={path} sidebar={tree} content={element?.content || "Not found"} />
         </div>
       </div>
