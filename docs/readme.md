@@ -38,6 +38,7 @@ Future implementations that will utilize the `.mdgen` folder include:
 The tool is currently in its beta phase (developed in just a couple of days), but it will soon be expanded to include:
 
 - [ ] Additional dark/light color scheme;
+- [ ] Add markdown yaml metadata support
 - [ ] Allow .ts/.js plugins from .mdgen folder
 - [ ] Add sample `.mdgen` styles (ae. Fantasy DnD)
 - [ ] CLI mode
