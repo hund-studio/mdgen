@@ -1,5 +1,6 @@
 import { renderToString } from "react-dom/server";
 import { saveAs } from "file-saver";
+import { tools } from "./styles/modules";
 import { useEffect, useRef, useState } from "react";
 import CSSBundle from "./static/assets/static.css?raw";
 import Handlebars from "handlebars";
@@ -9,7 +10,6 @@ import JSZip from "jszip";
 import Page from "./templates/page/page";
 import PreviewModal from "./components/previewModal/previewModal";
 import PreviewProvider from "./context/preview";
-import styles from "./tools.module.scss";
 import slugify from "slugify";
 
 export type DirectoryTree = {
@@ -265,33 +265,30 @@ function App() {
 
   return (
     <>
-      <div id="tool" className={`${styles["wrapper"]} ${styles["buttons"]} ${styles["vertical"]}`}>
+      <div id="tool" className={`${tools["wrapper"]} ${tools["buttons"]} ${tools["vertical"]}`}>
         <a
           target="_blank"
           href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showDirectoryPicker"
         >
-          <img src="/availability.svg" alt="availability" className={`${styles["availability"]}`} />
+          <img src="/availability.svg" alt="availability" className={`${tools["availability"]}`} />
         </a>
-        <div className={`${styles["buttons"]} ${styles["vertical"]}`}>
-          <button
-            className={`${styles["button"]} ${styles["button--3d"]}`}
-            onClick={directoryPicker}
-          >
+        <div className={`${tools["buttons"]} ${tools["vertical"]}`}>
+          <button className={`${tools["button"]} ${tools["button--3d"]}`} onClick={directoryPicker}>
             📁 {root ? <>Change directory</> : <>Pick a directory</>}
           </button>
           {(() => {
             if (!root) return;
 
             return (
-              <div className={`${styles["buttons"]}`}>
+              <div className={`${tools["buttons"]}`}>
                 <button
-                  className={`${styles["button"]} ${styles["button--3d"]}`}
+                  className={`${tools["button"]} ${tools["button--3d"]}`}
                   onClick={() => setPreview(true)}
                 >
                   🔍 Open preview
                 </button>
                 <button
-                  className={`${styles["button"]} ${styles["button--3d"]}`}
+                  className={`${tools["button"]} ${tools["button--3d"]}`}
                   onClick={downloadGenerated}
                 >
                   📄 Download HTML
@@ -303,13 +300,13 @@ function App() {
             if (!!root) return;
 
             return (
-              <div className={`${styles["card"]} ${styles["buttons"]} ${styles["vertical"]}`}>
-                <p className={`${styles["small"]} ${styles["nom"]}`}>Download a starter example:</p>
-                <div className={`${styles["buttons"]} ${styles["center"]}`}>
-                  <a href="/basic.zip" download className={`${styles["a"]}`}>
+              <div className={`${tools["card"]} ${tools["buttons"]} ${tools["vertical"]}`}>
+                <p className={`${tools["small"]} ${tools["nom"]}`}>Download a starter example:</p>
+                <div className={`${tools["buttons"]} ${tools["center"]}`}>
+                  <a href="/basic.zip" download className={`${tools["a"]}`}>
                     Basic doc
                   </a>
-                  <a href="/blog.zip" download className={`${styles["a"]}`}>
+                  <a href="/blog.zip" download className={`${tools["a"]}`}>
                     Blog
                   </a>
                 </div>
@@ -317,7 +314,7 @@ function App() {
             );
           })()}
         </div>
-        <div className={`${styles["small"]}`}>
+        <div className={`${tools["small"]}`}>
           <a href="https://hund.studio" target="_blank">
             hund.studio
           </a>{" "}

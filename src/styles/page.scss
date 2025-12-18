@@ -1,16 +1,17 @@
+@import "./variables.scss";
+
 // Global
 
 html,
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
-    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  font-size: 16px;
-  margin: 0;
+  font-family: var(--base-font-family);
+  font-size: var(--base-font-size);
 }
 
 html,
 body,
 #root {
+  margin: 0;
   height: 100%;
 }
 
@@ -31,15 +32,15 @@ body,
 // Aside
 
 .page-aside {
-  background: whitesmoke;
+  background: var(--theme-background-strong);
   border-radius: 0.25rem;
-  border-right: 1px solid lightgray;
+  border-right: 1px solid var(--theme-border-solid);
+  box-sizing: border-box;
   flex: 0;
+  min-width: 280px;
   padding-bottom: 1.5rem;
   padding-top: 1.5rem;
   user-select: none;
-  min-width: 280px;
-  box-sizing: border-box;
 
   a {
     color: inherit;
@@ -73,12 +74,12 @@ body,
       padding: 0.5em 0 0.5em 0.5em;
 
       &.active {
-        border-left: 1px solid rgb(112, 112, 233);
+        border-left: 1px solid var(--theme-active);
       }
 
       @media (hover: hover) {
         &:hover {
-          background-color: lightcyan;
+          background-color: var(--theme-hover);
         }
       }
     }
@@ -99,7 +100,7 @@ body,
 
     ul {
       & > li:not(.dropdown) {
-        border-left: 1px solid rgb(234, 234, 234);
+        border-left: 1px solid var(--theme-interactive-background);
       }
     }
   }
@@ -107,7 +108,7 @@ body,
   .dropdown {
     &-label {
       padding: 0.5em 0.5em;
-      background: rgb(234, 234, 234);
+      background: var(--theme-interactive-background);
       border-top-right-radius: 0.25rem;
       border-bottom-right-radius: 0.25rem;
       display: flex;
@@ -117,7 +118,7 @@ body,
 
       @media (hover: hover) {
         &:hover {
-          background: rgb(227, 227, 227);
+          background: var(--theme-interactive-background-hover);
         }
       }
 
@@ -155,6 +156,8 @@ body,
 // Content
 
 #md {
+  background: var(--theme-background-solid);
+
   // Table
 
   table {
@@ -164,7 +167,7 @@ body,
   table,
   th,
   td {
-    border: 1px solid lightgray;
+    border: 1px solid var(--theme-border-solid);
   }
 
   th,
@@ -184,7 +187,15 @@ body,
   h1,
   h2,
   h3 {
-    border-bottom: 1px solid whitesmoke;
+    border-bottom: 1px solid var(--theme-border-solid);
     padding-bottom: 0.15em;
+  }
+
+  // lines
+
+  hr {
+    color: var(--theme-border-solid);
+    border-width: 0.5px;
+    border-style: solid;
   }
 }

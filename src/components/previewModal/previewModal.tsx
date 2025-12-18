@@ -1,7 +1,7 @@
 import { previewContext } from "../../context/preview";
+import { tools } from "../../styles/modules";
 import { use, type FC, type PropsWithChildren } from "react";
 import Page from "../../templates/page/page";
-import styles from "../../tools.module.scss";
 import type { PageRenderTree } from "../../App";
 
 const PreviewModal: FC<
@@ -54,34 +54,34 @@ const PreviewModal: FC<
   const element = getCurrentElement(tree.children);
 
   return (
-    <div className={`${styles["modal"]}`}>
-      <div className={`${styles["modal-content"]}`}>
-        <div className={`${styles["modal-heading"]}`}>
-          <div className={`${styles["buttons"]}`}>
+    <div className={`${tools["modal"]}`}>
+      <div className={`${tools["modal-content"]}`}>
+        <div className={`${tools["modal-heading"]}`}>
+          <div className={`${tools["buttons"]}`}>
             <button
-              className={`${styles["button--thin"]} ${styles["button--dark"]} ${styles["button"]}`}
+              className={`${tools["button--thin"]} ${tools["button--dark"]} ${tools["button"]}`}
               onClick={loadRootDirectory}
             >
               🔃 Refresh
             </button>
           </div>
-          <div className={`${styles["url"]}`}>/{path}</div>
-          <div className={`${styles["buttons"]}`}>
+          <div className={`${tools["url"]}`}>/{path}</div>
+          <div className={`${tools["buttons"]}`}>
             <button
-              className={`${styles["button--thin"]} ${styles["button--dark"]} ${styles["button"]}`}
+              className={`${tools["button--thin"]} ${tools["button--dark"]} ${tools["button"]}`}
               onClick={downloadGenerated}
             >
               📄 Download HTML
             </button>
             <button
-              className={`${styles["button--thin"]} ${styles["button--dark"]} ${styles["button"]}`}
+              className={`${tools["button--thin"]} ${tools["button--dark"]} ${tools["button"]}`}
               onClick={onClose}
             >
               Close
             </button>
           </div>
         </div>
-        <div className={`${styles["modal-preview"]}`}>
+        <div className={`${tools["modal-preview"]}`}>
           {children}
           <Page path={path} sidebar={tree} content={element?.content || "Not found"} />
         </div>

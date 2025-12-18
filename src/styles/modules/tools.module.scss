@@ -1,4 +1,4 @@
-// elements
+// links
 
 .a {
   color: inherit;
@@ -12,6 +12,8 @@
     }
   }
 }
+
+// buttons
 
 .button {
   background: #f1f3f4;
@@ -58,15 +60,7 @@
   }
 }
 
-//
-
-.wrapper {
-  height: 100%;
-  padding: 0.5rem;
-  box-sizing: border-box;
-  align-items: center;
-  justify-content: space-between;
-}
+// buttons group
 
 .buttons {
   display: flex;
@@ -81,6 +75,27 @@
   }
 }
 
+// layout:wrapper
+
+.wrapper {
+  height: 100%;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// layout:card
+
+.card {
+  margin: 1em;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+// modal urlbar
+
 .url {
   flex: 1;
   display: flex;
@@ -91,6 +106,8 @@
   border-radius: 0.15em;
   color: #84ffff;
 }
+
+// modal layout
 
 .modal {
   position: fixed;
@@ -131,6 +148,8 @@
   }
 }
 
+// availability component
+
 .availability {
   width: 445px;
   max-width: 100%;
@@ -139,18 +158,14 @@
   border: 2px solid #dfdfdf;
 }
 
+// font
+
 .small {
   font-size: 0.85em;
 }
 
+// margins
+
 .nom {
   margin: 0;
-}
-
-.card {
-  margin: 1em;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  border-radius: 0.5em;
 }

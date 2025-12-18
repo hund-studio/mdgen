@@ -1,4 +1,4 @@
-import "./index.scss";
+import "./styles/page.scss";
 import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 import Page from "./templates/page/page.tsx";
