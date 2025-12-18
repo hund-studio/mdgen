@@ -1,6 +1,8 @@
 import { motion } from "motion/react";
-import { useState, type FC } from "react";
+import { search } from "@orama/orama";
+import { useEffect, useState, type FC } from "react";
 import Link from "../link/link";
+import type { SearchDB } from "../../App";
 
 export type DirectoryTree = { name: string; path: string; children: SidebarTree[] };
 export type PageTree = { name: string; href: string; title: string | null };
@@ -73,11 +75,21 @@ const Entries: FC<{ tree: DirectoryTree; path: string }> = ({ tree, path }) => {
   });
 };
 
-const Sidebar: FC<{ tree: DirectoryTree; path: string }> = ({ tree, path }) => {
+const Sidebar: FC<{ db?: SearchDB; tree: DirectoryTree; path: string }> = ({ db, tree, path }) => {
+  const [searchInput, setSearchInput] = useState("");
+
   if (!tree.children.length) return;
+
+  useEffect(() => {
+    if (!db) return;
+    console.log(search(db, { term: searchInput }));
+  }, [searchInput]);
 
   return (
     <aside className="page-aside">
+      <div>
+        <input type="search" onChange={({ target: { value } }) => setSearchInput(value)} />
+      </div>
       <nav>
         <ul>
           <Entries path={path} tree={tree} />

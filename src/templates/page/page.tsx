@@ -5,15 +5,16 @@ import remarkGfm from "remark-gfm";
 import Sidebar from "../../components/sidebar/sidebar";
 
 const Page: FC<{
+  db?: ComponentProps<typeof Sidebar>["db"];
   sidebar: ComponentProps<typeof Sidebar>["tree"];
   content: string;
   path?: string;
-}> = ({ sidebar, content, path }) => {
+}> = ({ db, sidebar, content, path }) => {
   path = path || window.location.pathname;
 
   return (
     <div id="page">
-      <Sidebar path={path} tree={sidebar} />
+      <Sidebar path={path} db={db} tree={sidebar} />
       <main className="page-content" id="md">
         <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ a: Link }}>
           {content}

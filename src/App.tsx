@@ -1,7 +1,9 @@
+import { create, insert, save, type Orama } from "@orama/orama";
 import { renderToString } from "react-dom/server";
 import { saveAs } from "file-saver";
 import { tools } from "./styles/modules";
 import { useEffect, useRef, useState } from "react";
+import Carousel from "./components/carousel/carousel";
 import CSSBundle from "./static/assets/static.css?raw";
 import Handlebars from "handlebars";
 import HTMLTemplate from "./static/static.html?raw";
@@ -11,7 +13,6 @@ import Page from "./templates/page/page";
 import PreviewModal from "./components/previewModal/previewModal";
 import PreviewProvider from "./context/preview";
 import slugify from "slugify";
-import Carousel from "./components/carousel/carousel";
 
 export type DirectoryTree = {
   name: string;
@@ -33,20 +34,32 @@ export type AssetTree = {
 };
 export type PageRenderTree = DirectoryTree | PageTree | AssetTree;
 
+export type SearchDB = Orama<{
+  title: "string";
+  content: "string";
+  href: "string";
+}>;
+
 const slugOptions = { lower: true };
 
 function App() {
+  // FS
   const observerRef = useRef<any>(null);
   const [root, setRoot] = useState<FileSystemDirectoryHandle>();
+
+  // Build
   const [generated, setGenerated] = useState<Blob>();
-  const [preview, setPreview] = useState(false);
-  const [instructions, setInstructions] = useState(false);
   const [tree, setTree] = useState<Awaited<ReturnType<typeof generateDirectoryTree>>>();
   const [config, setConfig] = useState<Awaited<ReturnType<typeof generateCustomConfig>>>();
+  const [db, setDb] = useState<SearchDB>();
+
+  // UI
+  const [preview, setPreview] = useState(false);
+  const [instructions, setInstructions] = useState(false);
 
   const generateDirectoryTree = async (
     directoryHandle: FileSystemDirectoryHandle,
-    parentHref: string = ""
+    { parentHref = "", db }: { parentHref?: string; db?: SearchDB } = {}
   ) => {
     let hasIndex = false;
 
@@ -79,6 +92,7 @@ function App() {
               slug: slugName.replace(/\.[^/.]+$/, ".html"),
               title,
             });
+            if (db) insert(db, { title: title || slugName, content: textContent, href });
           } else {
             const bufferContent = await file.arrayBuffer();
             tree.children.push({
@@ -98,7 +112,9 @@ function App() {
 
             return slugName;
           })();
-          tree.children.push(await generateDirectoryTree(handle, directoryPath));
+          tree.children.push(
+            await generateDirectoryTree(handle, { parentHref: directoryPath, db })
+          );
           break;
       }
     }
@@ -243,8 +259,18 @@ function App() {
     (async () => {
       const config = await generateCustomConfig(root);
       setConfig(config);
-      const tree = await generateDirectoryTree(root);
+
+      const db = create({
+        schema: {
+          title: "string",
+          content: "string",
+          href: "string",
+        },
+      });
+
+      const tree = await generateDirectoryTree(root, { db });
       setTree(tree);
+      setDb(db);
     })();
   };
 
@@ -253,6 +279,7 @@ function App() {
     const root = zip.folder(tree.name);
     if (!root) return;
     renderDirectoryTree(tree, root);
+    if (db) root.file("search.json", JSON.stringify(save(db)));
     setGenerated(await zip.generateAsync({ type: "blob" }));
   };
 
@@ -343,7 +370,7 @@ function App() {
         if (!tree) return;
 
         return (
-          <PreviewProvider tree={tree}>
+          <PreviewProvider tree={tree} db={db}>
             <PreviewModal
               onClose={() => setPreview(false)}
               loadRootDirectory={loadRootDirectory}

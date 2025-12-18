@@ -18,7 +18,7 @@ const PreviewModal: FC<
     return;
   }
 
-  const { tree, current } = context;
+  const { tree, current, db } = context;
 
   let path = current;
   path = path.replace(/^[/]+|[/]+$/g, "");
@@ -83,7 +83,7 @@ const PreviewModal: FC<
         </div>
         <div className={`${tools["modal-preview"]}`}>
           {children}
-          <Page path={path} sidebar={tree} content={element?.content || "Not found"} />
+          <Page path={path} db={db} sidebar={tree} content={element?.content || "Not found"} />
         </div>
       </div>
     </div>

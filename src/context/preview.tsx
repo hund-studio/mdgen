@@ -6,10 +6,11 @@ import {
   type PropsWithChildren,
   type SetStateAction,
 } from "react";
-import type { DirectoryTree } from "../App";
+import type { DirectoryTree, SearchDB } from "../App";
 
 export const previewContext = createContext<
   | {
+      db?: SearchDB;
       current: string;
       setCurrent: Dispatch<SetStateAction<string>>;
       tree: DirectoryTree;
@@ -17,10 +18,14 @@ export const previewContext = createContext<
   | undefined
 >(undefined);
 
-const PreviewProvider: FC<PropsWithChildren<{ tree: DirectoryTree }>> = ({ children, tree }) => {
+const PreviewProvider: FC<PropsWithChildren<{ db?: SearchDB; tree: DirectoryTree }>> = ({
+  children,
+  tree,
+  db,
+}) => {
   const [current, setCurrent] = useState("/");
   return (
-    <previewContext.Provider value={{ tree, current, setCurrent }}>
+    <previewContext.Provider value={{ db, tree, current, setCurrent }}>
       {children}
     </previewContext.Provider>
   );
