@@ -4,12 +4,16 @@
   "version": "0.0.0-beta.2",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build:tool": "tsc -b && vite build",
+    "dev": "vite --config vite.config.tool.ts",
+    "build:cli": "tsc -b && vite build  --config vite.config.cli.ts",
+    "build:tool": "tsc -b && vite build  --config vite.config.tool.ts",
     "build:static": "tsc -b && vite build --config vite.config.static.ts",
     "build": "npm run build:static && npm run build:tool",
     "lint": "eslint .",
     "preview": "vite preview"
+  },
+  "bin": {
+    "mdgen": "./dist-cli/cli.js"
   },
   "dependencies": {
     "@orama/highlight": "^0.1.9",
