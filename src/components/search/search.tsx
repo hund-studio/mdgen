@@ -1,30 +1,34 @@
-import { search, type InternalTypedDocument, type Results } from "@orama/orama";
+import { Highlight } from "@orama/highlight";
+import { search } from "@orama/orama";
 import { useEffect, useState, type FC } from "react";
-import type { SearchDB } from "../../App";
 import Link from "../link/link";
+import type { SearchDB } from "../../App";
+
+const highlighter = new Highlight();
+
+const makeSearch = async (db: SearchDB, input: string) => {
+  const results = await search(db, { term: input, includeVectors: true });
+  const hits = results.hits.filter((entry) => !!entry.score);
+  const hitsWithHighlight = hits.map((hit) => ({
+    ...hit,
+    highlights: highlighter.highlight(hit.document.content, input).positions,
+  }));
+  return { ...results, hits: hitsWithHighlight };
+};
 
 const SearchInput: FC<{
   db: SearchDB;
   onClose: VoidFunction;
 }> = ({ onClose, db }) => {
   const [input, setInput] = useState("");
-  const [results, setResults] = useState<
-    Results<
-      InternalTypedDocument<{
-        title: string;
-        content: string;
-        href: string;
-      }>
-    >
-  >();
+  const [results, setResults] = useState<Awaited<ReturnType<typeof makeSearch>>>();
 
   useEffect(() => {
     if (!db) return;
 
     (async () => {
-      const results = await search(db, { term: input });
-      const hits = results.hits.filter((entry) => !!entry.score);
-      setResults({ ...results, hits });
+      const results = await makeSearch(db, input);
+      setResults(results);
     })();
   }, [input]);
 
@@ -56,7 +60,28 @@ const SearchInput: FC<{
                   key={entry.id}
                 >
                   <div className={"page-search-result-heading"}>{entry.document.title}</div>
-                  <div className={"page-search-result-preview"}>{entry.document.content}</div>
+                  <div className={"page-search-result-preview"}>
+                    {(() => {
+                      const content = entry.document.content;
+                      const [firstMatch] = entry.highlights;
+                      if (!firstMatch) return content;
+
+                      let start = Math.max(0, firstMatch.start - 100);
+
+                      const textBefore = content.substring(start, firstMatch.start);
+                      const lastNewlineIndex = textBefore.lastIndexOf("\n");
+
+                      if (lastNewlineIndex !== -1) start = start + lastNewlineIndex + 1;
+
+                      const end = Math.min(content.length, firstMatch.end + 100);
+
+                      let snippet = content.substring(start, end);
+                      if (start > 0 && lastNewlineIndex === -1) snippet = "..." + snippet;
+                      if (end < content.length) snippet = snippet + "...";
+
+                      return snippet;
+                    })()}
+                  </div>
                   <div className={"page-search-result-href"}>
                     /{entry.document.href.replace("/index.html", "")}
                   </div>
