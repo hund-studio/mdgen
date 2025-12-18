@@ -40,6 +40,17 @@ Currently, the CLI tool does not support custom configuration. It generates the 
 
 To generate the site, navigate to a folder containing .md files and run `npx mdgen` (after installing it globally as specified above).
 
+### Serving the Generated Files
+
+To view the generated static files (unless you configure your browser to serve local files), it is generally recommended to use an HTTP server. In my opinion, the easiest method is to install `http-server` globally.
+
+1. Install it via npm:
+   `npm i -g http-server`
+2. Navigate into the generated folder:
+   `cd ../generated-folder-name`
+3. Run the server:
+   `npx http-server .`
+
 ## Project Status (Beta)
 
 Currently in alpha, the project is rapidly evolving. The completion of these tasks will mark our first official beta release:
