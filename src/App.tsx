@@ -346,10 +346,13 @@ function App() {
                 <p className={`${tools["small"]} ${tools["nom"]}`}>Download a starter example:</p>
                 <div className={`${tools["buttons"]} ${tools["center"]}`}>
                   <a href="/basic.zip" download className={`${tools["a"]}`}>
-                    Basic doc
+                    📑 Basic doc
                   </a>
                   <a href="/blog.zip" download className={`${tools["a"]}`}>
-                    Blog
+                    ✒️ Blog
+                  </a>
+                  <a href="/dnd-adventure.zip" download className={`${tools["a"]}`}>
+                    🐉 DnD Adventure
                   </a>
                 </div>
               </div>
