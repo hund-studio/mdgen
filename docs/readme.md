@@ -4,64 +4,88 @@
 
 **mdgen** is a static documentation generator that operates entirely within your browser (it is **serverless**).
 
-By utilizing the **Filesystem API**, mdgen can read a local folder containing your Markdown (`.md`) files and render them as static **HTML** pages ready for online publication.
+By utilizing the **Filesystem API**, mdgen reads a local folder containing your Markdown (`.md`) files and renders them as static **HTML** pages ready for online publication. The entire process happens client-side: **no installation or compilation is required**, and your files never leave your computer.
 
-The entire process happens client-side: **no installation or compilation is required, and the absence of a server** ensures that your Markdown files never leave your computer.
+## Table of Contents
 
-## How to Get Started
+- Key Features
+- How to Use (Web Version)
+- How to Use (CLI Tool)
+  - Installation & Building
+  - Generating Documentation
+  - Serving the Files
+- Configuration (.mdgen)
+- Project Status & Roadmap
 
-To begin compiling your documentation:
+### Key Features
+
+- **Serverless & Secure**: No data leaves your device.
+- **Fuzzy Search**: Built-in Orama index generation for fast search.
+- **Auto-Refresh**: Automatic refresh on file change (limited browser support).
+- **Markdown Support**: Includes GFM (GitHub Flavored Markdown), Tables, and Checkboxes.
+- **Smart Fallback**: Automatically detects `index.md` or falls back to `readme.md`.
+
+## How to Use (Web Version)
+
+The easiest way to get started without installing anything.
 
 1. Go to [mdgen.hund.studio](https://mdgen.hund.studio).
 2. Select the **folder** (not a single file) containing your Markdown documentation.
 3. Download the generated static HTML.
 
-## `.mdgen directory`
+## How to Use (CLI Tool)
 
-The root of the documentation project allows for the customization of the final output (build) through the use of a special folder.
-The `.mdgen` folder must be created directly in the documentation project's root directory to be recognized. This folder is intended to contain files and configurations for advanced customization of the generated documentation.
+For a faster workflow that doesn't rely on the browser, you can use the CLI tool.
 
-### Current Functionality
+### Installation & Building
 
-The `.mdgen` folder currently supports only the specification of a CSS file for style customization:
+Currently, you need to build the tool locally to use it.
 
-- **`style.css`**: A CSS file named `style.css` placed inside `.mdgen/` will be automatically detected and added to the final build. This allows you to apply custom styles, overriding or extending the default documentation styles.
+1. **Build the CLI:** `npm run build:cli`
+2. **Install Globally (for testing):** `npm i -g .` _(Run this command from the project root.)_
 
-### Planned Future Functionality
+### Generating Documentation
+
+The CLI tool generates the output folder in the **parent directory** of where the command is executed.
+
+1. Navigate to a folder containing your `.md` files.
+2. Run the command: `npx mdgen` _(Or just `mdgen` if you linked it)_
+
+### Serving the Files
+
+To view the generated static files correctly, it is recommended to use an HTTP server rather than opening the HTML files directly.
+
+1. **Install http-server:** `npm i -g http-server`
+2. **Navigate to the generated folder:** `cd ../generated`
+3. **Start the server:** `npx http-server .`
+
+## Configuration (`.mdgen`)
+
+You can customize the final build by creating a special folder named `.mdgen` in the root of your documentation project.
+
+### Current Capabilities
+
+- **Custom CSS:** Place a file named `style.css` inside `.mdgen/`. It will be automatically detected and added to the final build, allowing you to override the default styles.
+
+### Planned Capabilities
 
 Future implementations that will utilize the `.mdgen` folder include:
 
-- **Custom Logo**: Uploading a custom logo to replace the default one.
-- **Sidebar Customization**: Offering options to customize the structure and appearance of the navigation sidebar.
-- **Special Page Categories**: Creating and managing categories of pages with specific behaviors or layouts.
+- **Custom Logo:** Upload a custom logo to replace the default one.
+- **Sidebar Customization:** Options to modify the navigation structure.
+- **Special Categories:** Custom behaviors for specific page groups.
 
-## Testing the cli tool
+## Project Status & Roadmap
 
-After compiling the CLI tool with `npm run build:cli`, you can test it by installing it globally using `npm i -g .` from the project root.
-Currently, the CLI tool does not support custom configuration. It generates the folder containing the HTML output in the parent directory of where it is executed.
+**Status:** Beta. The project is rapidly evolving. The completion of the tasks below will mark our first official stable release.
 
-To generate the site, navigate to a folder containing .md files and run `npx mdgen` (after installing it globally as specified above).
-
-### Serving the Generated Files
-
-To view the generated static files (unless you configure your browser to serve local files), it is generally recommended to use an HTTP server. In my opinion, the easiest method is to install `http-server` globally.
-
-1. Install it via npm:
-   `npm i -g http-server`
-2. Navigate into the generated folder:
-   `cd ../generated-folder-name`
-3. Run the server:
-   `npx http-server .`
-
-## Project Status (Beta)
-
-Currently in alpha, the project is rapidly evolving. The completion of these tasks will mark our first official beta release:
+### Immediate Priorities (Next Steps)
 
 - [ ] Additional dark/light color scheme;
 - [ ] Add sample `.mdgen` styles (ae. Fantasy DnD)
-- [ ] CLI mode
+- [ ] **CLI Improvements:**
   - [x] Runnning and installable script
-  - [ ] Add --output option (using commander or similar)
+  - [ ] Add `--output` option (using commander or similar)
 - [x] Fuzzy search functionality;
   - [x] Orama index generation on compile
   - [x] Better search UI
@@ -73,10 +97,8 @@ Currently in alpha, the project is rapidly evolving. The completion of these tas
     - [x] Tables
     - [x] Checkboxes
 
-## Next Steps
+### Backlog & Future Features
 
-The following steps represent our immediate priorities following the initial launch. Completing these tasks will pave the way for our first stable release:
-
-- [ ] Add markdown yaml metadata support
-- [ ] Allow .ts/.js plugins from .mdgen folder
-- [ ] Mobile version
+- [ ] Add Markdown YAML metadata support.
+- [ ] Allow `.ts`/`.js` plugins from the `.mdgen` folder.
+- [ ] Mobile version.
