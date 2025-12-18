@@ -12,7 +12,7 @@ import Handlebars from "handlebars";
 import HTMLTemplate from "./static/static.html?raw";
 import JSBundle from "./static/assets/main.js?raw";
 import JSZip from "jszip";
-import Page from "./templates/page/page";
+import Page from "./components/page/page";
 import PreviewModal from "./components/previewModal/previewModal";
 import PreviewProvider from "./context/preview";
 import slugify from "slugify";

@@ -1,7 +1,7 @@
 import { previewContext } from "../../context/preview";
 import { tools } from "../../styles/modules";
 import { use, type FC, type PropsWithChildren } from "react";
-import Page from "../../templates/page/page";
+import Page from "../page/page";
 
 const PreviewModal: FC<
   PropsWithChildren<{
