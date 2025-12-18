@@ -25,6 +25,10 @@ The `.mdgen` folder currently supports only the specification of a CSS file for 
 
 - **`style.css`**: A CSS file named `style.css` placed inside `.mdgen/` will be automatically detected and added to the final build. This allows you to apply custom styles, overriding or extending the default documentation styles.
 
+## Testing the cli tool
+
+After compiling the CLI tool with `npm run build:cli`, you can test it by installing it globally using `npm i -g .` from the project root.
+
 ### Planned Future Functionality
 
 Future implementations that will utilize the `.mdgen` folder include:
