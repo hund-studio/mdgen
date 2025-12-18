@@ -15,6 +15,8 @@ By utilizing the **Filesystem API**, mdgen reads a local folder containing your 
   - [How to Use (CLI Tool)](#how-to-use-cli-tool)
     - [Installation \& Building](#installation--building)
     - [Generating Documentation](#generating-documentation)
+      - [Basic Usage](#basic-usage)
+      - [Advanced Options](#advanced-options)
     - [Serving the Files](#serving-the-files)
   - [Configuration (`.mdgen`)](#configuration-mdgen)
     - [Current Capabilities](#current-capabilities)
@@ -55,7 +57,36 @@ Currently, you need to build the tool locally to use it.
 The CLI tool generates the output folder in the **parent directory** of where the command is executed.
 
 1. Navigate to a folder containing your `.md` files.
-2. Run the command: `npx mdgen` _(Or just `mdgen` if you linked it)_
+2. Run the command using the following options:
+
+#### Basic Usage
+
+```bash
+npx mdgen
+```
+
+_Creates a folder named /generated in the parent directory (../)._
+
+#### Advanced Options
+
+| Option            | Shorthand | Description                                     | Default     |
+| :---------------- | :-------- | :---------------------------------------------- | :---------- |
+| `--outDir <path>` | `-o`      | Parent directory where the output will be saved | `../`       |
+| `--name <name>`   | `-n`      | The name of the output folder                   | `generated` |
+
+**Examples:**
+
+- **Custom folder name:**
+
+```bash
+npx mdgen --name my-docs
+```
+
+- **Specific output path:**
+
+```bash
+mdgen --outDir ./dist --name site
+```
 
 ### Serving the Files
 
@@ -64,6 +95,7 @@ To view the generated static files correctly, it is recommended to use an HTTP s
 1. **Install http-server:** `npm i -g http-server`
 2. **Navigate to the generated folder:** `cd ../generated`
 3. **Start the server:** `npx http-server .`
+4. Open the provided URL in your browser.
 
 ## Configuration (`.mdgen`)
 
@@ -89,9 +121,9 @@ Future implementations that will utilize the `.mdgen` folder include:
 
 - [ ] Additional dark/light color scheme;
 - [ ] Add sample `.mdgen` styles (ae. Fantasy DnD)
-- [ ] **CLI Improvements:**
+- [x] **CLI Improvements:**
   - [x] Runnning and installable script
-  - [ ] Add `--output` option (using commander or similar)
+  - [x] Add `--output` option (using commander or similar)
 - [x] Fuzzy search functionality;
   - [x] Orama index generation on compile
   - [x] Better search UI
