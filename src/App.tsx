@@ -61,7 +61,13 @@ function App() {
     directoryHandle: FileSystemDirectoryHandle,
     { parentHref = "", db }: { parentHref?: string; db?: SearchDB } = {}
   ) => {
-    let hasIndex = false;
+    const hasIndex = await (async () => {
+      for await (const handle of directoryHandle.values()) {
+        if (handle.kind === "directory") continue;
+        if (handle.name === "index.md") return true;
+      }
+      return false;
+    })();
 
     const tree: PageRenderTree = {
       name: directoryHandle.name,
@@ -76,7 +82,6 @@ function App() {
         case "file":
           const file = await handle.getFile();
           if (slugName.endsWith(".md")) {
-            if (slugName === "index.md") hasIndex = true;
             const textContent = await file.text();
             let href = slugName.replace(/\.[^/.]+$/, ".html");
             if (parentHref) href = [parentHref, href].join("/");
@@ -85,14 +90,32 @@ function App() {
             if (firstLine?.startsWith("#")) {
               title = firstLine.replace(/^#\s*/, "").trim();
             }
-            tree.children.push({
+
+            const entry = {
               content: textContent,
               href,
               name: slugName.replace(/\.[^/.]+$/, ".html"),
               slug: slugName.replace(/\.[^/.]+$/, ".html"),
               title,
-            });
-            if (db) insert(db, { title: title || slugName, content: textContent, href });
+            };
+
+            if (!hasIndex) {
+              if (entry.name === "readme.html") {
+                entry.name = "index.html";
+                entry.slug = "index.html";
+                entry.href = entry.href.replace("readme.html", "index.html");
+              }
+            }
+
+            tree.children.push(entry);
+
+            if (db) {
+              insert(db, {
+                title: entry.title || entry.slug,
+                content: textContent,
+                href: entry.href,
+              });
+            }
           } else {
             const bufferContent = await file.arrayBuffer();
             tree.children.push({
@@ -117,22 +140,6 @@ function App() {
           );
           break;
       }
-    }
-
-    if (!hasIndex) {
-      tree.children = tree.children.map((entry) => {
-        if (entry.name === "readme.html")
-          if ("content" in entry) {
-            return {
-              ...entry,
-              name: "index.html",
-              slug: "index.html",
-              href: entry.href.replace("readme.html", "index.html"),
-            };
-          }
-
-        return entry;
-      });
     }
 
     tree.children.sort((a, b) => {

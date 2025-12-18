@@ -1,6 +1,7 @@
 import { search, type InternalTypedDocument, type Results } from "@orama/orama";
 import { useEffect, useState, type FC } from "react";
 import type { SearchDB } from "../../App";
+import Link from "../link/link";
 
 const SearchInput: FC<{
   db: SearchDB;
@@ -48,7 +49,18 @@ const SearchInput: FC<{
           return (
             <div className={"page-search-results"}>
               {results.hits.map((entry) => (
-                <div key={entry.id}>{entry.document.title}</div>
+                <Link
+                  onClick={onClose}
+                  href={`/${entry.document.href}`}
+                  className={"page-search-result"}
+                  key={entry.id}
+                >
+                  <div className={"page-search-result-heading"}>{entry.document.title}</div>
+                  <div className={"page-search-result-preview"}>{entry.document.content}</div>
+                  <div className={"page-search-result-href"}>
+                    /{entry.document.href.replace("/index.html", "")}
+                  </div>
+                </Link>
               ))}
             </div>
           );
