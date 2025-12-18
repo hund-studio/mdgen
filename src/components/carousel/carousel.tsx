@@ -21,7 +21,10 @@ const Carousel: FC<{ onClose: VoidFunction }> = ({ onClose }) => {
     <div className={`${styles["wrapper"]}`}>
       <div className={`${styles["inner"]}`}>
         <div>
-          <button className={`${tools["button"]} ${tools["button--thin"]}`} onClick={onClose}>
+          <button
+            className={`${tools["button"]} ${tools["button--thin"]} ${tools["button--dark"]}`}
+            onClick={onClose}
+          >
             Close
           </button>
         </div>

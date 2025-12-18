@@ -4,7 +4,7 @@
   left: 0;
   height: 100%;
   width: 100%;
-  background: #00000050;
+  background: #2f4f4fa8;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -69,6 +69,7 @@
   flex-grow: 0;
   flex-shrink: 0;
   gap: 0.5rem;
+  border: 1px solid #101b1b;
 
   scroll-snap-align: center;
 

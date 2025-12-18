@@ -101,7 +101,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  background: darkslategray;
+  background: #2f4f4f;
   padding: 0.25em 0.5em;
   border-radius: 0.15em;
   color: #84ffff;
@@ -115,7 +115,7 @@
   bottom: 0;
   display: flex;
   padding: 0.5rem;
-  background: #00000025;
+  background: #2f4f4fa8;
   height: 100%;
   width: 100%;
   box-sizing: border-box;
@@ -123,7 +123,7 @@
   &-content {
     height: 100%;
     width: 100%;
-    border: 1px solid black;
+    border: 1px solid #101b1b;
     border-radius: 0.25em;
     display: flex;
     flex-direction: column;
@@ -132,7 +132,7 @@
 
   &-heading {
     flex: 0;
-    background: black;
+    background: #101b1b;
     color: white;
     padding: 0.25em;
     display: flex;
