@@ -47,12 +47,14 @@ Currently in alpha, the project is rapidly evolving. The completion of these tas
 - [ ] Additional dark/light color scheme;
 - [ ] Add sample `.mdgen` styles (ae. Fantasy DnD)
 - [ ] CLI mode
+  - [x] Runnning and installable script
+  - [ ] Add --output option (using commander or similar)
 - [x] Fuzzy search functionality;
   - [x] Orama index generation on compile
   - [x] Better search UI
-- [x] Currently, the default file used for each directory is `index.md`; it would be better to use `readme.md` and, if not found, then fall back to `index.md`;
-- [x] The ability to upload **custom CSS and styles** through the use of a `.mdgen` directory;
-- [x] Automatic refresh on file change **(limited browser support)**;
+- [x] Currently, the default file used for each directory is `index.md`; it would be better to use `readme.md` and, if not found, then fall back to `index.md`
+- [x] The ability to upload **custom CSS and styles** through the use of a `.mdgen` directory
+- [x] Automatic refresh on file change **(limited browser support)**
 - [x] Support for **additional Markdown features**:
   - [x] remark-gfm
     - [x] Tables
@@ -64,4 +66,4 @@ The following steps represent our immediate priorities following the initial lau
 
 - [ ] Add markdown yaml metadata support
 - [ ] Allow .ts/.js plugins from .mdgen folder
-- [ ] Mobile version;
+- [ ] Mobile version
