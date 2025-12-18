@@ -1,5 +1,7 @@
 # 🔨 mdgen: A Markdown to HTML Generator
 
+[![npm version](https://img.shields.io/npm/v/@hund.studio/mdgen?color=red&label=npm%20package)](https://www.npmjs.com/package/@hund.studio/mdgen)
+
 > **Tip:** Now with the new CLI tool, you can skip the browser-based workflow and significantly speed up the static site generation.
 
 **mdgen** is a static documentation generator that operates entirely within your browser (it is **serverless**).

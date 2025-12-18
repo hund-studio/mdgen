@@ -8,8 +8,14 @@
     "README.md"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hund-studio/mdgen.git"
+  },
+  "homepage": "https://mdgen.hund.studio/",
   "scripts": {
     "build:cli": "tsc -b && vite build  --config vite.config.cli.ts",
     "build:static": "tsc -b && vite build --config vite.config.static.ts",
@@ -22,7 +28,7 @@
     "postpublish": "rm ./README.md",
     "prepublishOnly": "npm run build:cli && npm run copy:readme",
     "preview": "vite preview",
-    "publish:beta": "npm publish --tag beta"
+    "release:beta": "npm version prerelease --preid beta && git push follow-tags"
   },
   "bin": {
     "mdgen": "./dist-cli/cli.js"
