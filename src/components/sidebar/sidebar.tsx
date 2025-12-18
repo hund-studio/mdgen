@@ -3,7 +3,7 @@ import { useState, type FC } from "react";
 import Link from "../link/link";
 import Search from "../search/search";
 
-const PageEntry: FC<{ tree: PageTree; path: string }> = ({ tree, path }) => {
+const PageEntry: FC<{ tree: PageEntry; path: string }> = ({ tree, path }) => {
   const normalizedPath = decodeURIComponent(path.replace(/\/$/, "").replace(/^\//, ""));
   const treeHref = tree.href ? decodeURIComponent(tree.href) : null;
 
@@ -24,7 +24,7 @@ const PageEntry: FC<{ tree: PageTree; path: string }> = ({ tree, path }) => {
   );
 };
 
-const AssetEntry: FC<{ tree: AssetTree; path: string }> = ({ tree }) => {
+const AssetEntry: FC<{ tree: AssetEntry; path: string }> = ({ tree }) => {
   return (
     <li>
       <span>{tree.name}</span>
@@ -32,7 +32,7 @@ const AssetEntry: FC<{ tree: AssetTree; path: string }> = ({ tree }) => {
   );
 };
 
-const DirectoryEntry: FC<{ tree: DirectoryTree; path: string }> = ({ tree, path }) => {
+const DirectoryEntry: FC<{ tree: DirectoryEntry; path: string }> = ({ tree, path }) => {
   const normalizedPath = decodeURIComponent(path.replace(/\/$/, "").replace(/^\//, ""));
   const isActiveOrContainsActive = normalizedPath.startsWith(tree.path);
 
@@ -61,7 +61,7 @@ const DirectoryEntry: FC<{ tree: DirectoryTree; path: string }> = ({ tree, path 
   );
 };
 
-const Entries: FC<{ tree: DirectoryTree; path: string }> = ({ tree, path }) => {
+const Entries: FC<{ tree: DirectoryEntry; path: string }> = ({ tree, path }) => {
   return tree.children.map((entry, index) => {
     if ("children" in entry) return <DirectoryEntry path={path} tree={entry} key={index} />;
     if (!("href" in entry)) return <AssetEntry path={path} tree={entry} key={index} />;
@@ -69,7 +69,7 @@ const Entries: FC<{ tree: DirectoryTree; path: string }> = ({ tree, path }) => {
   });
 };
 
-const Sidebar: FC<{ db?: SearchDB; tree: DirectoryTree; path: string }> = ({ db, tree, path }) => {
+const Sidebar: FC<{ db?: SearchDB; tree: DirectoryEntry; path: string }> = ({ db, tree, path }) => {
   if (!tree.children.length) return;
 
   return (

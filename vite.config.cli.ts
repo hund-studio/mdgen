@@ -1,7 +1,22 @@
-import { defineConfig } from "vite";
+import { defineConfig, Plugin } from "vite";
 import { resolve } from "path";
+import fs from "fs";
+
+const permissionsPlugin = (): Plugin => {
+  return {
+    name: "chmod-cli",
+    closeBundle() {
+      const path = resolve(__dirname, "dist-cli/cli.js");
+      if (fs.existsSync(path)) {
+        fs.chmodSync(path, 0o755);
+        console.log(`\n✅ Executable permissions set on: ${path}`);
+      }
+    },
+  };
+};
 
 export default defineConfig({
+  plugins: [permissionsPlugin()],
   publicDir: false,
   build: {
     ssr: true,

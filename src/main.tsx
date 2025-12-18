@@ -1,23 +1,15 @@
 import "./styles/page.scss";
-import { create, insert, save } from "@orama/orama";
+import { create, save } from "@orama/orama";
 import { createRoot } from "react-dom/client";
-import { renderToString } from "react-dom/server";
 import { saveAs } from "file-saver";
 import { StrictMode } from "react";
 import { tools } from "./styles/modules";
 import { useEffect, useRef, useState } from "react";
 import Carousel from "./components/carousel/carousel";
-import CSSBundle from "./static/assets/static.css?raw";
-import Handlebars from "handlebars";
-import HTMLTemplate from "./static/static.html?raw";
-import JSBundle from "./static/assets/main.js?raw";
 import JSZip from "jszip";
-import Page from "./components/page/page";
 import PreviewModal from "./components/previewModal/previewModal";
 import PreviewProvider from "./context/preview";
-import slugify from "slugify";
-
-const slugOptions = { lower: true };
+import utils from "./utils";
 
 function App() {
   // FS
@@ -26,198 +18,15 @@ function App() {
 
   // Build
   const [generated, setGenerated] = useState<Blob>();
-  const [tree, setTree] = useState<Awaited<ReturnType<typeof generateDirectoryTree>>>();
-  const [config, setConfig] = useState<Awaited<ReturnType<typeof generateCustomConfig>>>();
+  const [tree, setTree] =
+    useState<Awaited<ReturnType<typeof utils.directoryEntry.fromDirectoryHandle>>>();
+  const [config, setConfig] =
+    useState<Awaited<ReturnType<typeof utils.customConfig.fromDirectoryHandle>>>();
   const [db, setDb] = useState<SearchDB>();
 
   // UI
   const [preview, setPreview] = useState(false);
   const [instructions, setInstructions] = useState(false);
-
-  const generateDirectoryTree = async (
-    directoryHandle: FileSystemDirectoryHandle,
-    { parentHref = "", db }: { parentHref?: string; db?: SearchDB } = {}
-  ) => {
-    const hasIndex = await (async () => {
-      for await (const handle of directoryHandle.values()) {
-        if (handle.kind === "directory") continue;
-        if (handle.name === "index.md") return true;
-      }
-      return false;
-    })();
-
-    const tree: PageRenderTree = {
-      name: directoryHandle.name,
-      slug: slugify(directoryHandle.name, slugOptions),
-      path: parentHref,
-      children: [],
-    };
-
-    for await (const handle of directoryHandle.values()) {
-      const slugName = slugify(handle.name, slugOptions);
-      switch (handle.kind) {
-        case "file":
-          const file = await handle.getFile();
-          if (slugName.endsWith(".md")) {
-            const textContent = await file.text();
-            let href = slugName.replace(/\.[^/.]+$/, ".html");
-            if (parentHref) href = [parentHref, href].join("/");
-            let title: string | null = null;
-            const [firstLine] = textContent.split("\n");
-            if (firstLine?.startsWith("#")) {
-              title = firstLine.replace(/^#\s*/, "").trim();
-            }
-
-            const entry = {
-              content: textContent,
-              href,
-              name: slugName.replace(/\.[^/.]+$/, ".html"),
-              slug: slugName.replace(/\.[^/.]+$/, ".html"),
-              title,
-            };
-
-            if (!hasIndex) {
-              if (entry.name === "readme.html") {
-                entry.name = "index.html";
-                entry.slug = "index.html";
-                entry.href = entry.href.replace("readme.html", "index.html");
-              }
-            }
-
-            tree.children.push(entry);
-
-            if (db) {
-              insert(db, {
-                title: entry.title || entry.slug,
-                content: textContent,
-                href: entry.href,
-              });
-            }
-          } else {
-            const bufferContent = await file.arrayBuffer();
-            tree.children.push({
-              name: slugName,
-              slug: slugName,
-              buffer: bufferContent,
-            });
-          }
-          break;
-        case "directory":
-          if (slugName.startsWith(".")) continue;
-
-          const directoryPath = (() => {
-            if (!!parentHref.length) {
-              return [parentHref, slugName].join("/");
-            }
-
-            return slugName;
-          })();
-          tree.children.push(
-            await generateDirectoryTree(handle, { parentHref: directoryPath, db })
-          );
-          break;
-      }
-    }
-
-    tree.children.sort((a, b) => {
-      const isADirectory = "children" in a;
-      const isBDirectory = "children" in b;
-
-      if (!isADirectory && isBDirectory) return -1;
-
-      if (isADirectory && !isBDirectory) return 1;
-
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-
-    return tree;
-  };
-
-  const generateCustomConfig = async (directoryHandle: FileSystemDirectoryHandle) => {
-    const config: { brand: null | { file: File; name: string }; style: null | string } = {
-      brand: null,
-      style: null,
-    };
-
-    for await (const handle of directoryHandle.values()) {
-      if (handle.kind !== "directory") continue;
-      if (handle.name !== ".mdgen") continue;
-
-      const handleValues = handle.values();
-
-      for await (const handle of handleValues) {
-        switch (handle.name) {
-          case "style.css": {
-            if (handle.kind !== "file") break;
-            const file = await handle.getFile();
-            config.style = await file.text();
-            break;
-          }
-          case "logo.svg":
-          case "logo.png":
-          case "brand.svg":
-          case "brand.png": {
-            if (handle.kind !== "file") break;
-            config.brand = {
-              name: handle.name,
-              file: await handle.getFile(),
-            };
-            break;
-          }
-        }
-      }
-    }
-
-    return config;
-  };
-
-  const renderDirectoryTree = async (
-    generatedTree: Awaited<ReturnType<typeof generateDirectoryTree>>,
-    parentDirectory: JSZip
-  ) => {
-    const assets = parentDirectory.folder("assets");
-
-    assets?.file("main.js", JSBundle);
-    assets?.file("static.css", CSSBundle);
-
-    if (config?.brand) assets?.file(config.brand.name, config.brand.file);
-    if (config?.style) assets?.file("custom.css", config.style);
-
-    for (const entry of generatedTree.children) {
-      if ("children" in entry) {
-        const root = parentDirectory.folder(entry.slug);
-        if (!root) continue;
-        renderDirectoryTree(entry, root);
-        continue;
-      }
-      if ("buffer" in entry) {
-        parentDirectory.file(entry.name, entry.buffer);
-        continue;
-      }
-      const template = Handlebars.compile(HTMLTemplate);
-      const pageTree = tree || generatedTree;
-      parentDirectory.file(
-        entry.name,
-        template({
-          body: renderToString(
-            <Page
-              path={[pageTree.path, entry.name].join("/")}
-              sidebar={pageTree}
-              content={entry.content}
-            />
-          ),
-          content: entry.content,
-          data: JSON.stringify(pageTree),
-          style: !!config?.style,
-        })
-      );
-    }
-  };
 
   const directoryPicker = async () => {
     const rootHandle = await showDirectoryPicker({ mode: "read" });
@@ -241,7 +50,7 @@ function App() {
     if (!root) return;
 
     (async () => {
-      const config = await generateCustomConfig(root);
+      const config = await utils.customConfig.fromDirectoryHandle(root);
       setConfig(config);
 
       const db = create({
@@ -252,17 +61,16 @@ function App() {
         },
       });
 
-      const tree = await generateDirectoryTree(root, { db });
+      const tree = await utils.directoryEntry.fromDirectoryHandle(root, { db });
       setTree(tree);
       setDb(db);
     })();
   };
 
-  const generateDirectoryZIP = async (tree: DirectoryTree) => {
+  const generateDirectoryZIP = async (tree: DirectoryEntry) => {
     const zip = new JSZip();
-    const root = zip.folder(tree.name);
+    const root = await utils.directoryEntry.toZIP(tree, { tree, parentDirectory: zip, config });
     if (!root) return;
-    renderDirectoryTree(tree, root);
     if (db) root.file("search.json", JSON.stringify(save(db)));
     setGenerated(await zip.generateAsync({ type: "blob" }));
   };

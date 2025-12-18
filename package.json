@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.tool.ts",
+    "dev:cli": "vite build --config vite.config.cli.ts --watch",
     "build:cli": "tsc -b && vite build  --config vite.config.cli.ts",
     "build:tool": "tsc -b && vite build  --config vite.config.tool.ts",
     "build:static": "tsc -b && vite build --config vite.config.static.ts",

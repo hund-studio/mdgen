@@ -1,11 +1,11 @@
-type DirectoryTree = {
+type DirectoryEntry = {
   name: string;
   slug: string;
   path: string;
-  children: PageRenderTree[];
+  children: Tree[];
 };
 
-type PageTree = {
+type PageEntry = {
   name: string;
   slug: string;
   href: string;
@@ -13,10 +13,10 @@ type PageTree = {
   title: string | null;
 };
 
-type AssetTree = {
+type AssetEntry = {
   name: string;
   slug: string;
   buffer: ArrayBuffer;
 };
 
-type PageRenderTree = DirectoryTree | PageTree | AssetTree;
+type Tree = DirectoryEntry | PageEntry | AssetEntry;
