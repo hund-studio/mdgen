@@ -36,6 +36,9 @@ Future implementations that will utilize the `.mdgen` folder include:
 ## Testing the cli tool
 
 After compiling the CLI tool with `npm run build:cli`, you can test it by installing it globally using `npm i -g .` from the project root.
+Currently, the CLI tool does not support custom configuration. It generates the folder containing the HTML output in the parent directory of where it is executed.
+
+To generate the site, navigate to a folder containing .md files and run `npx mdgen` (after installing it globally as specified above).
 
 ## Project Status (Beta)
 

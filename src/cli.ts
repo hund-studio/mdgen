@@ -1,7 +1,7 @@
 import { create, save } from "@orama/orama";
-import utils from "./utils";
-import path from "path";
 import fs from "fs/promises";
+import path from "path";
+import utils from "./utils";
 
 async function run() {
   const db = await create({
