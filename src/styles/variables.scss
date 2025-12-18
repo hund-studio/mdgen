@@ -10,11 +10,17 @@
   --color-whitesmoke-strong: #e3e3e3;
   --color-lightgray-weak: #eaeaea;
   --color-lightgray: #d3d3d3;
+  --color-gray-solid: #808080;
   --color-lightpurple: #7070e9;
   --color-purple: #504aa8;
   --color-lightcyan: #e0ffff;
+  --color-black-solid: #000000;
+  --color-black-ghost-05: #000000d0;
+  --color-whitesmoke-ghost-05: #e3e3e3d0;
 
   // Theme
+  --theme-color-placeholder: var(--color-gray-solid);
+  --theme-color-solid: var(--color-black-solid);
   --theme-background-solid: var(--color-white);
   --theme-background-strong: var(--color-whitesmoke);
   --theme-border-solid: var(--color-lightgray);
@@ -23,4 +29,5 @@
   --theme-hover: var(--color-lightcyan);
   --theme-interactive-background: var(--color-lightgray-weak);
   --theme-interactive-background-hover: var(--color-whitesmoke-strong);
+  --theme-overlay-background: var(--color-whitesmoke-ghost-05);
 }
