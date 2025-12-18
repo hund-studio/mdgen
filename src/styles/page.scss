@@ -2,6 +2,11 @@
 
 // Global
 
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 html,
 body {
   font-family: var(--base-font-family);
@@ -74,7 +79,7 @@ body,
       padding: 0.5em 0 0.5em 0.5em;
 
       &.active {
-        border-left: 1px solid var(--theme-active);
+        border-left: 1px solid var(--theme-active-weak);
       }
 
       @media (hover: hover) {
@@ -197,5 +202,13 @@ body,
     color: var(--theme-border-solid);
     border-width: 0.5px;
     border-style: solid;
+  }
+
+  // Links
+
+  a {
+    color: var(--theme-active-solid);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.125em;
   }
 }

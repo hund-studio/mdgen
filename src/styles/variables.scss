@@ -10,14 +10,16 @@
   --color-whitesmoke-strong: #e3e3e3;
   --color-lightgray-weak: #eaeaea;
   --color-lightgray: #d3d3d3;
-  --color-purple: #7070e9;
+  --color-lightpurple: #7070e9;
+  --color-purple: #504aa8;
   --color-lightcyan: #e0ffff;
 
   // Theme
   --theme-background-solid: var(--color-white);
   --theme-background-strong: var(--color-whitesmoke);
   --theme-border-solid: var(--color-lightgray);
-  --theme-active: var(--color-purple);
+  --theme-active-weak: var(--color-lightpurple);
+  --theme-active-solid: var(--color-purple);
   --theme-hover: var(--color-lightcyan);
   --theme-interactive-background: var(--color-lightgray-weak);
   --theme-interactive-background-hover: var(--color-whitesmoke-strong);
