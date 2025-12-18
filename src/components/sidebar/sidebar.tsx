@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { useState, type FC } from "react";
 import Link from "../link/link";
 import Search from "../search/search";
-import type { SearchDB } from "../../App";
+import type { SearchDB } from "../../main";
 
 export type DirectoryTree = { name: string; path: string; children: SidebarTree[] };
 export type PageTree = { name: string; href: string; title: string | null };
