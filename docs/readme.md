@@ -113,8 +113,9 @@ Future implementations that will utilize the `.mdgen` folder include:
 
 ### Immediate Priorities (Next Steps)
 
-- [ ] Additional dark/light color scheme;
 - [ ] Add sample `.mdgen` styles (ae. Fantasy DnD)
+- [ ] Additional dark/light color scheme;
+- [ ] Fill the examples
 - [x] **CLI Improvements:**
   - [x] Runnning and installable script
   - [x] Add `--output` option (using commander or similar)
@@ -132,5 +133,6 @@ Future implementations that will utilize the `.mdgen` folder include:
 ### Backlog & Future Features
 
 - [ ] Add Markdown YAML metadata support.
+  - [ ] Enable page categories and tags for better/granular search
 - [ ] Allow `.ts`/`.js` plugins from the `.mdgen` folder.
 - [ ] Mobile version.
