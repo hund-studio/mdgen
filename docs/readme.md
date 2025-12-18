@@ -35,14 +35,11 @@ Future implementations that will utilize the `.mdgen` folder include:
 
 ## Project Status (Beta)
 
-The tool is currently in its beta phase (developed in just a couple of days), but it will soon be expanded to include:
+Currently in alpha, the project is rapidly evolving. The completion of these tasks will mark our first official beta release:
 
 - [ ] Additional dark/light color scheme;
-- [ ] Add markdown yaml metadata support
-- [ ] Allow .ts/.js plugins from .mdgen folder
 - [ ] Add sample `.mdgen` styles (ae. Fantasy DnD)
 - [ ] CLI mode
-- [ ] Mobile version;
 - [x] Fuzzy search functionality;
   - [x] Orama index generation on compile
   - [x] Better search UI
@@ -53,3 +50,11 @@ The tool is currently in its beta phase (developed in just a couple of days), bu
   - [x] remark-gfm
     - [x] Tables
     - [x] Checkboxes
+
+## Next Steps
+
+The following steps represent our immediate priorities following the initial launch. Completing these tasks will pave the way for our first stable release:
+
+- [ ] Add markdown yaml metadata support
+- [ ] Allow .ts/.js plugins from .mdgen folder
+- [ ] Mobile version;
