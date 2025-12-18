@@ -1,4 +1,6 @@
-# 🔨 mdgen: Serverless Markdown to HTML Generator
+# 🔨 mdgen: A Markdown to HTML Generator
+
+> **Tip:** Now with the new CLI tool, you can skip the browser-based workflow and significantly speed up the static site generation.
 
 **mdgen** is a static documentation generator that operates entirely within your browser (it is **serverless**).
 
