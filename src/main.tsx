@@ -98,7 +98,7 @@ function App() {
             className={`${tools["button"]} ${tools["button--thin"]}`}
             onClick={() => setInstructions(true)}
           >
-            📖 Instructions
+            📖 Quick Start
           </button>
           <button className={`${tools["button"]} ${tools["button--3d"]}`} onClick={directoryPicker}>
             📁 {root ? <>Change directory</> : <>Pick a directory</>}

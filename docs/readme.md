@@ -13,7 +13,7 @@ By utilizing the **Filesystem API**, mdgen reads a local folder containing your 
     - [Key Features](#key-features)
   - [How to Use (Web Version)](#how-to-use-web-version)
   - [How to Use (CLI Tool)](#how-to-use-cli-tool)
-    - [Installation \& Building](#installation--building)
+    - [Quick Start (No Installation Required)](#quick-start-no-installation-required)
     - [Generating Documentation](#generating-documentation)
       - [Basic Usage](#basic-usage)
       - [Advanced Options](#advanced-options)
@@ -43,14 +43,15 @@ The easiest way to get started without installing anything.
 
 ## How to Use (CLI Tool)
 
-For a faster workflow that doesn't rely on the browser, you can use the CLI tool.
+The mdgen CLI provides a fast, terminal-based workflow for generating and managing your documentation without needing a browser.
 
-### Installation & Building
+### Quick Start (No Installation Required)
 
-Currently, you need to build the tool locally to use it.
+The easiest way to run the tool is via `npx`. This ensures you are always using the latest beta features without a permanent installation:
 
-1. **Build the CLI:** `npm run build:cli`
-2. **Install Globally (for testing):** `npm i -g .` _(Run this command from the project root.)_
+```bash
+npx @hund.studio/mdgen [options]
+```
 
 ### Generating Documentation
 
