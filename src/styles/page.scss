@@ -211,4 +211,26 @@ body,
     text-decoration-thickness: 1px;
     text-underline-offset: 0.125em;
   }
+
+  // Blockquote
+
+  blockquote {
+    background-color: var(--theme-background-strong);
+    margin: 0;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    padding-block-start: 0.75em;
+    padding-block-end: 0.75em;
+    padding-inline-start: 2.5rem;
+    padding-inline-end: 2.5rem;
+    border-left: 1px solid var(--theme-border-solid);
+
+    & > *:first-child {
+      margin-top: 0;
+    }
+
+    & > *:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
