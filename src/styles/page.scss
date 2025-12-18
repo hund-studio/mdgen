@@ -165,12 +165,15 @@ body,
     display: flex;
     align-items: flex-start;
     justify-content: center;
+    overflow: auto;
+    padding: 1em;
+    box-sizing: border-box;
   }
 
   &-input {
     margin-left: auto;
     margin-right: auto;
-    margin-top: clamp(3rem, 10vh, 8rem);
+    margin-top: clamp(2rem, 10vh, 7rem);
     padding: 0.5em;
     width: min(100%, 420px);
     background: var(--theme-background-solid);
