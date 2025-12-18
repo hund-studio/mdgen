@@ -8,14 +8,20 @@ By utilizing the **Filesystem API**, mdgen reads a local folder containing your 
 
 ## Table of Contents
 
-- Key Features
-- How to Use (Web Version)
-- How to Use (CLI Tool)
-  - Installation & Building
-  - Generating Documentation
-  - Serving the Files
-- Configuration (.mdgen)
-- Project Status & Roadmap
+- [🔨 mdgen: A Markdown to HTML Generator](#-mdgen-a-markdown-to-html-generator)
+  - [Table of Contents](#table-of-contents)
+    - [Key Features](#key-features)
+  - [How to Use (Web Version)](#how-to-use-web-version)
+  - [How to Use (CLI Tool)](#how-to-use-cli-tool)
+    - [Installation \& Building](#installation--building)
+    - [Generating Documentation](#generating-documentation)
+    - [Serving the Files](#serving-the-files)
+  - [Configuration (`.mdgen`)](#configuration-mdgen)
+    - [Current Capabilities](#current-capabilities)
+    - [Planned Capabilities](#planned-capabilities)
+  - [Project Status \& Roadmap](#project-status--roadmap)
+    - [Immediate Priorities (Next Steps)](#immediate-priorities-next-steps)
+    - [Backlog \& Future Features](#backlog--future-features)
 
 ### Key Features
 
