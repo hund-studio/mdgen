@@ -39,6 +39,8 @@ The tool is currently in its beta phase (developed in just a couple of days), bu
 
 - [ ] Additional dark/light color scheme;
 - [ ] Fuzzy search functionality;
+  - [x] Orama index generation on compile
+  - [ ] Better search UI
 - [ ] Allow .ts/.js plugins from .mdgen folder
 - [ ] Add sample `.mdgen` styles (ae. Fantasy DnD)
 - [ ] CLI mode
