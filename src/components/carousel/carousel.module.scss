@@ -1,0 +1,85 @@
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: #00000050;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  box-sizing: border-box;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+  max-width: 100%;
+
+  & > * {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+.stage {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  gap: 0.5rem;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  overflow-x: scroll;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: calc(10px + 1rem);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-lightgray);
+    border-radius: 100px;
+    height: 10px;
+    border: 0.5rem solid transparent;
+    background-clip: content-box;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+.card {
+  width: 250px;
+  background-color: var(--color-lightgray);
+  border-radius: 0.35em;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 0;
+  flex-shrink: 0;
+  gap: 0.5rem;
+
+  scroll-snap-align: center;
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+
+  &-caption {
+    background-color: var(--color-white);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.35em;
+  }
+}

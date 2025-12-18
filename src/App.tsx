@@ -11,6 +11,7 @@ import Page from "./templates/page/page";
 import PreviewModal from "./components/previewModal/previewModal";
 import PreviewProvider from "./context/preview";
 import slugify from "slugify";
+import Carousel from "./components/carousel/carousel";
 
 export type DirectoryTree = {
   name: string;
@@ -39,6 +40,7 @@ function App() {
   const [root, setRoot] = useState<FileSystemDirectoryHandle>();
   const [generated, setGenerated] = useState<Blob>();
   const [preview, setPreview] = useState(false);
+  const [instructions, setInstructions] = useState(false);
   const [tree, setTree] = useState<Awaited<ReturnType<typeof generateDirectoryTree>>>();
   const [config, setConfig] = useState<Awaited<ReturnType<typeof generateCustomConfig>>>();
 
@@ -273,6 +275,12 @@ function App() {
           <img src="/availability.svg" alt="availability" className={`${tools["availability"]}`} />
         </a>
         <div className={`${tools["buttons"]} ${tools["vertical"]}`}>
+          <button
+            className={`${tools["button"]} ${tools["button--thin"]}`}
+            onClick={() => setInstructions(true)}
+          >
+            📖 Instructions
+          </button>
           <button className={`${tools["button"]} ${tools["button--3d"]}`} onClick={directoryPicker}>
             📁 {root ? <>Change directory</> : <>Pick a directory</>}
           </button>
@@ -325,6 +333,11 @@ function App() {
           - 0.0.0-beta
         </div>
       </div>
+      {(() => {
+        if (!instructions) return;
+
+        return <Carousel onClose={() => setInstructions(false)} />;
+      })()}
       {(() => {
         if (!preview) return;
         if (!tree) return;
