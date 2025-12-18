@@ -40,6 +40,7 @@ The tool is currently in its beta phase (developed in just a couple of days), bu
 - [ ] Additional dark/light color scheme;
 - [ ] Fuzzy search functionality;
 - [ ] Allow .ts/.js plugins from .mdgen folder
+- [ ] Add sample `.mdgen` styles (ae. Fantasy DnD)
 - [x] Currently, the default file used for each directory is `index.md`; it would be better to use `readme.md` and, if not found, then fall back to `index.md`;
 - [x] The ability to upload **custom CSS and styles** through the use of a `.mdgen` directory;
 - [x] Automatic refresh on file change **(limited browser support)**;
