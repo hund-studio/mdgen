@@ -2,7 +2,6 @@ import { previewContext } from "../../context/preview";
 import { tools } from "../../styles/modules";
 import { use, type FC, type PropsWithChildren } from "react";
 import Page from "../../templates/page/page";
-import type { PageRenderTree } from "../../main";
 
 const PreviewModal: FC<
   PropsWithChildren<{

@@ -2,7 +2,6 @@ import { Highlight } from "@orama/highlight";
 import { search } from "@orama/orama";
 import { useEffect, useState, type FC } from "react";
 import Link from "../link/link";
-import type { SearchDB } from "../../main";
 
 const highlighter = new Highlight();
 

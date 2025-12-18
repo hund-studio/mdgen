@@ -3,7 +3,6 @@ import { create, load } from "@orama/orama";
 import { createRoot } from "react-dom/client";
 import { StrictMode, useEffect, useState, type FC } from "react";
 import Page from "./templates/page/page.tsx";
-import type { SearchDB } from "./main.tsx";
 
 const dataElement = document.getElementById("data");
 const contentElement = document.getElementById("content");

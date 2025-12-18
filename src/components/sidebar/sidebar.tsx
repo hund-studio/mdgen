@@ -2,12 +2,6 @@ import { motion } from "motion/react";
 import { useState, type FC } from "react";
 import Link from "../link/link";
 import Search from "../search/search";
-import type { SearchDB } from "../../main";
-
-export type DirectoryTree = { name: string; path: string; children: SidebarTree[] };
-export type PageTree = { name: string; href: string; title: string | null };
-export type AssetTree = { name: string };
-type SidebarTree = DirectoryTree | PageTree | AssetTree;
 
 const PageEntry: FC<{ tree: PageTree; path: string }> = ({ tree, path }) => {
   const normalizedPath = decodeURIComponent(path.replace(/\/$/, "").replace(/^\//, ""));

@@ -1,9 +1,9 @@
 import "./styles/page.scss";
+import { create, insert, save } from "@orama/orama";
 import { createRoot } from "react-dom/client";
-import { StrictMode } from "react";
-import { create, insert, save, type Orama } from "@orama/orama";
 import { renderToString } from "react-dom/server";
 import { saveAs } from "file-saver";
+import { StrictMode } from "react";
 import { tools } from "./styles/modules";
 import { useEffect, useRef, useState } from "react";
 import Carousel from "./components/carousel/carousel";
@@ -16,32 +16,6 @@ import Page from "./templates/page/page";
 import PreviewModal from "./components/previewModal/previewModal";
 import PreviewProvider from "./context/preview";
 import slugify from "slugify";
-
-export type DirectoryTree = {
-  name: string;
-  slug: string;
-  path: string;
-  children: PageRenderTree[];
-};
-export type PageTree = {
-  name: string;
-  slug: string;
-  href: string;
-  content: string;
-  title: string | null;
-};
-export type AssetTree = {
-  name: string;
-  slug: string;
-  buffer: ArrayBuffer;
-};
-export type PageRenderTree = DirectoryTree | PageTree | AssetTree;
-
-export type SearchDB = Orama<{
-  title: "string";
-  content: "string";
-  href: "string";
-}>;
 
 const slugOptions = { lower: true };
 

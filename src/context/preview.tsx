@@ -6,7 +6,6 @@ import {
   type PropsWithChildren,
   type SetStateAction,
 } from "react";
-import type { SearchDB, DirectoryTree } from "../main";
 
 export const previewContext = createContext<
   | {
