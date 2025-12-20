@@ -1,7 +1,6 @@
 # 🔨 mdgen: A Markdown to HTML Generator
 
 [![npm version](https://img.shields.io/npm/v/@hund.studio/mdgen?color=red&label=npm%20package)](https://www.npmjs.com/package/@hund.studio/mdgen)
-[![npm beta version](https://img.shields.io/npm/v/@hund.studio/mdgen/beta?label=beta)](https://www.npmjs.com/package/@hund.studio/mdgen/v/0.0.0-beta.3)
 [![GitHub repo](https://img.shields.io/badge/GitHub-Repository-black?logo=github)](https://github.com/hund-studio/mdgen)
 [![Website](https://img.shields.io/badge/website-mdgen.hund.studio-blue)](https://mdgen.hund.studio/)
 [![Provenance Verified](https://img.shields.io/badge/provenance-verified-blueviolet)](https://www.npmjs.com/package/@hund.studio/mdgen?activeTab=code)
