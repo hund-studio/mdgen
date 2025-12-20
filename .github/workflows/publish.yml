@@ -50,3 +50,17 @@ jobs:
             dist-cli/cli.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify Discord
+        if: success()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: "🚀 Nuova Release Disponibile: ${{ github.ref_name }}!"
+          description: |
+            Il pacchetto **mdgen** è stato pubblicato con successo.
+            Versione: `${{ github.ref_name }}` (Tag: ${{ env.NPM_TAG }})
+
+            [Visualizza su GitHub](${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }})
+          color: 0x28a745
