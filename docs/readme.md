@@ -69,7 +69,8 @@ The CLI tool generates the output folder in the **parent directory** of where th
 
 | Option            | Shorthand | Description                                     | Default     |
 | :---------------- | :-------- | :---------------------------------------------- | :---------- |
-| `--outDir <path>` | `-o`      | Parent directory where the output will be saved | `../`       |
+| `--source <path>` | `-s`      | The directory containing your markdown files    | `.`         |
+| `--outDir <path>` | `-o`      | Parent directory where the output will be saved | `.`         |
 | `--name <name>`   | `-n`      | The name of the output folder                   | `generated` |
 
 **Examples:**
@@ -84,6 +85,12 @@ npx @hund.studio/mdgen --name my-docs
 
 ```bash
 npx @hund.studio/mdgen --outDir ./dist --name site
+```
+
+- **In a package script:**
+
+```bash
+"generate:doc": "npx @hund.studio/mdgen -s ./docs -o ./dist-md -n docs"
 ```
 
 ### Serving the Files
