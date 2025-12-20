@@ -3,6 +3,12 @@
   "private": false,
   "version": "0.0.0",
   "type": "module",
+  "keywords": [
+    "markdown",
+    "cli",
+    "documentation-generator",
+    "markdown-generator"
+  ],
   "files": [
     "dist-cli",
     "README.md"
