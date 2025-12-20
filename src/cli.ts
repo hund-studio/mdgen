@@ -21,6 +21,7 @@ Description:
   locally on your machine.
 `
     )
+    .option("-s, --source <path>", "The directory containing your markdown files", ".")
     .option("-o, --outDir <path>", "Parent directory where the output will be saved", "../")
     .option("-n, --name <name>", "Name of the output folder", "generated")
     .parse(process.argv);
@@ -31,7 +32,7 @@ Description:
     schema: { title: "string", content: "string", href: "string" },
   });
 
-  const sourceDir = process.cwd();
+  const sourceDir = path.resolve(options.source);
 
   const outputDir = path.resolve(sourceDir, options.outDir, options.name);
 
