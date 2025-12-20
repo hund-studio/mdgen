@@ -125,8 +125,8 @@ Future implementations that will utilize the `.mdgen` folder include:
 
 ### Immediate Priorities (Next Steps)
 
-- [ ] Improved UI style
-  - [ ] Additional dark/light color scheme;
+- [x] Improved UI style
+  - [x] Additional dark/light color scheme;
   - [x] Better dropdown behaviour;
 - [x] Add watch mode to CLI
 - [x] **CLI Improvements:**
