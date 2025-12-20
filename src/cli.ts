@@ -38,6 +38,7 @@ Description:
   console.log(`📂 Source: ${sourceDir}`);
   console.log(`🎯 Output: ${outputDir}`);
 
+  const config = await utils.customConfig.fromFSDirectory(sourceDir);
   const tree = await utils.directoryEntry.fromFSDirectory(sourceDir, { db });
 
   console.log("Generating static site...");
@@ -45,7 +46,7 @@ Description:
   await utils.directoryEntry.toFS(tree, {
     outputDir,
     tree,
-    config: {},
+    config,
   });
 
   const searchIndex = await save(db);
