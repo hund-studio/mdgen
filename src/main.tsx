@@ -18,10 +18,8 @@ function App() {
 
   // Build
   const [generated, setGenerated] = useState<Blob>();
-  const [tree, setTree] =
-    useState<Awaited<ReturnType<typeof utils.directoryEntry.fromDirectoryHandle>>>();
-  const [config, setConfig] =
-    useState<Awaited<ReturnType<typeof utils.customConfig.fromDirectoryHandle>>>();
+  const [tree, setTree] = useState<BrowserDirectoryEntry>();
+  const [config, setConfig] = useState<BrowserConfig>();
   const [db, setDb] = useState<SearchDB>();
 
   // UI

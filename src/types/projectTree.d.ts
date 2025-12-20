@@ -12,15 +12,7 @@ type FSDirectoryEntry = {
   children: FSTree[];
 };
 
-type PageEntry = {
-  name: string;
-  slug: string;
-  href: string;
-  content: string;
-  title: string | null;
-};
-
-type BrowerAssetEntry = {
+type BrowserAssetEntry = {
   name: string;
   slug: string;
   buffer: ArrayBuffer;
@@ -32,5 +24,13 @@ type FSAssetEntry = {
   buffer: NonSharedBuffer;
 };
 
-type BrowserTree = BrowserDirectoryEntry | PageEntry | BrowerAssetEntry;
+type PageEntry = {
+  name: string;
+  slug: string;
+  href: string;
+  content: string;
+  title: string | null;
+};
+
+type BrowserTree = BrowserDirectoryEntry | PageEntry | BrowserAssetEntry;
 type FSTree = FSDirectoryEntry | PageEntry | FSAssetEntry;

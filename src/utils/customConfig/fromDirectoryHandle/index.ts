@@ -1,5 +1,5 @@
 const fromDirectoryHandle = async (directoryHandle: FileSystemDirectoryHandle) => {
-  const config: { brand: null | { file: File; name: string }; style: null | string } = {
+  const config: BrowserConfig = {
     brand: null,
     style: null,
   };

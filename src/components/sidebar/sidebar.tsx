@@ -25,7 +25,7 @@ const PageEntry: FC<{ tree: PageEntry; path: string }> = ({ tree, path }) => {
   );
 };
 
-const AssetEntry: FC<{ tree: BrowerAssetEntry | FSAssetEntry; path: string }> = ({ tree }) => {
+const AssetEntry: FC<{ tree: BrowserAssetEntry | FSAssetEntry; path: string }> = ({ tree }) => {
   return (
     <li>
       <span>{tree.name}</span>

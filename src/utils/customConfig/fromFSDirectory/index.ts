@@ -2,10 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const fromFSDirectory = async (basePath: string) => {
-  const config: {
-    brand: null | { file: Buffer; name: string };
-    style: null | string;
-  } = {
+  const config: FSConfig = {
     brand: null,
     style: null,
   };
