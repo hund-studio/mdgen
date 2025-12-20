@@ -32,7 +32,7 @@
     "release:beta": "npm version prerelease --preid beta && git push --follow-tags"
   },
   "bin": {
-    "mdgen": "./dist-cli/cli.js"
+    "mdgen": "dist-cli/cli.js"
   },
   "dependencies": {
     "@orama/highlight": "^0.1.9",
