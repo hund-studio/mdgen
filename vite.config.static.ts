@@ -1,4 +1,3 @@
-// vite.config.app2.js
 import { defineConfig, Plugin } from "vite";
 import { readFileSync } from "fs";
 import { resolve } from "path";
@@ -41,14 +40,15 @@ const versionPlugin = (): Plugin => {
 };
 
 export default defineConfig({
-  publicDir: "public-static",
+  root: "templates",
+  publicDir: "../public-static",
   plugins: [versionPlugin()],
   build: {
-    outDir: "src/static",
+    outDir: "../src/static",
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        static: resolve(__dirname, "static.html"),
+        static: resolve(__dirname, "templates/static.html"),
       },
       output: {
         manualChunks: {},
