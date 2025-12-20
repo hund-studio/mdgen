@@ -18,6 +18,7 @@
   "homepage": "https://mdgen.hund.studio/",
   "scripts": {
     "build:cli": "tsc -b && vite build  --config vite.config.cli.ts",
+    "build:example": "npm run build:cli && node ./dist-cli/cli.js -s ./examples/basic -o ./dist-md -n basic",
     "build:static": "tsc -b && vite build --config vite.config.static.ts",
     "build:tool": "tsc -b && vite build  --config vite.config.tool.ts",
     "build": "npm run build:static && npm run build:tool",

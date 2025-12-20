@@ -22,7 +22,7 @@ Description:
 `
     )
     .option("-s, --source <path>", "The directory containing your markdown files", ".")
-    .option("-o, --outDir <path>", "Parent directory where the output will be saved", "../")
+    .option("-o, --outDir <path>", "Parent directory where the output will be saved", ".")
     .option("-n, --name <name>", "Name of the output folder", "generated")
     .parse(process.argv);
 
@@ -34,7 +34,7 @@ Description:
 
   const sourceDir = path.resolve(options.source);
 
-  const outputDir = path.resolve(sourceDir, options.outDir, options.name);
+  const outputDir = path.resolve(options.outDir, options.name);
 
   console.log(`📂 Source: ${sourceDir}`);
   console.log(`🎯 Output: ${outputDir}`);
