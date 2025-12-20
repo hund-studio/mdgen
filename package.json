@@ -29,7 +29,9 @@
     "postpublish": "rm ./README.md",
     "prepublishOnly": "npm run build:cli && npm run copy:readme",
     "preview": "vite preview",
-    "release:beta": "npm version prerelease --preid beta && git push --follow-tags"
+    "release:beta": "npm version prerelease --preid beta && git push --follow-tags",
+    "release:patch": "npm version patch && git push --follow-tags",
+    "release:minor": "npm version minor && git push --follow-tags"
   },
   "bin": {
     "mdgen": "dist-cli/cli.js"
