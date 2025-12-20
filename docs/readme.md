@@ -125,7 +125,6 @@ Future implementations that will utilize the `.mdgen` folder include:
 
 ### Immediate Priorities (Next Steps)
 
-- [ ] Release refactor
 - [x] Improved UI style
   - [x] Additional dark/light color scheme;
   - [x] Better dropdown behaviour;
