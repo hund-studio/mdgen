@@ -26,7 +26,6 @@ By utilizing the **Filesystem API**, mdgen reads a local folder containing your 
     - [Current Capabilities](#current-capabilities)
     - [Planned Capabilities](#planned-capabilities)
   - [Project Status \& Roadmap](#project-status--roadmap)
-    - [Immediate Priorities (Next Steps)](#immediate-priorities-next-steps)
     - [Backlog \& Future Features](#backlog--future-features)
 
 ### Key Features
@@ -121,26 +120,6 @@ Future implementations that will utilize the `.mdgen` folder include:
 ## Project Status & Roadmap
 
 **Status:** Beta. The project is rapidly evolving. The completion of the tasks below will mark our first official stable release.
-
-### Immediate Priorities (Next Steps)
-
-- [x] Improved UI style
-  - [x] Additional dark/light color scheme;
-  - [x] Better dropdown behaviour;
-- [x] Add watch mode to CLI
-- [x] **CLI Improvements:**
-  - [x] Runnning and installable script
-  - [x] Add `--output` option (using commander or similar)
-- [x] Fuzzy search functionality;
-  - [x] Orama index generation on compile
-  - [x] Better search UI
-- [x] Currently, the default file used for each directory is `index.md`; it would be better to use `readme.md` and, if not found, then fall back to `index.md`
-- [x] The ability to upload **custom CSS and styles** through the use of a `.mdgen` directory
-- [x] Automatic refresh on file change **(limited browser support)**
-- [x] Support for **additional Markdown features**:
-  - [x] remark-gfm
-    - [x] Tables
-    - [x] Checkboxes
 
 ### Backlog & Future Features
 
