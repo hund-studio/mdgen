@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
+import { useLocalStorage } from "usehooks-ts";
 import Link from "../link/link";
 import Search from "../search/search";
 
@@ -70,16 +71,41 @@ const Entries: FC<{ tree: DirectoryEntry; path: string }> = ({ tree, path }) => 
 };
 
 const Sidebar: FC<{ db?: SearchDB; tree: DirectoryEntry; path: string }> = ({ db, tree, path }) => {
+  const [schema, setSchema] = useLocalStorage("schema", "auto");
+
   if (!tree.children.length) return;
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-schema", schema);
+  }, [schema]);
 
   return (
     <aside className="page-aside">
-      <Search db={db} />
-      <nav>
-        <ul>
-          <Entries path={path} tree={tree} />
-        </ul>
-      </nav>
+      <div className="page-aside-inner">
+        <Search db={db} />
+        <nav>
+          <ul>
+            <Entries path={path} tree={tree} />
+          </ul>
+        </nav>
+      </div>
+      <div className="page-aside-inner page-aside-options">
+        <button
+          className={`page-aside-options-button schema-${schema}`}
+          onClick={() =>
+            setSchema((prev) => {
+              switch (prev) {
+                case "light":
+                  return "dark";
+                case "dark":
+                  return "auto";
+                default:
+                  return "light";
+              }
+            })
+          }
+        />
+      </div>
     </aside>
   );
 };

@@ -1,3 +1,31 @@
+@mixin light-theme {
+  --theme-color-placeholder: var(--color-gray-solid);
+  --theme-color-solid: var(--color-black-solid);
+  --theme-background-solid: var(--color-white);
+  --theme-background-strong: var(--color-whitesmoke);
+  --theme-border-solid: var(--color-lightgray);
+  --theme-active-weak: var(--color-lightpurple);
+  --theme-active-solid: var(--color-purple);
+  --theme-hover: var(--color-lightcyan);
+  --theme-interactive-background: var(--color-lightgray-weak);
+  --theme-interactive-background-hover: var(--color-whitesmoke-strong);
+  --theme-overlay-background: var(--color-whitesmoke-ghost-05);
+}
+
+@mixin dark-theme {
+  --theme-color-placeholder: rgb(82, 82, 82);
+  --theme-color-solid: rgb(255, 255, 255);
+  --theme-background-solid: rgb(40, 40, 40);
+  --theme-background-strong: rgb(29, 29, 29);
+  --theme-border-solid: rgb(20, 20, 20);
+  --theme-active-weak: rgb(67, 155, 126);
+  --theme-active-solid: rgb(61, 177, 121);
+  --theme-hover: rgb(41, 38, 55);
+  --theme-interactive-background: rgb(23, 23, 23);
+  --theme-interactive-background-hover: rgb(15, 15, 15);
+  --theme-overlay-background: rgba(29, 29, 29, 0.709);
+}
+
 :root {
   // Typo
   --base-font-size: 16px;
@@ -19,15 +47,19 @@
   --color-whitesmoke-ghost-05: #e3e3e3d0;
 
   // Theme
-  --theme-color-placeholder: var(--color-gray-solid);
-  --theme-color-solid: var(--color-black-solid);
-  --theme-background-solid: var(--color-white);
-  --theme-background-strong: var(--color-whitesmoke);
-  --theme-border-solid: var(--color-lightgray);
-  --theme-active-weak: var(--color-lightpurple);
-  --theme-active-solid: var(--color-purple);
-  --theme-hover: var(--color-lightcyan);
-  --theme-interactive-background: var(--color-lightgray-weak);
-  --theme-interactive-background-hover: var(--color-whitesmoke-strong);
-  --theme-overlay-background: var(--color-whitesmoke-ghost-05);
+  @include light-theme();
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    @include dark-theme();
+  }
+}
+
+[data-schema="dark"] {
+  @include dark-theme();
+}
+
+[data-schema="light"] {
+  @include light-theme();
 }

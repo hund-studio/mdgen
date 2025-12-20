@@ -6,6 +6,10 @@ import JSBundle from "../../../static/assets/main.js?raw";
 import JSZip from "jszip";
 import Page from "../../../components/page/page";
 import type utils from "../..";
+import staticIcon from "../../../static/icon.png";
+import staticIconsSchemaAuto from "../../../static/assets/icons/schema/auto.svg?raw";
+import staticIconsSchemaDark from "../../../static/assets/icons/schema/dark.svg?raw";
+import staticIconsSchemaLight from "../../../static/assets/icons/schema/light.svg?raw";
 
 const toZIP = async (
   directoryEntry: DirectoryEntry,
@@ -22,13 +26,23 @@ const toZIP = async (
   const current = parentDirectory.folder(directoryEntry.name);
   if (!current) return;
 
-  const assets = current.folder("assets");
+  if (!tree) {
+    const assets = current.folder("assets");
 
-  assets?.file("main.js", JSBundle);
-  assets?.file("static.css", CSSBundle);
+    assets?.file("main.js", JSBundle);
+    assets?.file("static.css", CSSBundle);
 
-  if (config?.brand) assets?.file(config.brand.name, config.brand.file);
-  if (config?.style) assets?.file("custom.css", config.style);
+    assets?.file("icon.png", staticIcon);
+
+    const icons = assets?.folder("icons/schema");
+
+    icons?.file("auto.svg", staticIconsSchemaAuto);
+    icons?.file("dark.svg", staticIconsSchemaDark);
+    icons?.file("light.svg", staticIconsSchemaLight);
+
+    if (config?.brand) assets?.file(config.brand.name, config.brand.file);
+    if (config?.style) assets?.file("custom.css", config.style);
+  }
 
   for (const entry of directoryEntry.children) {
     if ("children" in entry) {

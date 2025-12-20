@@ -18,7 +18,7 @@
   "homepage": "https://mdgen.hund.studio/",
   "scripts": {
     "build:cli": "tsc -b && vite build  --config vite.config.cli.ts",
-    "build:example": "npm run build:cli && node ./dist-cli/cli.js -s ./examples/basic -o ./dist-md -n basic",
+    "build:example": "npm run build:cli && node ./dist-cli/cli.js -s ./examples/dnd-adventure -o ./dist-md -n dnd-adventure -w",
     "build:static": "tsc -b && vite build --config vite.config.static.ts",
     "build:tool": "tsc -b && vite build  --config vite.config.tool.ts",
     "build": "npm run build:static && npm run build:tool",
@@ -37,6 +37,7 @@
   "dependencies": {
     "@orama/highlight": "^0.1.9",
     "@orama/orama": "^3.1.17",
+    "chokidar": "^5.0.0",
     "commander": "^14.0.2",
     "file-saver": "^2.0.5",
     "handlebars": "^4.7.8",
@@ -46,7 +47,8 @@
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "usehooks-ts": "^3.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

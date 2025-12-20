@@ -16,9 +16,11 @@ const Page: FC<{
     <div id="page">
       <Sidebar path={path} db={db} tree={sidebar} />
       <main className="page-content" id="md">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ a: Link }}>
-          {content}
-        </ReactMarkdown>
+        <div className="page-content-inner">
+          <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ a: Link }}>
+            {content}
+          </ReactMarkdown>
+        </div>
       </main>
     </div>
   );

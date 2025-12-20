@@ -69,7 +69,7 @@ function App() {
 
   const generateDirectoryZIP = async (tree: DirectoryEntry) => {
     const zip = new JSZip();
-    const root = await utils.directoryEntry.toZIP(tree, { tree, parentDirectory: zip, config });
+    const root = await utils.directoryEntry.toZIP(tree, { parentDirectory: zip, config });
     if (!root) return;
     if (db) root.file("search.json", JSON.stringify(save(db)));
     setGenerated(await zip.generateAsync({ type: "blob" }));

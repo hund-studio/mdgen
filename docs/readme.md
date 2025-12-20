@@ -72,6 +72,7 @@ The CLI tool generates the output folder in the **parent directory** of where th
 | `--source <path>` | `-s`      | The directory containing your markdown files    | `.`         |
 | `--outDir <path>` | `-o`      | Parent directory where the output will be saved | `.`         |
 | `--name <name>`   | `-n`      | The name of the output folder                   | `generated` |
+| `--watch`         | `-w`      | Watch for changes in the source directory       | `false`     |
 
 **Examples:**
 
@@ -124,9 +125,10 @@ Future implementations that will utilize the `.mdgen` folder include:
 
 ### Immediate Priorities (Next Steps)
 
-- [ ] Add sample `.mdgen` styles (ae. Fantasy DnD)
-- [ ] Additional dark/light color scheme;
-- [ ] Fill the examples
+- [ ] Improved UI style
+  - [ ] Additional dark/light color scheme;
+  - [x] Better dropdown behaviour;
+- [x] Add watch mode to CLI
 - [x] **CLI Improvements:**
   - [x] Runnning and installable script
   - [x] Add `--output` option (using commander or similar)
@@ -143,7 +145,10 @@ Future implementations that will utilize the `.mdgen` folder include:
 
 ### Backlog & Future Features
 
+- [ ] Moving to router
+- [ ] Add sample `.mdgen` styles (ae. Fantasy DnD)
 - [ ] Add Markdown YAML metadata support.
   - [ ] Enable page categories and tags for better/granular search
 - [ ] Allow `.ts`/`.js` plugins from the `.mdgen` folder.
 - [ ] Mobile version.
+- [ ] Fill the examples

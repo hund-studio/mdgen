@@ -41,6 +41,7 @@ const versionPlugin = (): Plugin => {
 };
 
 export default defineConfig({
+  publicDir: "public-static",
   plugins: [versionPlugin()],
   build: {
     outDir: "src/static",

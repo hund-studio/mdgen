@@ -74,11 +74,22 @@ const SearchInput: FC<{
 
                       const end = Math.min(content.length, firstMatch.end + 100);
 
-                      let snippet = content.substring(start, end);
-                      if (start > 0 && lastNewlineIndex === -1) snippet = "..." + snippet;
-                      if (end < content.length) snippet = snippet + "...";
+                      const matchStart = firstMatch.start;
+                      const matchEnd = firstMatch.end + 1;
 
-                      return snippet;
+                      const beforeMatch = content.substring(start, matchStart);
+                      const matchedText = content.substring(matchStart, matchEnd);
+                      const afterMatch = content.substring(matchEnd, end);
+
+                      return (
+                        <>
+                          {start > 0 && lastNewlineIndex === -1 ? "..." : ""}
+                          {beforeMatch}
+                          <strong className="strong">{matchedText}</strong>
+                          {afterMatch}
+                          {end < content.length ? "..." : ""}
+                        </>
+                      );
                     })()}
                   </div>
                   <div className={"page-search-result-href"}>
