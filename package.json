@@ -1,7 +1,7 @@
 {
   "name": "@hund.studio/mdgen",
   "private": false,
-  "version": "0.0.0-beta.4",
+  "version": "0.0.0",
   "type": "module",
   "files": [
     "dist-cli",
