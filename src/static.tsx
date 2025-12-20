@@ -1,8 +1,9 @@
 import "./styles/page.scss";
-import { create, load } from "@orama/orama";
 import { createRoot } from "react-dom/client";
+import { load } from "@orama/orama";
 import { StrictMode, useEffect, useState, type FC } from "react";
 import Page from "./components/page/page";
+import utils from "./utils";
 
 const dataElement = document.getElementById("data");
 const contentElement = document.getElementById("content");
@@ -18,13 +19,7 @@ const App: FC = () => {
       try {
         const response = await fetch("/search.json");
         const rawData = await response.json();
-        const db = create({
-          schema: {
-            title: "string",
-            content: "string",
-            href: "string",
-          },
-        });
+        const db = utils.db.create();
         load(db, rawData);
         setDb(db);
         console.log("Orama Index caricato con successo");

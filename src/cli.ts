@@ -1,15 +1,12 @@
 import { Command, type OptionValues } from "commander";
-import { create, save } from "@orama/orama";
+import { save } from "@orama/orama";
 import chokidar from "chokidar";
 import fs from "fs/promises";
 import path from "path";
 import utils from "./utils";
 
 const generate = async (options: OptionValues) => {
-  const db = await create({
-    schema: { title: "string", content: "string", href: "string" },
-  });
-
+  const db = await utils.db.create();
   const sourceDir = path.resolve(options.source);
   const outputDir = path.resolve(options.outDir, options.name);
 

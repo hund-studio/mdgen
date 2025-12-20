@@ -1,6 +1,6 @@
 import "./styles/page.scss";
-import { create, save } from "@orama/orama";
 import { createRoot } from "react-dom/client";
+import { save } from "@orama/orama";
 import { saveAs } from "file-saver";
 import { StrictMode } from "react";
 import { tools } from "./styles/modules";
@@ -51,13 +51,7 @@ function App() {
       const config = await utils.customConfig.fromDirectoryHandle(root);
       setConfig(config);
 
-      const db = create({
-        schema: {
-          title: "string",
-          content: "string",
-          href: "string",
-        },
-      });
+      const db = utils.db.create();
 
       const tree = await utils.directoryEntry.fromDirectoryHandle(root, { db });
       setTree(tree);
