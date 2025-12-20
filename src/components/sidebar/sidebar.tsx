@@ -25,7 +25,7 @@ const PageEntry: FC<{ tree: PageEntry; path: string }> = ({ tree, path }) => {
   );
 };
 
-const AssetEntry: FC<{ tree: AssetEntry; path: string }> = ({ tree }) => {
+const AssetEntry: FC<{ tree: BrowerAssetEntry | FSAssetEntry; path: string }> = ({ tree }) => {
   return (
     <li>
       <span>{tree.name}</span>
@@ -33,7 +33,10 @@ const AssetEntry: FC<{ tree: AssetEntry; path: string }> = ({ tree }) => {
   );
 };
 
-const DirectoryEntry: FC<{ tree: DirectoryEntry; path: string }> = ({ tree, path }) => {
+const DirectoryEntry: FC<{ tree: BrowserDirectoryEntry | FSDirectoryEntry; path: string }> = ({
+  tree,
+  path,
+}) => {
   const normalizedPath = decodeURIComponent(path.replace(/\/$/, "").replace(/^\//, ""));
   const isActiveOrContainsActive = normalizedPath.startsWith(tree.path);
 
@@ -62,7 +65,10 @@ const DirectoryEntry: FC<{ tree: DirectoryEntry; path: string }> = ({ tree, path
   );
 };
 
-const Entries: FC<{ tree: DirectoryEntry; path: string }> = ({ tree, path }) => {
+const Entries: FC<{ tree: BrowserDirectoryEntry | FSDirectoryEntry; path: string }> = ({
+  tree,
+  path,
+}) => {
   return tree.children.map((entry, index) => {
     if ("children" in entry) return <DirectoryEntry path={path} tree={entry} key={index} />;
     if (!("href" in entry)) return <AssetEntry path={path} tree={entry} key={index} />;
@@ -70,7 +76,11 @@ const Entries: FC<{ tree: DirectoryEntry; path: string }> = ({ tree, path }) => 
   });
 };
 
-const Sidebar: FC<{ db?: SearchDB; tree: DirectoryEntry; path: string }> = ({ db, tree, path }) => {
+const Sidebar: FC<{
+  db?: SearchDB;
+  tree: BrowserDirectoryEntry | FSDirectoryEntry;
+  path: string;
+}> = ({ db, tree, path }) => {
   const [schema, setSchema] = useLocalStorage("schema", "auto");
 
   if (!tree.children.length) return;

@@ -11,17 +11,18 @@ import staticIcon from "../../../static/icon.png?raw";
 import staticIconsSchemaAuto from "../../../static/assets/icons/schema/auto.svg?raw";
 import staticIconsSchemaDark from "../../../static/assets/icons/schema/dark.svg?raw";
 import staticIconsSchemaLight from "../../../static/assets/icons/schema/light.svg?raw";
+import type utils from "../..";
 
 const toFS = async (
-  directoryEntry: any,
+  directoryEntry: FSDirectoryEntry,
   {
+    config,
     outputDir,
     tree,
-    config,
   }: {
+    config?: Awaited<ReturnType<typeof utils.customConfig.fromFSDirectory>>;
     outputDir: string;
-    tree?: any;
-    config?: any;
+    tree?: FSDirectoryEntry;
   }
 ) => {
   await fs.mkdir(outputDir, { recursive: true });

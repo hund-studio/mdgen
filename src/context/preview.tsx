@@ -12,12 +12,12 @@ export const previewContext = createContext<
       db?: SearchDB;
       current: string;
       setCurrent: Dispatch<SetStateAction<string>>;
-      tree: DirectoryEntry;
+      tree: BrowserDirectoryEntry;
     }
   | undefined
 >(undefined);
 
-const PreviewProvider: FC<PropsWithChildren<{ db?: SearchDB; tree: DirectoryEntry }>> = ({
+const PreviewProvider: FC<PropsWithChildren<{ db?: SearchDB; tree: BrowserDirectoryEntry }>> = ({
   children,
   tree,
   db,

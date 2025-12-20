@@ -14,7 +14,7 @@ const fromFSDirectory = async (
 
   const hasIndex = items.some((name) => name.toLowerCase() === "index.md");
 
-  const tree: any = {
+  const tree: FSTree = {
     name: dirName,
     slug: slugify(dirName, slugOptions),
     path: parentHref,

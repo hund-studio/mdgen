@@ -28,7 +28,7 @@ const PreviewModal: FC<
   const getCurrentElement = (list: (typeof tree)["children"]) => {
     const fragments = path.split("/");
 
-    let match: Tree | undefined;
+    let match: BrowserTree | undefined;
 
     for (const fragment of fragments) {
       let pool = list;

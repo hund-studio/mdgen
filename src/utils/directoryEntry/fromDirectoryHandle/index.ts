@@ -15,7 +15,7 @@ const fromDirectoryHandle = async (
     return false;
   })();
 
-  const tree: Tree = {
+  const tree: BrowserTree = {
     name: directoryHandle.name,
     slug: slugify(directoryHandle.name, slugOptions),
     path: parentHref,

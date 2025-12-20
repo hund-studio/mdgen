@@ -67,7 +67,7 @@ function App() {
     })();
   };
 
-  const generateDirectoryZIP = async (tree: DirectoryEntry) => {
+  const generateDirectoryZIP = async (tree: BrowserDirectoryEntry) => {
     const zip = new JSZip();
     const root = await utils.directoryEntry.toZIP(tree, { parentDirectory: zip, config });
     if (!root) return;

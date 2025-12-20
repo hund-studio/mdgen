@@ -3,7 +3,7 @@ import path from "node:path";
 
 const fromFSDirectory = async (basePath: string) => {
   const config: {
-    brand: null | { data: Buffer; name: string };
+    brand: null | { file: Buffer; name: string };
     style: null | string;
   } = {
     brand: null,
@@ -34,7 +34,7 @@ const fromFSDirectory = async (basePath: string) => {
             case "brand.png": {
               config.brand = {
                 name: file.name,
-                data: await fs.readFile(filePath),
+                file: await fs.readFile(filePath),
               };
               break;
             }

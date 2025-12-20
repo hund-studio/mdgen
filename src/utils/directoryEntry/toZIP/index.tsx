@@ -12,15 +12,15 @@ import staticIconsSchemaDark from "../../../static/assets/icons/schema/dark.svg?
 import staticIconsSchemaLight from "../../../static/assets/icons/schema/light.svg?raw";
 
 const toZIP = async (
-  directoryEntry: DirectoryEntry,
+  directoryEntry: BrowserDirectoryEntry,
   {
+    config,
     parentDirectory,
     tree,
-    config,
   }: {
     config?: Awaited<ReturnType<typeof utils.customConfig.fromDirectoryHandle>>;
     parentDirectory: JSZip;
-    tree?: DirectoryEntry;
+    tree?: BrowserDirectoryEntry;
   }
 ) => {
   const current = parentDirectory.folder(directoryEntry.name);
