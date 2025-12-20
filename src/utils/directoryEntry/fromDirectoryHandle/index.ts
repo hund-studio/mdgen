@@ -28,16 +28,19 @@ const fromDirectoryHandle = async (
       case "file":
         const file = await handle.getFile();
         if (slugName.endsWith(".md")) {
+          // @todo repeated
           const textContent = await file.text();
+
           let href = slugName.replace(/\.[^/.]+$/, ".html");
           if (parentHref) href = [parentHref, href].join("/");
+
           let title: string | null = null;
           const [firstLine] = textContent.split("\n");
           if (firstLine?.startsWith("#")) {
             title = firstLine.replace(/^#\s*/, "").trim();
           }
 
-          const entry = {
+          const entry: PageEntry = {
             content: textContent,
             href,
             name: slugName.replace(/\.[^/.]+$/, ".html"),
@@ -53,8 +56,6 @@ const fromDirectoryHandle = async (
             }
           }
 
-          tree.children.push(entry);
-
           if (db) {
             insert(db, {
               title: entry.title || entry.slug,
@@ -62,6 +63,9 @@ const fromDirectoryHandle = async (
               href: entry.href,
             });
           }
+          //
+
+          tree.children.push(entry);
         } else {
           const bufferContent = await file.arrayBuffer();
           tree.children.push({
@@ -72,8 +76,9 @@ const fromDirectoryHandle = async (
         }
         break;
       case "directory":
-        if (slugName.startsWith(".")) continue;
+        if (handle.name.startsWith(".")) continue;
 
+        // @todo repeated
         const directoryPath = (() => {
           if (!!parentHref.length) {
             return [parentHref, slugName].join("/");
@@ -81,26 +86,22 @@ const fromDirectoryHandle = async (
 
           return slugName;
         })();
+        //
+
         tree.children.push(await fromDirectoryHandle(handle, { parentHref: directoryPath, db }));
         break;
     }
   }
 
+  // @todo repeated
   tree.children.sort((a, b) => {
     const isADirectory = "children" in a;
     const isBDirectory = "children" in b;
-
     if (!isADirectory && isBDirectory) return -1;
-
     if (isADirectory && !isBDirectory) return 1;
-
-    const nameA = a.name.toLowerCase();
-    const nameB = b.name.toLowerCase();
-
-    if (nameA < nameB) return -1;
-    if (nameA > nameB) return 1;
-    return 0;
+    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
   });
+  //
 
   return tree;
 };

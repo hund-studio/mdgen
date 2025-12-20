@@ -5,11 +5,11 @@ import HTMLTemplate from "../../../static/static.html?raw";
 import JSBundle from "../../../static/assets/main.js?raw";
 import JSZip from "jszip";
 import Page from "../../../components/page/page";
-import type utils from "../..";
 import staticIcon from "../../../static/icon.png";
 import staticIconsSchemaAuto from "../../../static/assets/icons/schema/auto.svg?raw";
 import staticIconsSchemaDark from "../../../static/assets/icons/schema/dark.svg?raw";
 import staticIconsSchemaLight from "../../../static/assets/icons/schema/light.svg?raw";
+import type utils from "../..";
 
 const toZIP = async (
   directoryEntry: BrowserDirectoryEntry,
