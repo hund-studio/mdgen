@@ -171,6 +171,7 @@ body,
       }
 
       &-caret {
+        background-color: var(--theme-color-solid);
         height: 24px;
         mask-image: url("/assets/icons/caret.svg");
         mask-repeat: no-repeat;
