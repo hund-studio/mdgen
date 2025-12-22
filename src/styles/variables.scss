@@ -13,17 +13,17 @@
 }
 
 @mixin dark-theme {
-  --theme-color-placeholder: rgb(82, 82, 82);
-  --theme-color-solid: rgb(255, 255, 255);
-  --theme-background-solid: rgb(40, 40, 40);
-  --theme-background-strong: rgb(29, 29, 29);
-  --theme-border-solid: rgb(20, 20, 20);
-  --theme-active-weak: rgb(67, 155, 126);
-  --theme-active-solid: rgb(61, 177, 121);
-  --theme-hover: rgb(41, 38, 55);
-  --theme-interactive-background: rgb(23, 23, 23);
-  --theme-interactive-background-hover: rgb(15, 15, 15);
-  --theme-overlay-background: rgba(29, 29, 29, 0.709);
+  --theme-color-placeholder: var(--color-darkgray-solid);
+  --theme-color-solid: var(--color-white);
+  --theme-background-solid: var(--color-charcoal-solid);
+  --theme-background-strong: var(--color-charcoal-strong);
+  --theme-border-solid: var(--color-night-solid);
+  --theme-active-weak: var(--color-emerald-weak);
+  --theme-active-solid: var(--color-emerald-solid);
+  --theme-hover: var(--color-deep-indigo);
+  --theme-interactive-background: var(--color-night-weak);
+  --theme-interactive-background-hover: var(--color-night-strong);
+  --theme-overlay-background: var(--color-charcoal-ghost-07);
 }
 
 :root {
@@ -45,6 +45,17 @@
   --color-black-solid: #000000;
   --color-black-ghost-05: #000000d0;
   --color-whitesmoke-ghost-05: #e3e3e3d0;
+
+  --color-darkgray-solid: rgb(82, 82, 82);
+  --color-charcoal-solid: rgb(40, 40, 40);
+  --color-charcoal-strong: rgb(29, 29, 29);
+  --color-charcoal-ghost-07: rgba(29, 29, 29, 0.709);
+  --color-night-solid: rgb(20, 20, 20);
+  --color-night-strong: rgb(15, 15, 15);
+  --color-night-weak: rgb(23, 23, 23);
+  --color-emerald-weak: rgb(67, 155, 126);
+  --color-emerald-solid: rgb(61, 177, 121);
+  --color-deep-indigo: rgb(41, 38, 55);
 
   // Theme
   @include light-theme();
