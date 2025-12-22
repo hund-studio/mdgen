@@ -41,6 +41,11 @@ const versionPlugin = (): Plugin => {
 
 export default defineConfig({
   root: "templates",
+  resolve: {
+    alias: {
+      "@static": resolve(__dirname, "src/static"),
+    },
+  },
   publicDir: "../public-static",
   plugins: [versionPlugin()],
   build: {

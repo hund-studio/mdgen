@@ -16,6 +16,11 @@ const permissionsPlugin = (): Plugin => {
 };
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@static": resolve(__dirname, "src/static"),
+    },
+  },
   plugins: [permissionsPlugin()],
   publicDir: false,
   build: {
@@ -27,7 +32,7 @@ export default defineConfig({
       formats: ["es"],
     },
     rollupOptions: {
-      external: (id) => !id.startsWith(".") && !id.startsWith("/"),
+      external: (id) => !id.startsWith("@static") && !id.startsWith(".") && !id.startsWith("/"),
       output: {
         banner: "#!/usr/bin/env node",
       },

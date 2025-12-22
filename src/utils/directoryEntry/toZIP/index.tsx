@@ -1,14 +1,15 @@
 import { renderToString } from "react-dom/server";
-import CSSBundle from "../../../static/assets/static.css?raw";
+import CSSBundle from "@static/assets/static.css?raw";
 import Handlebars from "handlebars";
-import HTMLTemplate from "../../../static/static.html?raw";
-import JSBundle from "../../../static/assets/main.js?raw";
+import HTMLTemplate from "@static/static.html?raw";
+import JSBundle from "@static/assets/main.js?raw";
 import JSZip from "jszip";
 import Page from "../../../components/page/page";
-import staticIcon from "../../../static/icon.png";
-import staticIconsSchemaAuto from "../../../static/assets/icons/schema/auto.svg?raw";
-import staticIconsSchemaDark from "../../../static/assets/icons/schema/dark.svg?raw";
-import staticIconsSchemaLight from "../../../static/assets/icons/schema/light.svg?raw";
+import staticIcon from "@static/icon.png";
+import staticIconsSchemaAuto from "@static/assets/icons/schema/auto.svg?raw";
+import staticIconsSchemaDark from "@static/assets/icons/schema/dark.svg?raw";
+import staticIconsSchemaLight from "@static/assets/icons/schema/light.svg?raw";
+import staticIconsCaret from "@static/assets/icons/caret.svg?raw";
 import type utils from "../..";
 
 const toZIP = async (
@@ -34,11 +35,15 @@ const toZIP = async (
 
     assets?.file("icon.png", staticIcon);
 
-    const icons = assets?.folder("icons/schema");
+    const icons = assets?.folder("icons");
 
-    icons?.file("auto.svg", staticIconsSchemaAuto);
-    icons?.file("dark.svg", staticIconsSchemaDark);
-    icons?.file("light.svg", staticIconsSchemaLight);
+    icons?.file("caret.svg", staticIconsCaret);
+
+    const iconsSchema = assets?.folder("icons/schema");
+
+    iconsSchema?.file("auto.svg", staticIconsSchemaAuto);
+    iconsSchema?.file("dark.svg", staticIconsSchemaDark);
+    iconsSchema?.file("light.svg", staticIconsSchemaLight);
 
     if (config?.brand) assets?.file(config.brand.name, config.brand.file);
     if (config?.style) assets?.file("custom.css", config.style);

@@ -1,16 +1,17 @@
 import { renderToString } from "react-dom/server";
-import CSSBundle from "../../../static/assets/static.css?raw";
+import CSSBundle from "@static/assets/static.css?raw";
 import fs from "fs/promises";
 import Handlebars from "handlebars";
-import HTMLTemplate from "../../../static/static.html?raw";
-import JSBundle from "../../../static/assets/main.js?raw";
+import HTMLTemplate from "@static/static.html?raw";
+import JSBundle from "@static/assets/main.js?raw";
 import Page from "../../../components/page/page";
 import path from "path";
 import React from "react";
-import staticIcon from "../../../static/icon.png?raw";
-import staticIconsSchemaAuto from "../../../static/assets/icons/schema/auto.svg?raw";
-import staticIconsSchemaDark from "../../../static/assets/icons/schema/dark.svg?raw";
-import staticIconsSchemaLight from "../../../static/assets/icons/schema/light.svg?raw";
+import staticIcon from "@static/icon.png";
+import staticIconsCaret from "@static/assets/icons/caret.svg?raw";
+import staticIconsSchemaAuto from "@static/assets/icons/schema/auto.svg?raw";
+import staticIconsSchemaDark from "@static/assets/icons/schema/dark.svg?raw";
+import staticIconsSchemaLight from "@static/assets/icons/schema/light.svg?raw";
 import type utils from "../..";
 
 const toFS = async (
@@ -35,6 +36,11 @@ const toFS = async (
 
     await fs.writeFile(path.join(assetsDir, "main.js"), JSBundle);
     await fs.writeFile(path.join(assetsDir, "static.css"), CSSBundle);
+
+    const iconsDir = path.join(assetsDir, "icons");
+    await fs.mkdir(iconsDir, { recursive: true });
+
+    await fs.writeFile(path.join(iconsDir, "caret.svg"), staticIconsCaret);
 
     const iconsSchemaDir = path.join(assetsDir, "icons/schema");
     await fs.mkdir(iconsSchemaDir, { recursive: true });
