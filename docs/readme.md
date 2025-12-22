@@ -123,10 +123,10 @@ Future implementations that will utilize the `.mdgen` folder include:
 
 ### Backlog & Future Features
 
-- [ ] Moving to router
-- [ ] Allow `.ts`/`.js` plugins from the `.mdgen` folder.
-- [ ] Mobile version.
-- [ ] Add Markdown YAML metadata support.
-  - [ ] Enable page categories and tags for better/granular search
-- [ ] Add sample `.mdgen` styles (ae. Fantasy DnD)
-- [ ] Fill the examples
+- 🚧 Moving to router
+- 🚧 Allow `.ts`/`.js` plugins from the `.mdgen` folder.
+- 🚧 Mobile version.
+- 🚧 Add Markdown YAML metadata support.
+  - 🚧 Enable page categories and tags for better/granular search
+- 🚧 Add sample `.mdgen` styles (ae. Fantasy DnD)
+- 🚧 Fill the examples
