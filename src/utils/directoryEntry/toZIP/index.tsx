@@ -3,7 +3,7 @@ import CSSBundle from "@static/assets/static.css?raw";
 import Handlebars from "handlebars";
 import HTMLTemplate from "@static/static.html?raw";
 import JSBundle from "@static/assets/main.js?raw";
-import JSZip from "jszip";
+import type JSZip from "jszip";
 import Page from "../../../components/page/page";
 import staticIcon from "@static/icon.png";
 import staticIconsSchemaAuto from "@static/assets/icons/schema/auto.svg?raw";
