@@ -1,18 +1,19 @@
 # 01 Alba
 
-- [#Preparazione]()
-  - [#Tirare il background dei personaggi]()
-- [#La vita a Leilon]()
-  - [#Il funerale]()
-  - [#Una serata burrascosa]()
-- [#Uno strano manoscritto]()
-  - [#La casa di Ithay Pugnofrantoio]()
-  - [#Il Negozio delle Peculiarità]()
-  - [#Tutti alla La Spada di Leilon !]()
-- [#Caccia ai ricercatori]()
-  - [#La vecchia Sala della Ricerca]()
-  - [#La porta dietro al ruscello]()
-- [#Benvenuti alla Società dei Ricercatori]()
+- [01 Alba](#01-alba)
+  - [Preparazione](#preparazione)
+    - [Tirare il background dei personaggi](#tirare-il-background-dei-personaggi)
+  - [La vita a Leilon](#la-vita-a-leilon)
+    - [Il funerale](#il-funerale)
+    - [Una serata burrascosa](#una-serata-burrascosa)
+  - [Uno strano manoscritto](#uno-strano-manoscritto)
+    - [La casa di Ithay Pugnofrantoio](#la-casa-di-ithay-pugnofrantoio)
+    - [Il Negozio delle Peculiarità](#il-negozio-delle-peculiarità)
+    - [Tutti alla \[\[La Spada di Leilon\]\]!](#tutti-alla-la-spada-di-leilon)
+  - [Caccia ai ricercatori](#caccia-ai-ricercatori)
+    - [La vecchia Sala della Ricerca](#la-vecchia-sala-della-ricerca)
+    - [La porta dietro al ruscello](#la-porta-dietro-al-ruscello)
+  - [Benvenuti alla \[\[Società dei Ricercatori\]\]](#benvenuti-alla-società-dei-ricercatori)
 
 ## Preparazione
 
