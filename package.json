@@ -25,11 +25,8 @@
   "scripts": {
     "build": "tsx scripts/build.ts",
     "copy:readme": "cp docs/readme.md ./README.md",
-    "dev:cli": "vite build --config vite.config.cli.ts --watch",
-    "dev:example": "npm run build:cli && node ./dist-cli/cli.js -s ./examples/dnd-adventure -o ./dist-md -n dnd-adventure -w",
-    "dev:pipeline": "chokidar \"src/static/**/*.js\" -c \"npm run dev:example\"",
-    "dev:static": "vite build --config vite.config.static.ts --watch",
-    "dev": "vite --config vite.config.tool.ts",
+    "dev:static": "tsx scripts/dev.ts",
+    "dev:tool": "vite --config vite.config.tool.ts",
     "lint": "eslint .",
     "postpublish": "rm ./README.md",
     "prepublishOnly": "npm run build:cli && npm run copy:readme",

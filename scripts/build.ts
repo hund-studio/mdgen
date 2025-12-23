@@ -1,7 +1,6 @@
 import { build } from "vite";
-import ts from "typescript";
 import path from "path";
-import fs from "fs";
+import ts from "typescript";
 
 async function runBuilds() {
   try {
