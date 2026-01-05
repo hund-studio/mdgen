@@ -13,9 +13,13 @@ const generate = async (options: OptionValues) => {
   console.log(`📂 Source: ${sourceDir}`);
   console.log(`🎯 Output: ${outputDir}`);
 
+  let publicUrl = options.publicUrl || "/";
+  if (!publicUrl.startsWith("/")) publicUrl = "/" + publicUrl;
+  if (!publicUrl.endsWith("/")) publicUrl = publicUrl + "/";
+
   try {
     const config = await utils.customConfig.fromFSDirectory(sourceDir);
-    const tree = await utils.directoryEntry.fromFSDirectory(sourceDir, { db });
+    const tree = await utils.directoryEntry.fromFSDirectory(sourceDir, { db, publicUrl });
 
     console.log("Generating static site...");
 
@@ -54,6 +58,7 @@ Description:
     .option("-s, --source <path>", "The directory containing your markdown files", ".")
     .option("-o, --outDir <path>", "Parent directory where the output will be saved", ".")
     .option("-n, --name <name>", "Name of the output folder", "generated")
+    .option("-u, --public-url <url>", "The base URL or path for the site (e.g., /docs/)", "/")
     .option("-w, --watch", "Watch for changes in the source directory")
     .parse(process.argv);
 

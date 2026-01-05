@@ -9,7 +9,7 @@ const permissionsPlugin = (): Plugin => {
       const path = resolve(__dirname, "dist-cli/cli.js");
       if (fs.existsSync(path)) {
         fs.chmodSync(path, 0o755);
-        console.log(`\n✅ Executable permissions set on: ${path}`);
+        // console.log(`\n✅ Executable permissions set on: ${path}`);
       }
     },
   };

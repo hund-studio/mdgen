@@ -7,17 +7,24 @@ const slugOptions = { lower: true };
 
 const fromFSDirectory = async (
   absolutePath: string,
-  { parentHref = "", db }: { parentHref?: string; db?: any } = {}
+  {
+    parentHref = "",
+    db,
+    publicUrl = "/",
+  }: { parentHref?: string; db?: any; publicUrl?: string } = {}
 ) => {
   const dirName = path.basename(absolutePath);
   const items = await fs.readdir(absolutePath);
-
   const hasIndex = items.some((name) => name.toLowerCase() === "index.md");
+
+  const joinPaths = (...parts: string[]) => parts.join("/").replace(/\/+/g, "/");
+
+  const currentPath = parentHref || publicUrl;
 
   const tree: FSTree = {
     name: dirName,
     slug: slugify(dirName, slugOptions),
-    path: parentHref,
+    path: currentPath,
     children: [],
   };
 
@@ -31,8 +38,8 @@ const fromFSDirectory = async (
         // @todo repeated
         const textContent = await fs.readFile(itemPath, "utf-8");
 
-        let href = slugName.replace(/\.md$/, ".html");
-        if (parentHref) href = `${parentHref}/${href}`;
+        let fileName = slugName.replace(/\.md$/, ".html");
+        let href = joinPaths(currentPath, fileName);
 
         let title: string | null = null;
         const [firstLine] = textContent.split("\n");
@@ -43,8 +50,8 @@ const fromFSDirectory = async (
         const entry: PageEntry = {
           content: textContent,
           href,
-          name: slugName.replace(/\.md$/, ".html"),
-          slug: slugName.replace(/\.md$/, ".html"),
+          name: fileName,
+          slug: fileName,
           title,
         };
 
@@ -78,16 +85,12 @@ const fromFSDirectory = async (
       if (itemName.startsWith(".")) continue;
 
       // @todo repeated
-      const directoryPath = (() => {
-        if (!!parentHref.length) {
-          return [parentHref, slugName].join("/");
-        }
-
-        return slugName;
-      })();
+      const nextDirectoryPath = joinPaths(currentPath, slugName);
       //
 
-      tree.children.push(await fromFSDirectory(itemPath, { parentHref: directoryPath, db }));
+      tree.children.push(
+        await fromFSDirectory(itemPath, { parentHref: nextDirectoryPath, db, publicUrl })
+      );
     }
   }
 
