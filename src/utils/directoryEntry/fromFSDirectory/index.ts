@@ -17,7 +17,7 @@ const fromFSDirectory = async (
   const items = await fs.readdir(absolutePath);
   const hasIndex = items.some((name) => name.toLowerCase() === "index.md");
 
-  const joinPaths = (...parts: string[]) => parts.join("/").replace(/\/+/g, "/");
+  const joinPaths = (...parts: string[]) => parts.join("/").replace(/\/+/g, "/"); // @todo duplicated
 
   const currentPath = parentHref || publicUrl;
 

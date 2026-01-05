@@ -20,10 +20,12 @@ const toFS = async (
     config,
     outputDir,
     tree,
+    publicUrl,
   }: {
     config?: Awaited<ReturnType<typeof utils.customConfig.fromFSDirectory>>;
     outputDir: string;
     tree?: FSDirectoryEntry;
+    publicUrl: string;
   }
 ) => {
   await fs.mkdir(outputDir, { recursive: true });
@@ -60,7 +62,12 @@ const toFS = async (
   for (const entry of directoryEntry.children) {
     if ("children" in entry) {
       const nextOutputDir = path.join(outputDir, entry.slug);
-      await toFS(entry, { config, outputDir: nextOutputDir, tree: tree || directoryEntry });
+      await toFS(entry, {
+        config,
+        outputDir: nextOutputDir,
+        tree: tree || directoryEntry,
+        publicUrl,
+      });
       continue;
     }
 
@@ -83,6 +90,7 @@ const toFS = async (
       content: entry.content,
       data: JSON.stringify(pageTree),
       style: !!config?.style,
+      publicUrl,
     });
 
     await fs.writeFile(path.join(outputDir, entry.name), htmlContent);

@@ -5,6 +5,26 @@ import { resolve } from "path";
 const pkg = JSON.parse(readFileSync(resolve("package.json"), "utf-8"));
 const version = pkg.version;
 
+const publicUrlPlugin = (): Plugin => {
+  return {
+    name: "html-public-url-hbs",
+    enforce: "post",
+    transformIndexHtml(html) {
+      const assetRegex = /(href|src)="\/(assets\/|icon\.png)/g;
+
+      let newHtml = html.replace(assetRegex, (match, attr, path) => {
+        return `${attr}="{{{publicUrl}}}${path}`;
+      });
+
+      if (!newHtml.includes("{{{publicUrl}}}icon.png")) {
+        newHtml = newHtml.replace('href="/icon.png"', 'href="{{{publicUrl}}}icon.png"');
+      }
+
+      return newHtml;
+    },
+  };
+};
+
 const versionPlugin = (): Plugin => {
   return {
     name: "html-version",
@@ -47,7 +67,7 @@ export default defineConfig({
     },
   },
   publicDir: "../public-static",
-  plugins: [versionPlugin()],
+  plugins: [versionPlugin(), publicUrlPlugin()],
   build: {
     outDir: "../src/static",
     emptyOutDir: true,

@@ -26,6 +26,7 @@ const generate = async (options: OptionValues) => {
     await utils.directoryEntry.toFS(tree, {
       outputDir,
       config,
+      publicUrl,
     });
 
     const searchIndex = await save(db);
