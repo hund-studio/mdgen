@@ -1,9 +1,9 @@
 import { renderToString } from "react-dom/server";
-import CSSBundle from "@static/assets/static.css?raw";
+import CSSTemplate from "@static/assets/static.css?raw";
 import fs from "fs/promises";
 import Handlebars from "handlebars";
 import HTMLTemplate from "@static/static.html?raw";
-import JSBundle from "@static/assets/main.js?raw";
+import JSTemplate from "@static/assets/main.js?raw";
 import Page from "../../../components/page/page";
 import path from "path";
 import React from "react";
@@ -36,8 +36,11 @@ const toFS = async (
     const assetsDir = path.join(outputDir, "assets");
     await fs.mkdir(assetsDir, { recursive: true });
 
-    await fs.writeFile(path.join(assetsDir, "main.js"), JSBundle);
-    await fs.writeFile(path.join(assetsDir, "static.css"), CSSBundle);
+    const jsTempalte = Handlebars.compile(JSTemplate);
+    await fs.writeFile(path.join(assetsDir, "main.js"), jsTempalte({ publicUrl }));
+
+    const cssTemplate = Handlebars.compile(CSSTemplate);
+    await fs.writeFile(path.join(assetsDir, "static.css"), cssTemplate({ publicUrl }));
 
     const iconsDir = path.join(assetsDir, "icons");
     await fs.mkdir(iconsDir, { recursive: true });
@@ -76,10 +79,10 @@ const toFS = async (
       continue;
     }
 
-    const template = Handlebars.compile(HTMLTemplate);
+    const htmlTemplate = Handlebars.compile(HTMLTemplate);
     const pageTree = tree || directoryEntry;
 
-    const htmlContent = template({
+    const htmlContent = htmlTemplate({
       body: renderToString(
         React.createElement(Page, {
           path: [pageTree.path, entry.name].filter(Boolean).join("/"),

@@ -5,6 +5,30 @@ import { resolve } from "path";
 const pkg = JSON.parse(readFileSync(resolve("package.json"), "utf-8"));
 const version = pkg.version;
 
+const publicUrlAssetsPlugin = (): Plugin => {
+  const cssUrlRegex = /url\(['"]?\/(assets\/[^'")]*)['"]?\)/g;
+  const hbsReplacement = 'url("{{{publicUrl}}}$1")';
+
+  return {
+    name: "css-public-url-assets",
+    enforce: "post",
+    generateBundle(_, bundle) {
+      for (const fileName in bundle) {
+        const file = bundle[fileName];
+
+        if (file.type === "asset" && fileName.endsWith(".css")) {
+          const source = file.source.toString();
+          file.source = source.replace(cssUrlRegex, hbsReplacement);
+        }
+
+        if (file.type === "chunk") {
+          file.code = file.code.replace(cssUrlRegex, hbsReplacement);
+        }
+      }
+    },
+  };
+};
+
 const publicUrlPlugin = (): Plugin => {
   return {
     name: "html-public-url-hbs",
@@ -67,7 +91,7 @@ export default defineConfig({
     },
   },
   publicDir: "../public-static",
-  plugins: [versionPlugin(), publicUrlPlugin()],
+  plugins: [publicUrlAssetsPlugin(), versionPlugin(), publicUrlPlugin()],
   build: {
     outDir: "../src/static",
     emptyOutDir: true,
