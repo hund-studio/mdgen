@@ -72,7 +72,7 @@ async function dev() {
   cliProcess = runCli([...exampleArgs, "-w"]);
 
   chokidar
-    .watch(path.resolve(process.cwd(), "src"), {
+    .watch([path.resolve(process.cwd(), "src"), path.resolve(process.cwd(), "templates")], {
       ignored: (path) => path.includes("/src/static/"),
       ignoreInitial: true,
       awaitWriteFinish: {
