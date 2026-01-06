@@ -43,20 +43,6 @@ async function dev() {
   console.log(`${cli.print.separator}`);
   await buildEssentials();
 
-  // build({
-  //   configFile: path.resolve(process.cwd(), "vite.config.static.ts"),
-  //   build: { watch: {} },
-  //   logLevel: "silent",
-  // });
-  // console.log(`${cli.print.sl.magenta} [watch] Watching static templates...`);
-
-  // build({
-  //   configFile: path.resolve(process.cwd(), "vite.config.cli.ts"),
-  //   build: { watch: {} },
-  //   logLevel: "silent",
-  // });
-  // console.log(`${cli.print.sl.magenta} [watch] Watching CLI code...`);
-
   const exampleArgs = [
     "-s",
     "./examples/dnd-adventure",
@@ -68,8 +54,8 @@ async function dev() {
     "/docs",
   ];
 
-  console.log(`${cli.print.sl.magenta} [watch] Watching source files...`);
   cliProcess = runCli([...exampleArgs, "-w"]);
+  console.log(`${cli.print.sl.magenta} [watch] Watching source files...`);
 
   chokidar
     .watch([path.resolve(process.cwd(), "src"), path.resolve(process.cwd(), "templates")], {
@@ -87,7 +73,14 @@ async function dev() {
       }
       await buildEssentials();
       cliProcess = runCli([...exampleArgs, "-w"]);
-      console.log(`${cli.print.sl.magenta} [watch] Watching example folder...`);
+      const now = new Date();
+      const formatted = now.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+      console.log(`${cli.print.sl.magenta} [watch] ${formatted} Restarting source files watch...`);
     });
 }
 
