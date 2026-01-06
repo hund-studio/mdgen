@@ -123,8 +123,7 @@ Future implementations that will utilize the `.mdgen` folder include:
 
 ### Backlog & Future Features
 
-- 🚧 Allowing to compile for a custom PUBLIC_PATH
-- 🚧 Moving to router
+- 🚧 Moving to react router
 - 🚧 Allow `.ts`/`.js` plugins from the `.mdgen` folder.
 - 🚧 Mobile version.
 - 🚧 Add Markdown YAML metadata support.
