@@ -1,7 +1,7 @@
 {
   "name": "@hund.studio/mdgen",
   "private": false,
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1-beta.0",
   "type": "module",
   "keywords": [
     "markdown",
@@ -29,7 +29,7 @@
     "dev:tool": "vite --config vite.config.tool.ts",
     "lint": "eslint .",
     "postpublish": "rm ./README.md",
-    "prepublishOnly": "npm run build:cli && npm run copy:readme",
+    "prepublishOnly": "npm run build && npm run copy:readme",
     "preview": "vite preview",
     "release:beta": "npm version prerelease --preid beta && git push --follow-tags",
     "release:minor": "npm version minor && git push --follow-tags",
