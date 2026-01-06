@@ -10,22 +10,37 @@ const generate = async (
   { verbose }: { verbose: string } = { verbose: "all" }
 ) => {
   verbose === "all" && console.log(`${utils.cli.print.separator}`);
-  verbose === "all" && console.log(`${utils.cli.print.sl.magenta} [cmd] Generate HTML from CLI...`);
+  verbose === "all" &&
+    console.log(
+      `${utils.cli.print.sl.yellow}${utils.cli.print.sl.magenta} [cmd] Generate HTML from CLI...`
+    );
   verbose === "all" && console.log(`${utils.cli.print.separator}`);
-  verbose === "all" && console.log(`${utils.cli.print.sl.green} CLI options:`);
-  verbose === "all" && console.log(`${utils.cli.print.sl.gray} root:\t\t${path.resolve()}`);
-  verbose === "all" && console.log(`${utils.cli.print.sl.gray} source:\t${options.source}`);
-  verbose === "all" && console.log(`${utils.cli.print.sl.gray} outDir:\t${options.outDir}`);
-  verbose === "all" && console.log(`${utils.cli.print.sl.gray} name:\t\t${options.name}`);
+  verbose === "all" &&
+    console.log(`${utils.cli.print.sl.yellow}${utils.cli.print.sl.green} CLI options:`);
+  verbose === "all" &&
+    console.log(`${utils.cli.print.sl.yellow}${utils.cli.print.sl.gray} root:\t${path.resolve()}`);
+  verbose === "all" &&
+    console.log(
+      `${utils.cli.print.sl.yellow}${utils.cli.print.sl.gray} source:\t${options.source}`
+    );
+  verbose === "all" &&
+    console.log(
+      `${utils.cli.print.sl.yellow}${utils.cli.print.sl.gray} outDir:\t${options.outDir}`
+    );
+  verbose === "all" &&
+    console.log(`${utils.cli.print.sl.yellow}${utils.cli.print.sl.gray} name:\t${options.name}`);
   verbose === "all" && console.log(`${utils.cli.print.separator}`);
 
   const db = await utils.db.create();
   const sourceDir = path.resolve(options.source);
   const outputDir = path.resolve(options.outDir, options.name);
 
-  verbose === "all" && console.log(`${utils.cli.print.sl.green} Generator config:`);
-  verbose === "all" && console.log(`${utils.cli.print.sl.gray} source:\t${sourceDir}`);
-  verbose === "all" && console.log(`${utils.cli.print.sl.gray} output:\t${outputDir}`);
+  verbose === "all" &&
+    console.log(`${utils.cli.print.sl.yellow}${utils.cli.print.sl.green} Generator config:`);
+  verbose === "all" &&
+    console.log(`${utils.cli.print.sl.yellow}${utils.cli.print.sl.gray} source:\t${sourceDir}`);
+  verbose === "all" &&
+    console.log(`${utils.cli.print.sl.yellow}${utils.cli.print.sl.gray} output:\t${outputDir}`);
 
   let publicUrl = options.publicUrl || "/";
   if (!publicUrl.startsWith("/")) publicUrl = "/" + publicUrl;
@@ -36,13 +51,21 @@ const generate = async (
 
     if (found) {
       verbose === "all" &&
-        console.log(`${utils.cli.print.sl.gray} config:\t${path.join(sourceDir, ".mdgen")}`);
+        console.log(
+          `${utils.cli.print.sl.yellow}${utils.cli.print.sl.gray} config:\t${path.join(
+            sourceDir,
+            ".mdgen"
+          )}`
+        );
     }
     verbose === "all" && console.log(`${utils.cli.print.separator}`);
 
     const tree = await utils.directoryEntry.fromFSDirectory(sourceDir, { db, publicUrl });
 
-    console.log(utils.cli.print.sl.orange, "[gen] Generating HTML...");
+    console.log(
+      `${utils.cli.print.sl.yellow}${utils.cli.print.sl.orange}`,
+      "[gen] Generating HTML..."
+    );
 
     await utils.directoryEntry.toFS(tree, {
       outputDir,
@@ -54,10 +77,17 @@ const generate = async (
 
     await fs.writeFile(path.join(outputDir, "search.json"), JSON.stringify(searchIndex));
 
-    console.log(utils.cli.print.sl.green, `[gen] HTML generation complete in: ${outputDir}`);
+    console.log(
+      `${utils.cli.print.sl.yellow}${utils.cli.print.sl.green}`,
+      `[gen] HTML generation complete in: ${outputDir}`
+    );
     console.log(`${utils.cli.print.separator}`);
   } catch (err) {
-    console.error(utils.cli.print.sl.red, "[gen] Generation failed:", err);
+    console.error(
+      `${utils.cli.print.sl.yellow}${utils.cli.print.sl.red}`,
+      "[gen] Generation failed:",
+      err
+    );
   }
 };
 
@@ -91,7 +121,7 @@ Description:
 
   if (options.watch) {
     console.log(
-      utils.cli.print.sl.magenta,
+      `${utils.cli.print.sl.yellow}${utils.cli.print.sl.magenta}`,
       `[watch] Watching for changes in: ${options.source}...`
     );
     console.log(`${utils.cli.print.separator}`);
@@ -103,7 +133,10 @@ Description:
     });
 
     watcher.on("all", async (event, path) => {
-      console.log(utils.cli.print.sl.orange, `[${event}] ${path} changed, regenerating...`);
+      console.log(
+        `${utils.cli.print.sl.yellow}${utils.cli.print.sl.orange}`,
+        `[${event}] ${path} changed, regenerating...`
+      );
       await generate(options, { verbose: "output" });
     });
   }

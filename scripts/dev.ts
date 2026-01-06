@@ -11,7 +11,10 @@ function runCommand(command: string, args: string[]): ChildProcess {
   const process = spawn(command, args, { stdio: "inherit" });
 
   process.on("error", (err) => {
-    console.error(`${cli.print.sl.red} Errore nell'esecuzione di ${command}:`, err);
+    console.error(
+      `${cli.print.sl.blue}${cli.print.sl.red} Errore nell'esecuzione di ${command}:`,
+      err
+    );
   });
 
   return process;
@@ -22,24 +25,23 @@ function runCli(args: string[]) {
 }
 
 const buildEssentials = async () => {
-  console.log(`${cli.print.sl.orange} [build] Building static templates...`);
+  console.log(`${cli.print.sl.blue}${cli.print.sl.orange} [build] Building static templates...`);
   await build({
     configFile: path.resolve(process.cwd(), "vite.config.static.ts"),
     logLevel: "silent",
   });
-  console.log(`${cli.print.sl.green} [build] Static build complete.`);
-  console.log(`${cli.print.sl.orange} [build] Building CLI...`);
+  console.log(`${cli.print.sl.blue}${cli.print.sl.green} [build] Static build complete.`);
+  console.log(`${cli.print.sl.blue}${cli.print.sl.orange} [build] Building CLI...`);
   await build({
     configFile: path.resolve(process.cwd(), "vite.config.cli.ts"),
     logLevel: "silent",
   });
-  console.log(`${cli.print.sl.green} [build] CLI build complete.`);
-  console.log(`${cli.print.separator}`);
+  console.log(`${cli.print.sl.blue}${cli.print.sl.green} [build] CLI build complete.`);
 };
 
 async function dev() {
   console.log(`${cli.print.separator}`);
-  console.log(`${cli.print.sl.magenta} [cmd] Running dev command...`);
+  console.log(`${cli.print.sl.blue}${cli.print.sl.magenta} [cmd] Running dev command...`);
   console.log(`${cli.print.separator}`);
   await buildEssentials();
 
@@ -54,8 +56,9 @@ async function dev() {
     "/docs",
   ];
 
+  console.log(`${cli.print.sl.blue}${cli.print.sl.magenta} [watch] Watching source files...`);
+
   cliProcess = runCli([...exampleArgs, "-w"]);
-  console.log(`${cli.print.sl.magenta} [watch] Watching source files...`);
 
   chokidar
     .watch([path.resolve(process.cwd(), "src"), path.resolve(process.cwd(), "templates")], {
@@ -72,7 +75,6 @@ async function dev() {
         treeKill(cliProcess.pid, "SIGKILL");
       }
       await buildEssentials();
-      cliProcess = runCli([...exampleArgs, "-w"]);
       const now = new Date();
       const formatted = now.toLocaleTimeString("en-GB", {
         hour: "2-digit",
@@ -80,7 +82,11 @@ async function dev() {
         second: "2-digit",
         hour12: false,
       });
-      console.log(`${cli.print.sl.magenta} [watch] ${formatted} Restarting source files watch...`);
+      console.log(
+        `${cli.print.sl.blue}${cli.print.sl.magenta} [watch] ${formatted} Restarting source files watch...`
+      );
+
+      cliProcess = runCli([...exampleArgs, "-w"]);
     });
 }
 

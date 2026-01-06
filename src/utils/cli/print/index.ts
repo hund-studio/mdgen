@@ -1,13 +1,18 @@
 import chalk from "chalk";
 
+const orange = chalk.hex("#FFA500");
+
 const sl = {
-  green: chalk.bgGreenBright(" "),
-  orange: chalk.bgYellowBright(" "),
+  green: chalk.greenBright(" • "),
+  orange: orange(" • "),
+  yellow: chalk.bgYellowBright(" "),
   red: chalk.bgRedBright(" "),
-  magenta: chalk.bgMagentaBright(" "),
-  gray: chalk.bgGray(" "),
+  magenta: chalk.magentaBright(" • "),
+  gray: chalk.gray(" • "),
+  blue: chalk.bgBlueBright(" "),
+  white: chalk.whiteBright(" "),
 };
 
-const separator = "· · · ·";
+const separator = chalk.dim(chalk.gray("• •"));
 
 export { sl, separator };
