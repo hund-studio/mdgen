@@ -65,12 +65,13 @@ The CLI tool generates the output folder in the **parent directory** of where th
 
 #### Advanced Options
 
-| Option            | Shorthand | Description                                     | Default     |
-| :---------------- | :-------- | :---------------------------------------------- | :---------- |
-| `--source <path>` | `-s`      | The directory containing your markdown files    | `.`         |
-| `--outDir <path>` | `-o`      | Parent directory where the output will be saved | `.`         |
-| `--name <name>`   | `-n`      | The name of the output folder                   | `generated` |
-| `--watch`         | `-w`      | Watch for changes in the source directory       | `false`     |
+| Option               | Shorthand | Description                                      | Default     |
+| :------------------- | :-------- | :----------------------------------------------- | :---------- |
+| `--source <path>`    | `-s`      | The directory containing your markdown files     | `.`         |
+| `--outDir <path>`    | `-o`      | Parent directory where the output will be saved  | `.`         |
+| `--name <name>`      | `-n`      | The name of the output folder                    | `generated` |
+| `--public-url <url>` | `-u`      | The base URL or path for the site (e.g., /docs/) | `/`         |
+| `--watch`            | `-w`      | Watch for changes in the source directory        | `false`     |
 
 **Examples:**
 
