@@ -3,13 +3,13 @@ import CSSBundle from "@static/assets/static.css?raw";
 import Handlebars from "handlebars";
 import HTMLTemplate from "@static/static.html?raw";
 import JSBundle from "@static/assets/main.js?raw";
-import type JSZip from "jszip";
 import Page from "../../../components/page/page";
 import staticIcon from "@static/icon.png";
+import staticIconsCaret from "@static/assets/icons/caret.svg?raw";
 import staticIconsSchemaAuto from "@static/assets/icons/schema/auto.svg?raw";
 import staticIconsSchemaDark from "@static/assets/icons/schema/dark.svg?raw";
 import staticIconsSchemaLight from "@static/assets/icons/schema/light.svg?raw";
-import staticIconsCaret from "@static/assets/icons/caret.svg?raw";
+import type JSZip from "jszip";
 import type utils from "../..";
 
 const toZIP = async (

@@ -1,7 +1,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import utils from "../..";
 
-const fromFSDirectory = async (basePath: string) => {
+const fromFSDirectory = async (basePath: string): Promise<[boolean, FSConfig]> => {
+  let found = false;
   const config: FSConfig = {
     brand: null,
     style: null,
@@ -12,6 +14,7 @@ const fromFSDirectory = async (basePath: string) => {
 
     for (const entry of entries) {
       if (entry.isDirectory() && entry.name === ".mdgen") {
+        found = true;
         const configPath = path.join(basePath, entry.name);
         const configFiles = await fs.readdir(configPath, { withFileTypes: true });
 
@@ -40,10 +43,10 @@ const fromFSDirectory = async (basePath: string) => {
       }
     }
   } catch (error) {
-    console.error("Error reading directory:", error);
+    console.error(utils.cli.print.sl.red, "Error reading directory:", error);
   }
 
-  return config;
+  return [found, config];
 };
 
 export default fromFSDirectory;

@@ -22,7 +22,7 @@ const toFS = async (
     tree,
     publicUrl,
   }: {
-    config?: Awaited<ReturnType<typeof utils.customConfig.fromFSDirectory>>;
+    config?: Awaited<ReturnType<typeof utils.customConfig.fromFSDirectory>>[1];
     outputDir: string;
     tree?: FSDirectoryEntry;
     publicUrl: string;

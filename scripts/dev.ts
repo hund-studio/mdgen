@@ -1,57 +1,61 @@
 import { build } from "vite";
 import { ChildProcess, spawn } from "child_process";
+import * as cli from "../src/utils/cli";
 import chokidar from "chokidar";
 import path from "path";
-import chalk from "chalk";
+import treeKill from "tree-kill";
 
-const sl = {
-  red: chalk.bgRedBright(" "),
-  green: chalk.bgGreenBright(" "),
-  orange: chalk.bgYellowBright(" "),
-};
-
-const separator = "- - - -";
+let cliProcess: ChildProcess | null = null;
 
 function runCommand(command: string, args: string[]): ChildProcess {
-  const process = spawn(command, args, { stdio: "inherit", shell: true });
+  const process = spawn(command, args, { stdio: "inherit" });
 
   process.on("error", (err) => {
-    console.error(`${sl.red} Errore nell'esecuzione di ${command}:`, err);
+    console.error(`${cli.print.sl.red} Errore nell'esecuzione di ${command}:`, err);
   });
 
   return process;
 }
 
 function runCli(args: string[]) {
-  runCommand("node", ["./dist-cli/cli.js", ...args]);
+  return runCommand("node", ["./dist-cli/cli.js", ...args]);
 }
 
-async function dev() {
-  console.log(`${sl.green} [cmd] dev`);
-  console.log(separator);
-
-  console.log(`${sl.orange} [build] static start`);
+const buildEssentials = async () => {
+  console.log(`${cli.print.sl.orange} [build] Building static templates...`);
   await build({
     configFile: path.resolve(process.cwd(), "vite.config.static.ts"),
     logLevel: "silent",
   });
-  console.log(`${sl.green} [build] static complete\n`);
-
-  build({
-    configFile: path.resolve(process.cwd(), "vite.config.static.ts"),
-    build: { watch: {} },
-    logLevel: "silent",
-  });
-  console.log(`${sl.green} [watch] static watch`);
-
-  build({
+  console.log(`${cli.print.sl.green} [build] Static build complete.`);
+  console.log(`${cli.print.sl.orange} [build] Building CLI...`);
+  await build({
     configFile: path.resolve(process.cwd(), "vite.config.cli.ts"),
-    build: { watch: {} },
     logLevel: "silent",
   });
+  console.log(`${cli.print.sl.green} [build] CLI build complete.`);
+  console.log(`${cli.print.separator}`);
+};
 
-  // @todo continue from here
-  console.log(`${sl.green} [watch] cli watch`);
+async function dev() {
+  console.log(`${cli.print.separator}`);
+  console.log(`${cli.print.sl.magenta} [cmd] Running dev command...`);
+  console.log(`${cli.print.separator}`);
+  await buildEssentials();
+
+  // build({
+  //   configFile: path.resolve(process.cwd(), "vite.config.static.ts"),
+  //   build: { watch: {} },
+  //   logLevel: "silent",
+  // });
+  // console.log(`${cli.print.sl.magenta} [watch] Watching static templates...`);
+
+  // build({
+  //   configFile: path.resolve(process.cwd(), "vite.config.cli.ts"),
+  //   build: { watch: {} },
+  //   logLevel: "silent",
+  // });
+  // console.log(`${cli.print.sl.magenta} [watch] Watching CLI code...`);
 
   const exampleArgs = [
     "-s",
@@ -64,18 +68,27 @@ async function dev() {
     "/docs",
   ];
 
-  runCli([...exampleArgs, "-w"]);
-  console.log(`${sl.green} [watch] example watch`);
-  console.log(`${separator}\n`);
+  console.log(`${cli.print.sl.magenta} [watch] Watching source files...`);
+  cliProcess = runCli([...exampleArgs, "-w"]);
 
-  const staticSrcWatcher = chokidar.watch("src/static/**/*.js", {
-    ignoreInitial: true,
-  });
-
-  staticSrcWatcher.on("change", () => {
-    console.log(`${sl.orange} [watch] src/static regenerate`);
-    // runCli(exampleArgs);
-  });
+  chokidar
+    .watch(path.resolve(process.cwd(), "src"), {
+      ignored: (path) => path.includes("/src/static/"),
+      ignoreInitial: true,
+      awaitWriteFinish: {
+        stabilityThreshold: 1000,
+        pollInterval: 1000,
+      },
+    })
+    .on("all", async () => {
+      if (cliProcess) {
+        if (!cliProcess.pid) throw "Invalid PID";
+        treeKill(cliProcess.pid, "SIGKILL");
+      }
+      await buildEssentials();
+      cliProcess = runCli([...exampleArgs, "-w"]);
+      console.log(`${cli.print.sl.magenta} [watch] Watching example folder...`);
+    });
 }
 
 dev().catch(console.error);
