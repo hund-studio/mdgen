@@ -45,16 +45,7 @@ async function dev() {
   console.log(`${cli.print.separator}`);
   await buildEssentials();
 
-  const exampleArgs = [
-    "-s",
-    "./examples/dnd-adventure",
-    "-o",
-    "./dist-md",
-    "-n",
-    "dnd-adventure",
-    "-u",
-    "/docs",
-  ];
+  const exampleArgs = ["-s", "./examples/docs", "-o", "./dist-md", "-n", "docs", "-u", "/docs"];
 
   console.log(`${cli.print.sl.blue}${cli.print.sl.magenta} [watch] Watching source files...`);
 
