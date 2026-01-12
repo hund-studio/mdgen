@@ -124,7 +124,6 @@ Future implementations that will utilize the `.mdgen` folder include:
 
 ### Backlog & Future Features
 
-- 🚧 Moving to react router
 - 🚧 Allow `.ts`/`.js` plugins from the `.mdgen` folder.
 - 🚧 Mobile version.
 - 🚧 Add Markdown YAML metadata support.
