@@ -60,7 +60,8 @@ const generate = async (
     }
     verbose === "all" && console.log(`${utils.cli.print.separator}`);
 
-    const tree = await utils.directoryEntry.fromFSDirectory(sourceDir, { db, publicUrl });
+    // const tree = await utils.directoryEntry.fromFSDirectory(sourceDir, { db, publicUrl });
+    const tree = await utils.directoryEntry.fromFSDirectory(sourceDir, { db });
 
     console.log(
       `${utils.cli.print.sl.yellow}${utils.cli.print.sl.orange}`,

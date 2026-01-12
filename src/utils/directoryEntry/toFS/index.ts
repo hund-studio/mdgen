@@ -1,4 +1,5 @@
 import { renderToString } from "react-dom/server";
+import { StaticRouter } from "react-router-dom";
 import CSSTemplate from "@static/assets/static.css?raw";
 import fs from "fs/promises";
 import Handlebars from "handlebars";
@@ -21,11 +22,13 @@ const toFS = async (
     outputDir,
     tree,
     publicUrl,
+    manifest = {},
   }: {
     config?: Awaited<ReturnType<typeof utils.customConfig.fromFSDirectory>>[1];
     outputDir: string;
     tree?: FSDirectoryEntry;
     publicUrl: string;
+    manifest?: Record<string, string>;
   }
 ) => {
   await fs.mkdir(outputDir, { recursive: true });
@@ -70,6 +73,7 @@ const toFS = async (
         outputDir: nextOutputDir,
         tree: tree || directoryEntry,
         publicUrl,
+        manifest,
       });
       continue;
     }
@@ -82,13 +86,45 @@ const toFS = async (
     const htmlTemplate = Handlebars.compile(HTMLTemplate);
     const pageTree = tree || directoryEntry;
 
+    const relativeHref = entry.href.replace(/^\//, "");
+    const cleanRoute =
+      "/" +
+      relativeHref
+        .replace(".html", "")
+        .replace(/index$/, "")
+        .replace(/\/+$/, "");
+
+    const htmlRoute = "/" + relativeHref;
+    const contentFileName = entry.name.replace(".html", ".content");
+    const manifestContentPath = path
+      .join(path.dirname(relativeHref), contentFileName)
+      .replace(/\\/g, "/")
+      .replace(/^\.\//, "");
+
+    manifest[cleanRoute || "/"] = manifestContentPath;
+    manifest[htmlRoute] = manifestContentPath;
+
+    if (entry.name === "index.html") {
+      const dirPath = "/" + path.dirname(relativeHref).replace(/^\.$/, "");
+      manifest[dirPath === "//" ? "/" : dirPath] = manifestContentPath;
+    }
+
+    const currentPath = relativeHref;
+
     const htmlContent = htmlTemplate({
       body: renderToString(
-        React.createElement(Page, {
-          path: [pageTree.path, entry.name].filter(Boolean).join("/"),
-          sidebar: pageTree,
-          content: entry.content,
-        })
+        React.createElement(
+          StaticRouter,
+          {
+            location: path.normalize([publicUrl, currentPath].join("/")),
+            basename: publicUrl,
+          },
+          React.createElement(Page, {
+            path: currentPath,
+            sidebar: pageTree,
+            content: entry.content,
+          })
+        )
       ),
       content: entry.content,
       data: JSON.stringify(pageTree),
@@ -96,7 +132,12 @@ const toFS = async (
       publicUrl,
     });
 
+    await fs.writeFile(path.join(outputDir, contentFileName), entry.content);
     await fs.writeFile(path.join(outputDir, entry.name), htmlContent);
+  }
+
+  if (!tree) {
+    await fs.writeFile(path.join(outputDir, "manifest.json"), JSON.stringify(manifest, null, 2));
   }
 };
 
