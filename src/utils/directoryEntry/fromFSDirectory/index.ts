@@ -3,7 +3,14 @@ import slugify from "slugify";
 import fs from "fs/promises";
 import path from "path";
 
-const slugOptions = { lower: true };
+const SLUG_OPTS = { lower: true };
+
+const joinPaths = (...parts: string[]) => parts.join("/").replace(/\/+/g, "/");
+
+const extractTitle = (content: string): string | null => {
+  const [firstLine] = content.split("\n");
+  return firstLine?.startsWith("#") ? firstLine.replace(/^#\s*/, "").trim() : null;
+};
 
 const fromFSDirectory = async (
   absolutePath: string,
@@ -15,15 +22,13 @@ const fromFSDirectory = async (
 ) => {
   const dirName = path.basename(absolutePath);
   const items = await fs.readdir(absolutePath);
-  const hasIndex = items.some((name) => name.toLowerCase() === "index.md");
-
-  const joinPaths = (...parts: string[]) => parts.join("/").replace(/\/+/g, "/"); // @todo duplicated
-
   const currentPath = parentHref || publicUrl;
+
+  const hasIndex = items.some((name) => name.toLowerCase() === "index.md");
 
   const tree: FSTree = {
     name: dirName,
-    slug: slugify(dirName, slugOptions),
+    slug: slugify(dirName, SLUG_OPTS),
     path: currentPath,
     children: [],
   };
@@ -31,78 +36,63 @@ const fromFSDirectory = async (
   for (const itemName of items) {
     const itemPath = path.join(absolutePath, itemName);
     const stats = await fs.stat(itemPath);
-    const slugName = slugify(itemName, slugOptions);
+    const slugName = slugify(itemName, SLUG_OPTS);
 
-    if (stats.isFile()) {
-      if (itemName.toLowerCase().endsWith(".md")) {
-        // @todo repeated
-        const textContent = await fs.readFile(itemPath, "utf-8");
-
-        let fileName = slugName.replace(/\.md$/, ".html");
-        let href = joinPaths(currentPath, fileName);
-
-        let title: string | null = null;
-        const [firstLine] = textContent.split("\n");
-        if (firstLine?.startsWith("#")) {
-          title = firstLine.replace(/^#\s*/, "").trim();
-        }
-
-        const entry: PageEntry = {
-          content: textContent,
-          href,
-          name: fileName,
-          slug: fileName,
-          title,
-        };
-
-        if (!hasIndex) {
-          if (entry.name === "readme.html") {
-            entry.name = "index.html";
-            entry.slug = "index.html";
-            entry.href = entry.href.replace("readme.html", "index.html");
-          }
-        }
-
-        if (db) {
-          await insert(db, {
-            title: entry.title || entry.slug,
-            content: textContent,
-            href: entry.href,
-          });
-        }
-        //
-
-        tree.children.push(entry);
-      } else {
-        const bufferContent = await fs.readFile(itemPath);
-        tree.children.push({
-          name: itemName,
-          slug: slugName,
-          buffer: bufferContent,
-        });
-      }
-    } else if (stats.isDirectory()) {
+    if (stats.isDirectory()) {
       if (itemName.startsWith(".")) continue;
 
-      // @todo repeated
       const nextDirectoryPath = joinPaths(currentPath, slugName);
-      //
+      const subTree = await fromFSDirectory(itemPath, {
+        parentHref: nextDirectoryPath,
+        db,
+        publicUrl,
+      });
 
-      tree.children.push(
-        await fromFSDirectory(itemPath, { parentHref: nextDirectoryPath, db, publicUrl })
-      );
+      tree.children.push(subTree);
+      continue;
+    }
+
+    if (itemName.toLowerCase().endsWith(".md")) {
+      const textContent = await fs.readFile(itemPath, "utf-8");
+      let fileName = slugName.replace(/\.md$/, ".html");
+
+      if (!hasIndex && fileName === "readme.html") {
+        fileName = "index.html";
+      }
+
+      const entry: PageEntry = {
+        name: fileName,
+        slug: fileName,
+        href: joinPaths(currentPath, fileName),
+        title: extractTitle(textContent),
+        content: textContent,
+      };
+
+      if (db) {
+        await insert(db, {
+          title: entry.title || entry.slug,
+          content: textContent,
+          href: entry.href,
+        });
+      }
+
+      tree.children.push(entry);
+    } else {
+      tree.children.push({
+        name: itemName,
+        slug: slugName,
+        buffer: await fs.readFile(itemPath),
+      });
     }
   }
 
-  // @todo repeated
   tree.children.sort((a, b) => {
-    const isADirectory = "children" in a;
-    const isBDirectory = "children" in b;
-    if (!isADirectory && isBDirectory) return -1;
-    if (isADirectory && !isBDirectory) return 1;
+    const isADir = "children" in a;
+    const isBDir = "children" in b;
+
+    if (isADir !== isBDir) return isADir ? 1 : -1;
     return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
   });
-  //
 
   return tree;
 };
