@@ -1,44 +1,41 @@
+import { chmodSync, existsSync } from "fs";
 import { defineConfig, Plugin } from "vite";
-import { resolve } from "path";
-import fs from "fs";
+import path, { resolve } from "path";
 
-const permissionsPlugin = (): Plugin => {
-  return {
-    name: "chmod-cli",
-    closeBundle() {
-      const path = resolve(__dirname, "dist-cli/cli.js");
-      if (fs.existsSync(path)) {
-        fs.chmodSync(path, 0o755);
-        // console.log(`\n✅ Executable permissions set on: ${path}`);
-      }
-    },
-  };
-};
+const chmod = (path: string): Plugin => ({
+  name: "chmod",
+  closeBundle: () => {
+    existsSync(path);
+    chmodSync(path, 0o755);
+  },
+});
+
+const r = (p: string) => resolve(__dirname, p);
+const outDir = "dist-cli";
+const entry = r("dist-cli/cli.mjs");
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      "@static": resolve(__dirname, "src/static"),
-    },
-  },
-  plugins: [permissionsPlugin()],
+  resolve: { alias: { "@static": r("src/static") } },
+  plugins: [chmod(entry)],
   publicDir: false,
   build: {
     ssr: true,
+    outDir,
+    emptyOutDir: true,
+    target: "node18",
+    minify: "esbuild",
     lib: {
-      entry: resolve(__dirname, "src/cli.ts"),
-      name: "mdgen-cli",
-      fileName: "cli",
+      entry: r("src/cli.ts"),
       formats: ["es"],
+      fileName: "cli",
     },
     rollupOptions: {
-      external: (id) => !id.startsWith("@static") && !id.startsWith(".") && !id.startsWith("/"),
+      external: (id) => !id.startsWith(".") && !id.startsWith("@static") && !path.isAbsolute(id),
       output: {
         banner: "#!/usr/bin/env node",
+        inlineDynamicImports: true,
+        compact: true,
       },
     },
-    outDir: "dist-cli",
-    target: "node18",
-    emptyOutDir: true,
   },
 });
