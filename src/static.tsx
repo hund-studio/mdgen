@@ -22,7 +22,6 @@ const App: FC = () => {
         const db = create();
         load(db, rawData);
         setDb(db);
-        console.log("Orama Index caricato con successo");
       } catch (e) {
         console.error("Errore nel caricamento dell'indice di ricerca:", e);
       }

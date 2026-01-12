@@ -49,6 +49,27 @@ const publicUrlPlugin = (): Plugin => {
   };
 };
 
+const publicUrlFetchPlugin = (): Plugin => {
+  const fetchRegex = /fetch\(['"]\/([^'"]+)['"]\)/g;
+  const hbsReplacement = "fetch(`{{{publicUrl}}}$1`)";
+
+  return {
+    name: "fetch-public-url-hbs",
+    enforce: "post",
+    transform(code, id) {
+      if (/\.(js|ts|jsx|tsx)$/.test(id) && !id.includes("node_modules")) {
+        if (code.includes("fetch(")) {
+          const newCode = code.replace(fetchRegex, hbsReplacement);
+          return {
+            code: newCode,
+            map: null,
+          };
+        }
+      }
+    },
+  };
+};
+
 const versionPlugin = (): Plugin => {
   return {
     name: "html-version",
@@ -61,7 +82,7 @@ const versionPlugin = (): Plugin => {
         .replace(cssRegex, `$1?v=${version}`);
 
       const customCssLinkRegex =
-        /(\s*)(\{{#if [^}]+\}\}\s*<link[^>]*data-head[^>]*>\s*{{\/if}})(\s*)/gi; // More general regex
+        /(\s*)(\{{#if [^}]+\}\}\s*<link[^>]*data-head[^>]*>\s*{{\/if}})(\s*)/gi;
 
       const customCssMatches = [...newHtml.matchAll(customCssLinkRegex)];
 
@@ -91,7 +112,7 @@ export default defineConfig({
     },
   },
   publicDir: "../public-static",
-  plugins: [publicUrlAssetsPlugin(), versionPlugin(), publicUrlPlugin()],
+  plugins: [publicUrlAssetsPlugin(), versionPlugin(), publicUrlPlugin(), publicUrlFetchPlugin()],
   build: {
     outDir: "../src/static",
     emptyOutDir: true,

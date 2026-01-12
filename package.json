@@ -30,7 +30,7 @@
     "lint": "eslint .",
     "postpublish": "rm ./README.md",
     "prepublishOnly": "npm run build && npm run copy:readme",
-    "preview": "vite preview",
+    "preview": "vite preview --base /docs/ --outDir ./dist-md/docs",
     "release:beta": "npm version prerelease --preid beta && git push --follow-tags",
     "release:minor": "npm version minor && git push --follow-tags",
     "release:patch": "npm version patch && git push --follow-tags"

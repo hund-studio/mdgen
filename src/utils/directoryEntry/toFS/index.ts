@@ -36,8 +36,8 @@ const toFS = async (
     const assetsDir = path.join(outputDir, "assets");
     await fs.mkdir(assetsDir, { recursive: true });
 
-    const jsTempalte = Handlebars.compile(JSTemplate);
-    await fs.writeFile(path.join(assetsDir, "main.js"), jsTempalte({ publicUrl }));
+    const jsTemplate = Handlebars.compile(JSTemplate);
+    await fs.writeFile(path.join(assetsDir, "main.js"), jsTemplate({ publicUrl }));
 
     const cssTemplate = Handlebars.compile(CSSTemplate);
     await fs.writeFile(path.join(assetsDir, "static.css"), cssTemplate({ publicUrl }));
