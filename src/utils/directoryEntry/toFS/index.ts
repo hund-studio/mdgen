@@ -1,76 +1,75 @@
 import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router-dom";
-import CSSTemplate from "@static/assets/static.css?raw";
-import fs from "fs/promises";
-import Handlebars from "handlebars";
-import HTMLTemplate from "@static/static.html?raw";
-import JSTemplate from "@static/assets/main.js?raw";
-import Page from "../../../components/page/page";
-import path from "path";
 import React from "react";
+import fs from "fs/promises";
+import path from "path";
+import Handlebars from "handlebars";
+
+import Page from "../../../components/page/page";
+import HTMLTemplateSource from "@static/static.html?raw";
+import JSTemplateSource from "@static/assets/main.js?raw";
+import CSSTemplateSource from "@static/assets/static.css?raw";
 import staticIcon from "@static/icon.png";
 import staticIconsCaret from "@static/assets/icons/caret.svg?raw";
 import staticIconsSchemaAuto from "@static/assets/icons/schema/auto.svg?raw";
 import staticIconsSchemaDark from "@static/assets/icons/schema/dark.svg?raw";
 import staticIconsSchemaLight from "@static/assets/icons/schema/light.svg?raw";
-import type utils from "../..";
+
+const compileHTML = Handlebars.compile(HTMLTemplateSource);
+const compileJS = Handlebars.compile(JSTemplateSource);
+const compileCSS = Handlebars.compile(CSSTemplateSource);
+
+async function writeSystemAssets(outputDir: string, publicUrl: string, config: any) {
+  const assetsDir = path.join(outputDir, "assets");
+  const iconsDir = path.join(assetsDir, "icons");
+  const schemaDir = path.join(iconsDir, "schema");
+
+  await fs.mkdir(schemaDir, { recursive: true });
+
+  await Promise.all([
+    fs.writeFile(path.join(outputDir, "icon.png"), staticIcon),
+    fs.writeFile(path.join(assetsDir, "main.js"), compileJS({ publicUrl })),
+    fs.writeFile(path.join(assetsDir, "static.css"), compileCSS({ publicUrl })),
+    fs.writeFile(path.join(iconsDir, "caret.svg"), staticIconsCaret),
+    fs.writeFile(path.join(schemaDir, "auto.svg"), staticIconsSchemaAuto),
+    fs.writeFile(path.join(schemaDir, "light.svg"), staticIconsSchemaDark),
+    fs.writeFile(path.join(schemaDir, "dark.svg"), staticIconsSchemaLight),
+  ]);
+
+  if (config?.brand) await fs.writeFile(path.join(assetsDir, config.brand.name), config.brand.file);
+  if (config?.style) await fs.writeFile(path.join(assetsDir, "custom.css"), config.style);
+}
+
+function resolveRoutes(relativeHref: string, entryName: string) {
+  const clean =
+    "/" +
+    relativeHref
+      .replace(".html", "")
+      .replace(/index$/, "")
+      .replace(/\/+$/, "");
+  const html = "/" + relativeHref;
+  const contentFile = entryName.replace(".html", ".content");
+  const manifestPath = path
+    .join(path.dirname(relativeHref), contentFile)
+    .replace(/\\/g, "/")
+    .replace(/^\.\//, "");
+
+  return { clean: clean || "/", html, contentFile, manifestPath };
+}
 
 const toFS = async (
   directoryEntry: FSDirectoryEntry,
-  {
-    config,
-    outputDir,
-    tree,
-    publicUrl,
-    manifest = {},
-  }: {
-    config?: Awaited<ReturnType<typeof utils.customConfig.fromFSDirectory>>[1];
-    outputDir: string;
-    tree?: FSDirectoryEntry;
-    publicUrl: string;
-    manifest?: Record<string, string>;
-  }
+  { config, outputDir, tree, publicUrl, manifest = {} }: any
 ) => {
   await fs.mkdir(outputDir, { recursive: true });
 
-  if (!tree) {
-    await fs.writeFile(path.join(outputDir, "icon.png"), staticIcon);
-
-    const assetsDir = path.join(outputDir, "assets");
-    await fs.mkdir(assetsDir, { recursive: true });
-
-    const jsTemplate = Handlebars.compile(JSTemplate);
-    await fs.writeFile(path.join(assetsDir, "main.js"), jsTemplate({ publicUrl }));
-
-    const cssTemplate = Handlebars.compile(CSSTemplate);
-    await fs.writeFile(path.join(assetsDir, "static.css"), cssTemplate({ publicUrl }));
-
-    const iconsDir = path.join(assetsDir, "icons");
-    await fs.mkdir(iconsDir, { recursive: true });
-
-    await fs.writeFile(path.join(iconsDir, "caret.svg"), staticIconsCaret);
-
-    const iconsSchemaDir = path.join(assetsDir, "icons/schema");
-    await fs.mkdir(iconsSchemaDir, { recursive: true });
-
-    await fs.writeFile(path.join(iconsSchemaDir, "auto.svg"), staticIconsSchemaAuto);
-    await fs.writeFile(path.join(iconsSchemaDir, "light.svg"), staticIconsSchemaDark);
-    await fs.writeFile(path.join(iconsSchemaDir, "dark.svg"), staticIconsSchemaLight);
-
-    if (config?.brand) {
-      await fs.writeFile(path.join(assetsDir, config.brand.name), config.brand.file);
-    }
-    if (config?.style) {
-      await fs.writeFile(path.join(assetsDir, "custom.css"), config.style);
-    }
-  }
+  if (!tree) await writeSystemAssets(outputDir, publicUrl, config);
 
   for (const entry of directoryEntry.children) {
     if ("children" in entry) {
-      const nextOutputDir = path.join(outputDir, entry.slug);
       await toFS(entry, {
         config,
-        outputDir: nextOutputDir,
+        outputDir: path.join(outputDir, entry.slug),
         tree: tree || directoryEntry,
         publicUrl,
         manifest,
@@ -83,57 +82,44 @@ const toFS = async (
       continue;
     }
 
-    const htmlTemplate = Handlebars.compile(HTMLTemplate);
     const pageTree = tree || directoryEntry;
+    const routes = resolveRoutes(entry.href.replace(/^\//, ""), entry.name);
 
-    const relativeHref = entry.href.replace(/^\//, "");
-    const cleanRoute =
-      "/" +
-      relativeHref
-        .replace(".html", "")
-        .replace(/index$/, "")
-        .replace(/\/+$/, "");
-
-    const htmlRoute = "/" + relativeHref;
-    const contentFileName = entry.name.replace(".html", ".content");
-    const manifestContentPath = path
-      .join(path.dirname(relativeHref), contentFileName)
-      .replace(/\\/g, "/")
-      .replace(/^\.\//, "");
-
-    manifest[cleanRoute || "/"] = manifestContentPath;
-    manifest[htmlRoute] = manifestContentPath;
+    manifest[routes.clean] = routes.manifestPath;
+    manifest[routes.html] = routes.manifestPath;
 
     if (entry.name === "index.html") {
-      const dirPath = "/" + path.dirname(relativeHref).replace(/^\.$/, "");
-      manifest[dirPath === "//" ? "/" : dirPath] = manifestContentPath;
+      const dirPath = "/" + path.dirname(entry.href.replace(/^\//, "")).replace(/^\.$/, "");
+      manifest[dirPath === "//" ? "/" : dirPath] = routes.manifestPath;
     }
 
-    const currentPath = relativeHref;
+    const body = renderToString(
+      React.createElement(
+        StaticRouter,
+        {
+          location: path.normalize([publicUrl, routes.html].join("/")),
+          basename: publicUrl,
+        },
+        React.createElement(Page, {
+          path: routes.html,
+          sidebar: pageTree,
+          content: entry.content,
+        })
+      )
+    );
 
-    const htmlContent = htmlTemplate({
-      body: renderToString(
-        React.createElement(
-          StaticRouter,
-          {
-            location: path.normalize([publicUrl, currentPath].join("/")),
-            basename: publicUrl,
-          },
-          React.createElement(Page, {
-            path: currentPath,
-            sidebar: pageTree,
-            content: entry.content,
-          })
-        )
-      ),
+    const htmlOutput = compileHTML({
+      body,
       content: entry.content,
       data: JSON.stringify(pageTree),
       style: !!config?.style,
       publicUrl,
     });
 
-    await fs.writeFile(path.join(outputDir, contentFileName), entry.content);
-    await fs.writeFile(path.join(outputDir, entry.name), htmlContent);
+    await Promise.all([
+      fs.writeFile(path.join(outputDir, routes.contentFile), entry.content),
+      fs.writeFile(path.join(outputDir, entry.name), htmlOutput),
+    ]);
   }
 
   if (!tree) {
