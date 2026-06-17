@@ -7,34 +7,36 @@
 
 > **Tip:** Now with the new CLI tool, you can skip the browser-based workflow and significantly speed up the static site generation.
 
-**mdgen** is a static documentation generator that operates entirely within your browser (it is **serverless**).
-
-By utilizing the **Filesystem API**, mdgen reads a local folder containing your Markdown (`.md`) files and renders them as static **HTML** pages ready for online publication. The entire process happens client-side: **no installation or compilation is required**, and your files never leave your computer.
+**mdgen** turns a folder of Markdown (`.md`) files into a static **HTML** documentation site. It runs either **entirely in your browser** (serverless, via the Filesystem API — your files never leave your machine) or as a **CLI** for fast, scriptable builds.
 
 ## Table of Contents
 
-- [🔨 mdgen: A Markdown to HTML Generator](#-mdgen-a-markdown-to-html-generator)
-  - [Table of Contents](#table-of-contents)
-    - [Key Features](#key-features)
-  - [How to Use (Web Version)](#how-to-use-web-version)
-  - [How to Use (CLI Tool)](#how-to-use-cli-tool)
-    - [Quick Start (No Installation Required)](#quick-start-no-installation-required)
-    - [Generating Documentation](#generating-documentation)
-      - [Advanced Options](#advanced-options)
-    - [Serving the Files](#serving-the-files)
-  - [Configuration (`.mdgen`)](#configuration-mdgen)
-    - [Current Capabilities](#current-capabilities)
-    - [Planned Capabilities](#planned-capabilities)
-  - [Project Status \& Roadmap](#project-status--roadmap)
-    - [Backlog \& Future Features](#backlog--future-features)
+- [Key Features](#key-features)
+- [How to Use (Web Version)](#how-to-use-web-version)
+- [How to Use (CLI Tool)](#how-to-use-cli-tool)
+  - [Quick Start](#quick-start-no-installation-required)
+  - [Options](#options)
+  - [Serving the Files](#serving-the-files)
+- [Authoring](#authoring)
+  - [Frontmatter (order, label, hidden)](#frontmatter)
+  - [Folders & the sidebar](#folders--the-sidebar)
+- [Configuration (`.mdgen`)](#configuration-mdgen)
+  - [`config.json`](#configjson)
+  - [Multilingual sites (i18n)](#multilingual-sites-i18n)
+  - [Theming & custom styles](#theming--custom-styles)
+  - [React components (plugins)](#react-components-plugins)
+- [Project Status & Roadmap](#project-status--roadmap)
 
-### Key Features
+## Key Features
 
-- **Serverless & Secure**: No data leaves your device.
-- **Fuzzy Search**: Built-in Orama index generation for fast search.
-- **Auto-Refresh**: Automatic refresh on file change (limited browser support).
-- **Markdown Support**: Includes GFM (GitHub Flavored Markdown), Tables, and Checkboxes.
-- **Smart Fallback**: Automatically detects `index.md` or falls back to `readme.md`.
+- **Serverless & Secure**: in the browser, no data leaves your device.
+- **Frontmatter**: order, rename and hide entries with simple YAML-ish frontmatter.
+- **Multilingual (i18n)**: locale folders, per-language sidebar/search and a built-in language switcher.
+- **Fuzzy Search**: built-in [Orama](https://oramasearch.com/) index (toggleable).
+- **Theming**: Mantine-inspired design tokens, light/dark/system toggle, fully overridable from a single CSS file.
+- **React components**: drop interactive React components into the page, with the Markdown staying as a graceful fallback.
+- **Markdown Support**: GFM (tables, checkboxes, …).
+- **Smart Fallback**: detects `index.md`, or falls back to `readme.md`.
 
 ## How to Use (Web Version)
 
@@ -44,26 +46,17 @@ The easiest way to get started without installing anything.
 2. Select the **folder** (not a single file) containing your Markdown documentation.
 3. Download the generated static HTML.
 
+> The web tool covers single-site generation, frontmatter and custom styles. **Multilingual sites** and **React components** require the CLI (they need a build step).
+
 ## How to Use (CLI Tool)
 
-The mdgen CLI provides a fast, terminal-based workflow for generating and managing your documentation without needing a browser.
-
 ### Quick Start (No Installation Required)
-
-The easiest way to run the tool is via `npx`. This ensures you are always using the latest features without a permanent installation:
 
 ```bash
 npx @hund.studio/mdgen [options]
 ```
 
-### Generating Documentation
-
-The CLI tool generates the output folder in the **parent directory** of where the command is executed.
-
-1. Navigate to a folder containing your `.md` files.
-2. Run the command using the following options:
-
-#### Advanced Options
+### Options
 
 | Option               | Shorthand | Description                                      | Default     |
 | :------------------- | :-------- | :----------------------------------------------- | :---------- |
@@ -73,60 +66,174 @@ The CLI tool generates the output folder in the **parent directory** of where th
 | `--public-url <url>` | `-u`      | The base URL or path for the site (e.g., /docs/) | `/`         |
 | `--watch`            | `-w`      | Watch for changes in the source directory        | `false`     |
 
-**Examples:**
+**Example (in a package script):**
 
-- **Custom folder name:**
-
-```bash
-npx @hund.studio/mdgen --name my-docs
-```
-
-- **Specific output path:**
-
-```bash
-npx @hund.studio/mdgen --outDir ./dist --name site
-```
-
-- **In a package script:**
-
-```bash
-"generate:doc": "npx @hund.studio/mdgen -s ./docs -o ./dist-md -n docs"
+```jsonc
+"generate:doc": "npx @hund.studio/mdgen -s ./docs -o ./dist-md -n docs -u /docs/"
 ```
 
 ### Serving the Files
 
-To view the generated static files correctly, it is recommended to use an HTTP server rather than opening the HTML files directly.
+The output is a SPA-style static site; serve it over HTTP rather than opening the files directly:
 
-1. **Install http-server:** `npm i -g http-server`
-2. **Navigate to the generated folder:** `cd ../generated`
-3. **Start the server:** `npx http-server .`
-4. Open the provided URL in your browser.
+```bash
+npx http-server ./dist-md/docs
+```
+
+When deploying under a sub-path (e.g. `/docs/`), build with the matching `--public-url`.
+
+## Authoring
+
+### Frontmatter
+
+Any page can start with a frontmatter block. All fields are optional:
+
+```markdown
+---
+title: Getting started   # overrides the H1-derived title
+label: Quickstart         # sidebar label (defaults to title, then file name)
+order: 10                 # sidebar sort weight (ascending; unset sinks to the bottom)
+hidden: false             # hide from the sidebar (the page is still generated)
+---
+
+# Getting started
+```
+
+Sorting is by `order` first, then pages before folders, then alphabetical by label.
+
+### Folders & the sidebar
+
+- A folder **with** an `index.md` (or `readme.md`) becomes a **clickable** sidebar entry: clicking the label opens that page and expands the section, while the **caret** toggles the section without navigating. The folder's `label`/`order` are taken from the index page's frontmatter.
+- A folder **without** an index is a plain accordion; its label defaults to the prettified folder name (`getting-started` → "Getting Started").
 
 ## Configuration (`.mdgen`)
 
-You can customize the final build by creating a special folder named `.mdgen` in the root of your documentation project.
+Create a `.mdgen` folder at the root of your documentation source. It is never published — it only configures the build.
 
-### Current Capabilities
+```
+my-docs/
+├─ .mdgen/
+│  ├─ config.json        # site config (locales, search, …)
+│  ├─ style.css          # custom styles / token overrides
+│  └─ components/        # React components (see below)
+│     └─ index.tsx
+└─ index.md
+```
 
-- **Custom CSS:** Place a file named `style.css` inside `.mdgen/`. It will be automatically detected and added to the final build, allowing you to override the default styles.
+### `config.json`
 
-### Planned Capabilities
+```jsonc
+{
+  "locales": ["it-IT", "en-US"], // enables i18n (see below); omit for a single-language site
+  "defaultLocale": "it-IT",      // landing locale; defaults to the first entry
+  "search": true                 // set to false to disable the search index + UI
+}
+```
 
-Future implementations that will utilize the `.mdgen` folder include:
+### Multilingual sites (i18n)
 
-- **Custom Logo:** Upload a custom logo to replace the default one.
-- **Sidebar Customization:** Options to modify the navigation structure.
-- **Special Categories:** Custom behaviors for specific page groups.
+Declare your `locales` in `config.json` and put each language in a folder named after its locale, **sharing the same structure** (same file/folder names, translated content):
+
+```
+my-docs/
+├─ .mdgen/config.json     # { "locales": ["it-IT","en-US"], "defaultLocale": "it-IT" }
+├─ it-IT/
+│  ├─ index.md
+│  └─ guide/index.md
+└─ en-US/
+   ├─ index.md
+   └─ guide/index.md
+```
+
+What you get:
+
+- A **language switcher** in the sidebar showing each language's native name.
+- **Per-locale** sidebar, search index and routing (`/<locale>/…`).
+- A **root redirect** that picks the best match from the visitor's `navigator.language`, falling back to `defaultLocale`.
+- If a page is missing in another locale, the switcher **disables** that language for that page (no broken links).
+
+> Tip: keep file and folder **names identical** across locales (translate the _content_, not the filenames) so equivalent pages map to each other.
+
+### Theming & custom styles
+
+The look is driven by **design tokens** (`--mdgen-*`). To re-skin a site, drop a `.mdgen/style.css` — it is injected **after** the default stylesheet, so redefining a token wins:
+
+```css
+/* .mdgen/style.css */
+:root {
+  --mdgen-primary: #e64980;
+  --mdgen-radius: 12px;
+}
+[data-schema="dark"] {
+  --mdgen-color-body: #101113;
+}
+```
+
+Common tokens: `--mdgen-color-body`, `--mdgen-color-surface`, `--mdgen-color-text`, `--mdgen-color-dimmed`, `--mdgen-color-border`, `--mdgen-color-hover`, `--mdgen-primary`, `--mdgen-primary-light`, `--mdgen-radius`, `--mdgen-font-family`, …
+
+A built-in toggle cycles **light → dark → system**; the chosen scheme is applied before first paint (no flash) and native UI follows via `color-scheme`.
+
+### React components (plugins)
+
+Render interactive React components inside the page while keeping a valid Markdown fallback. Wrap a region of Markdown in HTML comments:
+
+```markdown
+<!-- ApiTester -->
+
+| Method | Description         |
+| :----- | :------------------ |
+| GET    | Get a resource      |
+| POST   | Create a resource   |
+
+<!-- !ApiTester -->
+```
+
+- Without JS (or on GitHub), the comments are invisible and the **table renders as the fallback**.
+- In the built site, the region is replaced by the React component registered as `ApiTester`, which receives the region body.
+
+Define your components under `.mdgen/components/` and export them from `index.tsx` (only what's exported there is registered; the rest of the folder is free to organise):
+
+```tsx
+// .mdgen/components/index.tsx
+export { ApiTester } from "./ApiTester";
+```
+
+```tsx
+// .mdgen/components/ApiTester.tsx
+import { useState } from "react";
+import { withTableContent, type TableContent } from "mdgen";
+
+// `withTableContent` parses the region's table into rows of objects.
+export const ApiTester = withTableContent(({ content }: { content: TableContent }) => {
+  const [selected, setSelected] = useState(0);
+  return (
+    <div>
+      {content.map((row, i) => (
+        <button key={i} onClick={() => setSelected(i)}>{row.Method}</button>
+      ))}
+      <p>{content[selected]?.Description}</p>
+    </div>
+  );
+});
+```
+
+Helpers exported from `mdgen`:
+
+- `withTableContent` — parses the region body (a GFM table) into a `TableContent` array and passes it as the `content` prop.
+- `withRawContent` — passes the raw region body as a `content` string.
+
+Components are compiled at build time and **server-rendered** (so they appear in the static HTML too) before hydrating in the browser. Requires the CLI.
 
 ## Project Status & Roadmap
 
-**Status:** Beta. The project is rapidly evolving. The completion of the tasks below will mark our first official stable release.
+**Status:** Beta, evolving quickly.
 
-### Backlog & Future Features
-
-- 🚧 Allow `.ts`/`.js` plugins from the `.mdgen` folder.
-- 🚧 Mobile version.
-- 🚧 Add Markdown YAML metadata support.
-  - 🚧 Enable page categories and tags for better/granular search
-- 🚧 Add sample `.mdgen` styles (ae. Fantasy DnD)
-- 🚧 Fill the examples
+- ✅ Markdown YAML frontmatter (order/label/hidden)
+- ✅ Multilingual (i18n) sites with language switcher
+- ✅ Sidebar ordering & folder index pages
+- ✅ Theming via design tokens + custom CSS
+- ✅ React components/plugins from `.mdgen/components`
+- 🚧 Custom logo / brand
+- 🚧 Mobile layout polish
+- 🚧 Page categories & tags for richer search
+- 🚧 Sample `.mdgen` themes
