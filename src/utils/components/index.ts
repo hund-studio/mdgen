@@ -6,27 +6,24 @@ import type { ComponentType } from "react";
 
 export type ComponentRegistry = Record<string, ComponentType<{ content: string }>>;
 
-const COMPONENT_EXT = /\.(tsx|ts|jsx|js)$/;
+const INDEX_CANDIDATES = ["index.tsx", "index.ts", "index.jsx", "index.js"];
 
 /** Directory of the running CLI bundle, where the shipped runtime helper lives. */
 const cliDir = path.dirname(fileURLToPath(import.meta.url));
 const runtimeHelper = path.join(cliDir, "runtime.mjs");
 
-const listComponentFiles = async (dir: string): Promise<string[]> => {
-  let entries: import("node:fs").Dirent[];
-  try {
-    entries = await fs.readdir(dir, { withFileTypes: true });
-  } catch {
-    return [];
+/** Locate the `.mdgen/components` entry barrel, if any. */
+const findComponentsEntry = async (dir: string): Promise<string | null> => {
+  for (const candidate of INDEX_CANDIDATES) {
+    const full = path.join(dir, candidate);
+    try {
+      await fs.access(full);
+      return full;
+    } catch {
+      /* try the next candidate */
+    }
   }
-
-  const files: string[] = [];
-  for (const entry of entries) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) files.push(...(await listComponentFiles(full)));
-    else if (COMPONENT_EXT.test(entry.name) && !/\.d\.ts$/.test(entry.name)) files.push(full);
-  }
-  return files;
+  return null;
 };
 
 /**
@@ -52,14 +49,21 @@ const reactGlobalsPlugin = (): esbuild.Plugin => ({
   },
 });
 
-const buildEntry = (files: string[]) => {
-  const imports = files.map((file, i) => `import * as c${i} from ${JSON.stringify(file)};`);
-  const merge = files.map((_, i) => `c${i}`).join(", ");
-  return `${imports.join("\n")}\nexport const registry = Object.assign({}, ${merge});`;
-};
+/**
+ * The registry is the set of named exports of `.mdgen/components/index.*`, so
+ * the rest of the folder (helpers, subcomponents, assets) can be organised
+ * freely without being auto-registered. A `<!-- Name -->` marker maps to the
+ * export `Name`. The `default` export is ignored.
+ */
+const buildEntry = (indexFile: string) =>
+  [
+    `import * as mod from ${JSON.stringify(indexFile)};`,
+    "const { default: _default, ...rest } = mod;",
+    "export const registry = rest;",
+  ].join("\n");
 
 /**
- * Compiles the doc's `.mdgen/components/**` into:
+ * Compiles the doc's `.mdgen/components` barrel into:
  *  - an SSR registry (imported into this Node process, sharing the CLI's React),
  *  - a browser `assets/components.js` bundle (React shimmed to page globals).
  *
@@ -70,10 +74,10 @@ export const bundleComponents = async (
   outputDir: string
 ): Promise<{ registry: ComponentRegistry; hasComponents: boolean }> => {
   const componentsDir = path.join(sourceDir, ".mdgen", "components");
-  const files = await listComponentFiles(componentsDir);
-  if (!files.length) return { registry: {}, hasComponents: false };
+  const indexFile = await findComponentsEntry(componentsDir);
+  if (!indexFile) return { registry: {}, hasComponents: false };
 
-  const entry = buildEntry(files);
+  const entry = buildEntry(indexFile);
   const shared = {
     stdin: { contents: entry, resolveDir: componentsDir, loader: "tsx" as const },
     bundle: true,
