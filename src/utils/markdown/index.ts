@@ -48,8 +48,11 @@ export const parseFrontmatter = (raw: string): { data: Frontmatter; body: string
   return { data: data as Frontmatter, body: raw.slice(match[0].length) };
 };
 
-/** Title derived from the first `# heading` line of a markdown body. */
+/**
+ * Title derived from the first `# heading` (h1) of a markdown body. Tolerant of
+ * blank lines left after a frontmatter block.
+ */
 export const extractTitle = (body: string): string | null => {
-  const [firstLine] = body.split("\n");
-  return firstLine?.startsWith("#") ? firstLine.replace(/^#\s*/, "").trim() : null;
+  const match = body.match(/^#\s+(.+?)\s*$/m);
+  return match ? match[1].trim() : null;
 };

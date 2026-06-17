@@ -15,6 +15,8 @@ type FSConfig = {
 /** Per-page runtime config injected into each generated HTML page. */
 type MdgenRuntime = {
   publicUrl: string;
+  /** Canonical root-relative href of this page (e.g. `/it-IT/guide/index.html`). */
+  page: string;
   locale: string | null;
   locales: string[];
   /** locale → root-relative `.html` href of the equivalent page, or null if missing. */

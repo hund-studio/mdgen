@@ -81,16 +81,18 @@ body,
   }
 
   nav li > a,
-  .dropdown-label {
+  .dropdown-label-text {
     align-items: center;
     border-radius: var(--mdgen-radius-sm);
     box-sizing: border-box;
     color: inherit;
+    cursor: pointer;
     display: flex;
     gap: var(--mdgen-spacing-xs);
     line-height: 1.4;
     min-height: 2rem;
     padding: 0.4rem 0.625rem;
+    text-decoration: none;
 
     @media (hover: hover) {
       &:hover {
@@ -99,10 +101,10 @@ body,
     }
   }
 
-  nav li > a.active {
+  nav li > a.active,
+  .dropdown-label-text.active {
     background: var(--mdgen-primary-light);
     color: var(--mdgen-primary);
-    font-weight: 600;
 
     @media (hover: hover) {
       &:hover {
@@ -111,20 +113,57 @@ body,
     }
   }
 
+  // Bold only when active. Folders without an index page never become active,
+  // so their (toggle-only) label stays at weight 400.
+  nav li > a.active,
+  .dropdown-label-text.active {
+    font-weight: 600;
+  }
+
   .dropdown {
     &-label {
-      cursor: pointer;
-      font-weight: 600;
-      justify-content: space-between;
+      align-items: center;
+      display: flex;
+      gap: 2px;
 
+      // Folder labels are not bold, even when active.
+      &-text {
+        flex: 1 1 auto;
+        font-weight: 400;
+        min-width: 0;
+      }
+
+      // Separate control: toggles the section without navigating.
       &-caret {
-        background-color: var(--mdgen-color-dimmed);
+        align-items: center;
+        background: transparent;
+        border: 0;
+        border-radius: var(--mdgen-radius-sm);
+        cursor: pointer;
+        display: flex;
         flex: 0 0 auto;
-        height: 18px;
-        mask-image: url("/assets/icons/caret.svg");
-        mask-repeat: no-repeat;
-        mask-size: contain;
-        width: 18px;
+        height: 28px;
+        justify-content: center;
+        padding: 0;
+        width: 28px;
+
+        @media (hover: hover) {
+          &:hover {
+            background: var(--mdgen-color-hover);
+          }
+        }
+
+        &::before {
+          background-color: var(--mdgen-color-dimmed);
+          content: "";
+          display: block;
+          height: 18px;
+          mask-image: url("/assets/icons/caret.svg");
+          mask-position: center;
+          mask-repeat: no-repeat;
+          mask-size: contain;
+          width: 18px;
+        }
       }
     }
 

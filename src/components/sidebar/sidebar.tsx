@@ -4,17 +4,25 @@ import { useLocalStorage } from "usehooks-ts";
 import Link from "../link/link";
 import Search from "../search/search";
 
+/** Strips leading/trailing slashes and decodes, so paths and hrefs compare cleanly. */
+const normalize = (value: string) => decodeURIComponent(value.replace(/^\/+|\/+$/g, ""));
+
+/**
+ * Fallback label for a folder without a frontmatter override: turn the folder
+ * name into Title Case (`getting-started` → "Getting Started").
+ */
+const prettify = (name: string) =>
+  name
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+const folderLabel = (tree: BrowserDirectoryEntry | FSDirectoryEntry) =>
+  tree.label || prettify(tree.name);
+
 const PageEntry: FC<{ tree: PageEntry; path: string }> = ({ tree, path }) => {
-  const normalizedPath = decodeURIComponent(path.replace(/\/$/, "").replace(/^\//, ""));
-  const treeHref = tree.href ? decodeURIComponent(tree.href) : null;
-
-  let activeClass = "";
-
-  if (treeHref) {
-    if (normalizedPath === treeHref) {
-      activeClass = "active";
-    }
-  }
+  const activeClass = tree.href && normalize(path) === normalize(tree.href) ? "active" : "";
 
   return (
     <li>
@@ -37,42 +45,76 @@ const DirectoryEntry: FC<{ tree: BrowserDirectoryEntry | FSDirectoryEntry; path:
   tree,
   path,
 }) => {
-  const normalizedPath = decodeURIComponent(path.replace(/\/$/, "").replace(/^\//, ""));
-  const isActiveOrContainsActive = normalizedPath.startsWith(tree.path);
+  const current = normalize(path);
+  const treePath = normalize(tree.path);
+  const containsActive = current === treePath || current.startsWith(`${treePath}/`);
+  const isIndexActive = !!tree.indexHref && current === normalize(tree.indexHref);
 
-  const [open, setOpen] = useState(isActiveOrContainsActive);
+  const [open, setOpen] = useState(containsActive);
+
+  const toggle = () => setOpen((prev) => !prev);
+
+  // The caret is its own control: it toggles the accordion without ever
+  // triggering navigation (mirrors the Next.js docs sidebar).
+  const caret = (
+    <motion.button
+      type="button"
+      aria-label="Apri/chiudi sezione"
+      className="dropdown-label-caret"
+      initial={false}
+      animate={{ rotate: open ? 0 : 180 }}
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggle();
+      }}
+    />
+  );
 
   return (
     <li className="dropdown">
-      <div className="dropdown-label" onClick={() => setOpen((prev) => !prev)}>
-        {tree.label || tree.name}
-        <motion.div
-          initial={!isActiveOrContainsActive ? { rotate: 180 } : { rotate: 0 }}
-          animate={open ? { rotate: 0 } : { rotate: 180 }}
-          className="dropdown-label-caret"
-        />
+      <div className="dropdown-label">
+        {tree.indexHref ? (
+          // With an index/readme: the label navigates to it and opens the section.
+          <Link
+            className={`dropdown-label-text${isIndexActive ? " active" : ""}`}
+            href={tree.indexHref}
+            onClick={() => setOpen(true)}
+          >
+            {folderLabel(tree)}
+          </Link>
+        ) : (
+          // Plain accordion: the whole label just toggles.
+          <span className="dropdown-label-text" onClick={toggle}>
+            {folderLabel(tree)}
+          </span>
+        )}
+        {caret}
       </div>
       <motion.div
         className="dropdown-content"
-        initial={!isActiveOrContainsActive ? { height: 0 } : { height: "auto" }}
-        animate={open ? { height: "auto" } : { height: 0 }}
+        initial={false}
+        animate={{ height: open ? "auto" : 0 }}
       >
         <ul>
-          <Entries path={path} tree={tree} />
+          <Entries path={path} tree={tree} skipHref={tree.indexHref} />
         </ul>
       </motion.div>
     </li>
   );
 };
 
-const Entries: FC<{ tree: BrowserDirectoryEntry | FSDirectoryEntry; path: string }> = ({
-  tree,
-  path,
-}) => {
+const Entries: FC<{
+  tree: BrowserDirectoryEntry | FSDirectoryEntry;
+  path: string;
+  /** Href of the folder's own index page, rendered as the folder link instead of a child. */
+  skipHref?: string;
+}> = ({ tree, path, skipHref }) => {
   return tree.children.map((entry, index) => {
     if ("hidden" in entry && entry.hidden) return null;
     if ("children" in entry) return <DirectoryEntry path={path} tree={entry} key={index} />;
     if (!("href" in entry)) return <AssetEntry path={path} tree={entry} key={index} />;
+    if (skipHref && entry.href === skipHref) return null;
     return <PageEntry path={path} tree={entry} key={index} />;
   });
 };

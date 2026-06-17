@@ -33,6 +33,9 @@ const App: FC = () => {
   const [db, setDb] = useState<SearchDB>();
   const [manifest, setManifest] = useState<Record<string, string>>({});
   const [content, setContent] = useState(initialContent);
+  // Canonical href of the current page; seeded from the injected runtime so it
+  // matches the server-rendered markup, then kept in sync on navigation.
+  const [pagePath, setPagePath] = useState(runtime.page || "/");
   const location = useLocation();
 
   useEffect(() => {
@@ -65,6 +68,10 @@ const App: FC = () => {
       const contentPath = manifest[cleanPath];
       if (!contentPath) return;
 
+      // Derive the canonical page href from the manifest entry (keeps the
+      // locale prefix), so relative links resolve from the right directory.
+      setPagePath("/" + contentPath.replace(/\.content$/, ".html"));
+
       try {
         // `contentPath` already carries the locale prefix when i18n is enabled.
         const response = await fetch(`${cleanBase}/${contentPath}`);
@@ -85,6 +92,7 @@ const App: FC = () => {
       db={db}
       sidebar={tree}
       content={content}
+      path={pagePath}
       locale={runtime.locale}
       locales={runtime.locales}
       translations={runtime.translations}

@@ -5,11 +5,6 @@ import { extractTitle, parseFrontmatter } from "../../markdown";
 
 const slugOptions = { lower: true };
 
-const isIndexFile = (name: string) => {
-  const lower = name.toLowerCase();
-  return lower === "index.md" || lower === "readme.md";
-};
-
 const fromDirectoryHandle = async (
   directoryHandle: FileSystemDirectoryHandle,
   { parentHref = "", db }: { parentHref?: string; db?: SearchDB } = {}
@@ -60,7 +55,8 @@ const fromDirectoryHandle = async (
             }
           }
 
-          if (isIndexFile(handle.name)) {
+          if (entry.name === "index.html") {
+            tree.indexHref = entry.href;
             if (data.label !== undefined) tree.label = data.label;
             if (data.order !== undefined) tree.order = data.order;
             if (data.hidden !== undefined) tree.hidden = data.hidden;

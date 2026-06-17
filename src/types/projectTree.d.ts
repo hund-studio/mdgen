@@ -5,6 +5,8 @@ type BrowserDirectoryEntry = {
   label?: string;
   order?: number;
   hidden?: boolean;
+  /** href of the folder's own index/readme page, if present. */
+  indexHref?: string;
   children: BrowserTree[];
 };
 
@@ -15,6 +17,8 @@ type FSDirectoryEntry = {
   label?: string;
   order?: number;
   hidden?: boolean;
+  /** href of the folder's own index/readme page, if present. */
+  indexHref?: string;
   children: FSTree[];
 };
 

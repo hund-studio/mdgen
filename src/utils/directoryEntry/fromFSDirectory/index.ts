@@ -9,11 +9,6 @@ const SLUG_OPTS = { lower: true };
 
 const joinPaths = (...parts: string[]) => parts.join("/").replace(/\/+/g, "/");
 
-const isIndexFile = (name: string) => {
-  const lower = name.toLowerCase();
-  return lower === "index.md" || lower === "readme.md";
-};
-
 const fromFSDirectory = async (
   absolutePath: string,
   {
@@ -74,9 +69,11 @@ const fromFSDirectory = async (
         hidden: data.hidden,
       };
 
-      // The folder's own index/readme drives the folder node's sidebar label
-      // and ordering among its siblings.
-      if (isIndexFile(itemName)) {
+      // The folder's own index/readme drives the folder node's sidebar label,
+      // ordering and click target. `index.html` is the canonical name after the
+      // readme→index rename, so it uniquely identifies the folder index.
+      if (entry.name === "index.html") {
+        tree.indexHref = entry.href;
         if (data.label !== undefined) tree.label = data.label;
         if (data.order !== undefined) tree.order = data.order;
         if (data.hidden !== undefined) tree.hidden = data.hidden;

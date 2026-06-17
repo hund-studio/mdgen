@@ -70,7 +70,7 @@ export const writeAssets = async (
 
 const buildRuntime = (entryHref: string, publicUrl: string, i18n?: I18nContext): MdgenRuntime => {
   if (!i18n) {
-    return { publicUrl, locale: null, locales: [], translations: {} };
+    return { publicUrl, page: entryHref, locale: null, locales: [], translations: {} };
   }
 
   // Strip the leading `/<locale>/` to get the locale-relative html key.
@@ -86,7 +86,7 @@ const buildRuntime = (entryHref: string, publicUrl: string, i18n?: I18nContext):
       : null;
   }
 
-  return { publicUrl, locale: i18n.locale, locales: i18n.locales, translations };
+  return { publicUrl, page: entryHref, locale: i18n.locale, locales: i18n.locales, translations };
 };
 
 const toFS = async (
