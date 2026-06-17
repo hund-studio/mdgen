@@ -108,8 +108,8 @@ const SearchInput: FC<{
 const Search: FC<{ db?: SearchDB }> = ({ db }) => {
   const [open, setOpen] = useState(false);
 
-  if (!db) return;
-
+  // The trigger is always rendered (server-side included) so the sidebar layout
+  // stays stable; the overlay only opens once the index (db) has loaded.
   return (
     <div className={"page-search-trigger"}>
       <input
@@ -118,10 +118,7 @@ const Search: FC<{ db?: SearchDB }> = ({ db }) => {
         className="text-input"
         onFocus={() => setOpen(true)}
       />
-      {(() => {
-        if (!open) return;
-        return <SearchInput db={db} onClose={() => setOpen(false)} />;
-      })()}
+      {open && db ? <SearchInput db={db} onClose={() => setOpen(false)} /> : null}
     </div>
   );
 };

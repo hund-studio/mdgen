@@ -178,6 +178,11 @@ const toFS = async (
             path: currentPath,
             sidebar: pageTree,
             content: entry.content,
+            // Pre-render the language switcher server-side (translations are
+            // known at build time) to avoid layout shift on hydration.
+            locale: runtime.locale,
+            locales: runtime.locales,
+            translations: runtime.translations,
           })
         )
       ),

@@ -135,14 +135,11 @@ const LanguageSwitcher: FC<{
   locales?: string[];
   translations?: Record<string, string | null>;
 }> = ({ locale, locales, translations }) => {
-  // Render client-side only: the equivalent-page hrefs aren't known at SSR time,
-  // so deferring avoids a hydration mismatch.
-  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setMounted(true), []);
-
+  // Translations are known at build time, so the switcher is server-rendered;
+  // the click-outside listener only matters on the client when the menu is open.
   useEffect(() => {
     if (!open) return;
     const onPointerDown = (event: MouseEvent) => {
@@ -152,7 +149,7 @@ const LanguageSwitcher: FC<{
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, [open]);
 
-  if (!mounted || !locale || !locales || locales.length < 2) return null;
+  if (!locale || !locales || locales.length < 2) return null;
 
   return (
     <div className="page-aside-language" ref={ref}>
