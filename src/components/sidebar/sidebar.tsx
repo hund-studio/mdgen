@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { useEffect, useState, type FC } from "react";
+import { useEffect, useRef, useState, type FC } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import Link from "../link/link";
 import Search from "../search/search";
@@ -77,6 +77,17 @@ const Entries: FC<{ tree: BrowserDirectoryEntry | FSDirectoryEntry; path: string
   });
 };
 
+/** Full language name in its own language (e.g. `it-IT` → "Italiano (Italia)"). */
+const displayName = (code: string) => {
+  try {
+    const name = new Intl.DisplayNames([code], { type: "language" }).of(code);
+    if (name) return name.charAt(0).toUpperCase() + name.slice(1);
+  } catch {
+    /* Intl.DisplayNames unsupported or invalid tag → fall back to the code. */
+  }
+  return code;
+};
+
 const LanguageSwitcher: FC<{
   locale?: string | null;
   locales?: string[];
@@ -85,30 +96,61 @@ const LanguageSwitcher: FC<{
   // Render client-side only: the equivalent-page hrefs aren't known at SSR time,
   // so deferring avoids a hydration mismatch.
   const [mounted, setMounted] = useState(false);
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => setMounted(true), []);
 
-  if (!mounted || !locales || locales.length < 2) return null;
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    return () => document.removeEventListener("mousedown", onPointerDown);
+  }, [open]);
+
+  if (!mounted || !locale || !locales || locales.length < 2) return null;
 
   return (
-    <nav className="page-aside-languages">
-      <ul>
-        {locales.map((code) => {
-          const href = translations?.[code] ?? null;
-          const isCurrent = code === locale;
+    <div className="page-aside-language" ref={ref}>
+      {open && (
+        <ul className="page-aside-language-menu">
+          {locales.map((code) => {
+            const href = translations?.[code] ?? null;
+            const isCurrent = code === locale;
+            const disabled = !href && !isCurrent;
 
-          return (
-            <li key={code}>
-              {href && !isCurrent ? (
-                // Hard navigation: reloads per-locale manifest/search + runtime.
-                <a href={href}>{code}</a>
-              ) : (
-                <span className={isCurrent ? "active" : "disabled"}>{code}</span>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+            return (
+              <li key={code}>
+                {/* Hard navigation: reloads the per-locale manifest/search + runtime. */}
+                <a
+                  href={href ?? undefined}
+                  aria-current={isCurrent || undefined}
+                  className={[isCurrent ? "active" : "", disabled ? "disabled" : ""]
+                    .filter(Boolean)
+                    .join(" ")}
+                  onClick={(event) => {
+                    if (disabled || isCurrent) event.preventDefault();
+                  }}
+                >
+                  {displayName(code)}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      <button
+        type="button"
+        className="page-aside-language-trigger"
+        aria-expanded={open}
+        onClick={() => setOpen((prev) => !prev)}
+      >
+        <span>{locale}</span>
+        <motion.div className="page-aside-language-caret" animate={{ rotate: open ? 0 : 180 }} />
+      </button>
+    </div>
   );
 };
 
@@ -132,7 +174,6 @@ const Sidebar: FC<{
     <aside className="page-aside">
       <div className="page-aside-inner">
         <Search db={db} />
-        <LanguageSwitcher locale={locale} locales={locales} translations={translations} />
         <nav>
           <ul>
             <Entries path={path} tree={tree} />
@@ -140,6 +181,7 @@ const Sidebar: FC<{
         </nav>
       </div>
       <div className="page-aside-inner page-aside-options">
+        <LanguageSwitcher locale={locale} locales={locales} translations={translations} />
         <button
           className={`page-aside-options-button schema-${schema}`}
           onClick={() =>
