@@ -13,6 +13,7 @@ import staticIconsCaret from "@static/assets/icons/caret.svg?raw";
 import staticIconsSchemaAuto from "@static/assets/icons/schema/auto.svg?raw";
 import staticIconsSchemaDark from "@static/assets/icons/schema/dark.svg?raw";
 import staticIconsSchemaLight from "@static/assets/icons/schema/light.svg?raw";
+import type { ComponentRegistry } from "../../../components/content/content";
 import type utils from "../..";
 
 type Config = Awaited<ReturnType<typeof utils.customConfig.fromFSDirectory>>[1];
@@ -72,10 +73,19 @@ const buildRuntime = (
   entryHref: string,
   publicUrl: string,
   search: boolean,
+  components: boolean,
   i18n?: I18nContext
 ): MdgenRuntime => {
   if (!i18n) {
-    return { publicUrl, page: entryHref, search, locale: null, locales: [], translations: {} };
+    return {
+      publicUrl,
+      page: entryHref,
+      search,
+      components,
+      locale: null,
+      locales: [],
+      translations: {},
+    };
   }
 
   // Strip the leading `/<locale>/` to get the locale-relative html key.
@@ -95,6 +105,7 @@ const buildRuntime = (
     publicUrl,
     page: entryHref,
     search,
+    components,
     locale: i18n.locale,
     locales: i18n.locales,
     translations,
@@ -111,6 +122,7 @@ const toFS = async (
     manifest = {},
     emitAssets,
     i18n,
+    components,
   }: {
     config?: Config;
     outputDir: string;
@@ -120,6 +132,8 @@ const toFS = async (
     /** Write shared assets on the root call (defaults to true). */
     emitAssets?: boolean;
     i18n?: I18nContext;
+    /** Compiled React components for `<!-- Name -->` regions (SSR). */
+    components?: ComponentRegistry;
   }
 ) => {
   await fs.mkdir(outputDir, { recursive: true });
@@ -140,6 +154,7 @@ const toFS = async (
         manifest,
         emitAssets,
         i18n,
+        components,
       });
       continue;
     }
@@ -176,7 +191,14 @@ const toFS = async (
     }
 
     const currentPath = relativeHref;
-    const runtime = buildRuntime(entry.href, publicUrl, config?.search !== false, i18n);
+    const hasComponents = !!components && Object.keys(components).length > 0;
+    const runtime = buildRuntime(
+      entry.href,
+      publicUrl,
+      config?.search !== false,
+      hasComponents,
+      i18n
+    );
 
     const htmlContent = htmlTemplate({
       body: renderToString(
@@ -196,6 +218,7 @@ const toFS = async (
             locale: runtime.locale,
             locales: runtime.locales,
             translations: runtime.translations,
+            components,
           })
         )
       ),

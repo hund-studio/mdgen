@@ -21,6 +21,8 @@ type MdgenRuntime = {
   page: string;
   /** Whether the search index is available for this site. */
   search: boolean;
+  /** Whether a compiled React components bundle exists for this site. */
+  components: boolean;
   locale: string | null;
   locales: string[];
   /** locale → root-relative `.html` href of the equivalent page, or null if missing. */

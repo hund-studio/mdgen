@@ -1,4 +1,5 @@
 import { build } from "vite";
+import * as esbuild from "esbuild";
 import { ChildProcess, spawn } from "child_process";
 import * as cli from "../src/utils/cli";
 import chokidar from "chokidar";
@@ -37,6 +38,14 @@ const buildEssentials = async () => {
     logLevel: "silent",
   });
   console.log(`${cli.print.sl.blue}${cli.print.sl.green} [build] CLI build complete.`);
+  await esbuild.build({
+    entryPoints: [path.resolve(process.cwd(), "src/runtime/index.ts")],
+    outfile: path.resolve(process.cwd(), "dist-cli/runtime.mjs"),
+    bundle: true,
+    format: "esm",
+    platform: "neutral",
+    external: ["react", "react-dom"],
+  });
 };
 
 async function dev() {

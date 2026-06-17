@@ -1,4 +1,5 @@
 import { build } from "vite";
+import * as esbuild from "esbuild";
 import path from "path";
 import ts from "typescript";
 
@@ -52,6 +53,18 @@ async function runBuilds() {
         configFile: path.resolve(process.cwd(), configFile),
       });
     }
+
+    // Runtime helper shipped alongside the CLI; aliased as "mdgen" when
+    // bundling the doc's components (react stays external/shared).
+    console.log("🔨 Build runtime helper (dist-cli/runtime.mjs)...");
+    await esbuild.build({
+      entryPoints: [path.resolve(process.cwd(), "src/runtime/index.ts")],
+      outfile: path.resolve(process.cwd(), "dist-cli/runtime.mjs"),
+      bundle: true,
+      format: "esm",
+      platform: "neutral",
+      external: ["react", "react-dom"],
+    });
 
     console.log("✅ Tutte le build completate!");
   } catch (error) {

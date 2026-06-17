@@ -4,6 +4,7 @@ import chokidar from "chokidar";
 import fs from "fs/promises";
 import path from "path";
 import utils from "./utils";
+import { bundleComponents } from "./utils/components";
 
 const { print } = utils.cli;
 
@@ -111,6 +112,13 @@ const generate = async (
     const locales = config.locales ?? [];
     const searchEnabled = config.search !== false;
 
+    // Compile the doc's React components once (shared across locales); the
+    // browser bundle is emitted to the public root's assets.
+    const { registry: components, hasComponents } = await bundleComponents(sourceDir, outputDir);
+    if (hasComponents && isVerbose) {
+      logVerbose(`${print.sl.gray} components:\t${Object.keys(components).join(", ")}`);
+    }
+
     if (locales.length) {
       const defaultLocale = config.defaultLocale ?? locales[0];
 
@@ -153,6 +161,7 @@ const generate = async (
           publicUrl,
           emitAssets: false,
           i18n: { locale, locales: presentLocales, routeSets },
+          components,
         });
 
         if (db) {
@@ -180,6 +189,7 @@ const generate = async (
         outputDir,
         config,
         publicUrl,
+        components,
       });
 
       if (db) {

@@ -1,8 +1,6 @@
 import { type ComponentProps, type FC } from "react";
-import Link from "../../components/link/link";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import Sidebar from "../../components/sidebar/sidebar";
+import Content, { type ComponentRegistry } from "../../components/content/content";
 import { pathContext } from "../../context/path";
 
 const Page: FC<{
@@ -14,7 +12,8 @@ const Page: FC<{
   locale?: string | null;
   locales?: string[];
   translations?: Record<string, string | null>;
-}> = ({ db, sidebar, content, path, search, locale, locales, translations }) => {
+  components?: ComponentRegistry;
+}> = ({ db, sidebar, content, path, search, locale, locales, translations, components }) => {
   path = path || window.location.pathname;
 
   return (
@@ -31,9 +30,7 @@ const Page: FC<{
         />
         <main className="page-content" id="md">
           <div className="page-content-inner">
-            <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ a: Link }}>
-              {content}
-            </ReactMarkdown>
+            <Content content={content} components={components} />
           </div>
         </main>
       </div>

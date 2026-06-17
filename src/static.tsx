@@ -1,10 +1,18 @@
 import "./styles/page.scss";
+import * as React from "react";
+import * as JsxRuntime from "react/jsx-runtime";
 import { BrowserRouter, useLocation } from "react-router-dom";
 import { create } from "./utils/db";
 import { createRoot } from "react-dom/client";
 import { load } from "@orama/orama";
 import { StrictMode, useEffect, useState, type FC } from "react";
 import Page from "./components/page/page";
+import type { ComponentRegistry } from "./components/content/content";
+
+// Expose the page's React to the separately-bundled components chunk, so doc
+// components share this exact React instance (hooks work, no duplicate copy).
+(globalThis as unknown as { __mdgenReact: typeof React }).__mdgenReact = React;
+(globalThis as unknown as { __mdgenJsx: typeof JsxRuntime }).__mdgenJsx = JsxRuntime;
 
 const publicUrl = "{{{publicUrl}}}".replace(/\/$/, "") || "/";
 const cleanBase = publicUrl === "/" ? "" : publicUrl;
@@ -36,7 +44,7 @@ const runtime: MdgenRuntime = (() => {
 // Per-locale assets live under `/<locale>/`; without i18n everything is at the root.
 const localeBase = runtime.locale ? `${cleanBase}/${runtime.locale}` : cleanBase;
 
-const App: FC = () => {
+const App: FC<{ components: ComponentRegistry }> = ({ components }) => {
   const [db, setDb] = useState<SearchDB>();
   const [manifest, setManifest] = useState<Record<string, string>>({});
   const [content, setContent] = useState(initialContent);
@@ -97,17 +105,37 @@ const App: FC = () => {
       sidebar={tree}
       content={content}
       path={pagePath}
+      search={runtime.search}
       locale={runtime.locale}
       locales={runtime.locales}
       translations={runtime.translations}
+      components={components}
     />
   );
 };
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <BrowserRouter basename={publicUrl}>
-      <App />
-    </BrowserRouter>
-  </StrictMode>
-);
+const mount = async () => {
+  let components: ComponentRegistry = {};
+
+  // Load the doc's compiled components (they register on a global) before the
+  // first render, so component regions render in one pass.
+  if (runtime.components) {
+    try {
+      await import(/* @vite-ignore */ `${cleanBase}/assets/components.js`);
+      components =
+        (globalThis as unknown as { __mdgenComponents?: ComponentRegistry }).__mdgenComponents ?? {};
+    } catch (e) {
+      console.error("Errore caricamento componenti:", e);
+    }
+  }
+
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <BrowserRouter basename={publicUrl}>
+        <App components={components} />
+      </BrowserRouter>
+    </StrictMode>
+  );
+};
+
+mount();
