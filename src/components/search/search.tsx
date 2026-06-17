@@ -54,7 +54,7 @@ const SearchInput: FC<{
               {results.hits.map((entry) => (
                 <Link
                   onClick={onClose}
-                  href={`/${entry.document.href}`}
+                  href={entry.document.href}
                   className={"page-search-result"}
                   key={entry.id}
                 >
@@ -93,7 +93,7 @@ const SearchInput: FC<{
                     })()}
                   </div>
                   <div className={"page-search-result-href"}>
-                    /{entry.document.href.replace("/index.html", "")}
+                    {entry.document.href.replace("/index.html", "") || "/"}
                   </div>
                 </Link>
               ))}

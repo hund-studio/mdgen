@@ -16,7 +16,14 @@ let tree = dataElement ? JSON.parse(dataElement.textContent.trim()) : {};
 let initialContent = contentElement ? contentElement.textContent.trim() : "";
 
 const runtime: MdgenRuntime = (() => {
-  const fallback: MdgenRuntime = { publicUrl, locale: null, locales: [], translations: {} };
+  const fallback: MdgenRuntime = {
+    publicUrl,
+    page: "/",
+    search: true,
+    locale: null,
+    locales: [],
+    translations: {},
+  };
   const raw = runtimeElement?.textContent?.trim();
   if (!raw) return fallback;
   try {
@@ -41,19 +48,16 @@ const App: FC = () => {
   useEffect(() => {
     const initApp = async () => {
       try {
-        const [searchRes, manifestRes] = await Promise.all([
-          fetch(`${localeBase}/search.json`),
-          fetch(`${localeBase}/manifest.json`),
-        ]);
-
-        const rawData = await searchRes.json();
-        const manifestData = await manifestRes.json();
-
-        const db = create();
-        load(db, rawData);
-
-        setDb(db);
+        const manifestData = await (await fetch(`${localeBase}/manifest.json`)).json();
         setManifest(manifestData);
+
+        // Only load the search index when search is enabled for this site.
+        if (runtime.search) {
+          const rawData = await (await fetch(`${localeBase}/search.json`)).json();
+          const db = create();
+          load(db, rawData);
+          setDb(db);
+        }
       } catch (e) {
         console.error("Errore inizializzazione:", e);
       }

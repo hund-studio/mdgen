@@ -68,9 +68,14 @@ export const writeAssets = async (
   }
 };
 
-const buildRuntime = (entryHref: string, publicUrl: string, i18n?: I18nContext): MdgenRuntime => {
+const buildRuntime = (
+  entryHref: string,
+  publicUrl: string,
+  search: boolean,
+  i18n?: I18nContext
+): MdgenRuntime => {
   if (!i18n) {
-    return { publicUrl, page: entryHref, locale: null, locales: [], translations: {} };
+    return { publicUrl, page: entryHref, search, locale: null, locales: [], translations: {} };
   }
 
   // Strip the leading `/<locale>/` to get the locale-relative html key.
@@ -86,7 +91,14 @@ const buildRuntime = (entryHref: string, publicUrl: string, i18n?: I18nContext):
       : null;
   }
 
-  return { publicUrl, page: entryHref, locale: i18n.locale, locales: i18n.locales, translations };
+  return {
+    publicUrl,
+    page: entryHref,
+    search,
+    locale: i18n.locale,
+    locales: i18n.locales,
+    translations,
+  };
 };
 
 const toFS = async (
@@ -164,7 +176,7 @@ const toFS = async (
     }
 
     const currentPath = relativeHref;
-    const runtime = buildRuntime(entry.href, publicUrl, i18n);
+    const runtime = buildRuntime(entry.href, publicUrl, config?.search !== false, i18n);
 
     const htmlContent = htmlTemplate({
       body: renderToString(
@@ -178,8 +190,9 @@ const toFS = async (
             path: currentPath,
             sidebar: pageTree,
             content: entry.content,
-            // Pre-render the language switcher server-side (translations are
+            // Pre-render search trigger + language switcher server-side (both are
             // known at build time) to avoid layout shift on hydration.
+            search: runtime.search,
             locale: runtime.locale,
             locales: runtime.locales,
             translations: runtime.translations,

@@ -197,10 +197,11 @@ const Sidebar: FC<{
   db?: SearchDB;
   tree: BrowserDirectoryEntry | FSDirectoryEntry;
   path: string;
+  search?: boolean;
   locale?: string | null;
   locales?: string[];
   translations?: Record<string, string | null>;
-}> = ({ db, tree, path, locale, locales, translations }) => {
+}> = ({ db, tree, path, search = true, locale, locales, translations }) => {
   const [schema, setSchema] = useLocalStorage("schema", "auto");
 
   if (!tree.children.length) return;
@@ -212,7 +213,7 @@ const Sidebar: FC<{
   return (
     <aside className="page-aside">
       <div className="page-aside-inner">
-        <Search db={db} />
+        {search ? <Search db={db} /> : null}
         <nav>
           <ul>
             <Entries path={path} tree={tree} />

@@ -109,12 +109,17 @@ const generate = async (
     console.log(`${print.sl.yellow}${print.sl.orange}`, "[gen] Generating HTML...");
 
     const locales = config.locales ?? [];
+    const searchEnabled = config.search !== false;
 
     if (locales.length) {
       const defaultLocale = config.defaultLocale ?? locales[0];
 
       // 1. Build a tree per locale (hrefs scoped under `/<locale>/`), each with its own index.
-      const built: { locale: string; db: Awaited<ReturnType<typeof utils.db.create>>; tree: FSDirectoryEntry }[] = [];
+      const built: {
+        locale: string;
+        db?: Awaited<ReturnType<typeof utils.db.create>>;
+        tree: FSDirectoryEntry;
+      }[] = [];
       for (const locale of locales) {
         const localeSource = path.join(sourceDir, locale);
         try {
@@ -124,7 +129,7 @@ const generate = async (
           continue;
         }
 
-        const db = await utils.db.create();
+        const db = searchEnabled ? await utils.db.create() : undefined;
         const tree = await utils.directoryEntry.fromFSDirectory(localeSource, {
           db,
           publicUrl: joinUrl(locale),
@@ -150,8 +155,13 @@ const generate = async (
           i18n: { locale, locales: presentLocales, routeSets },
         });
 
-        const searchIndex = await save(db);
-        await fs.writeFile(path.join(outputDir, locale, "search.json"), JSON.stringify(searchIndex));
+        if (db) {
+          const searchIndex = await save(db);
+          await fs.writeFile(
+            path.join(outputDir, locale, "search.json"),
+            JSON.stringify(searchIndex)
+          );
+        }
       }
 
       // 4. Root landing page that redirects to the best-matching locale.
@@ -163,7 +173,7 @@ const generate = async (
         renderRootRedirect(publicUrl, presentLocales, redirectLocale)
       );
     } else {
-      const db = await utils.db.create();
+      const db = searchEnabled ? await utils.db.create() : undefined;
       const tree = await utils.directoryEntry.fromFSDirectory(sourceDir, { db });
 
       await utils.directoryEntry.toFS(tree, {
@@ -172,8 +182,10 @@ const generate = async (
         publicUrl,
       });
 
-      const searchIndex = await save(db);
-      await fs.writeFile(path.join(outputDir, "search.json"), JSON.stringify(searchIndex));
+      if (db) {
+        const searchIndex = await save(db);
+        await fs.writeFile(path.join(outputDir, "search.json"), JSON.stringify(searchIndex));
+      }
     }
 
     console.log(

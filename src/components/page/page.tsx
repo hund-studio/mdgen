@@ -10,10 +10,11 @@ const Page: FC<{
   sidebar: ComponentProps<typeof Sidebar>["tree"];
   content: string;
   path?: string;
+  search?: boolean;
   locale?: string | null;
   locales?: string[];
   translations?: Record<string, string | null>;
-}> = ({ db, sidebar, content, path, locale, locales, translations }) => {
+}> = ({ db, sidebar, content, path, search, locale, locales, translations }) => {
   path = path || window.location.pathname;
 
   return (
@@ -23,6 +24,7 @@ const Page: FC<{
           path={path}
           db={db}
           tree={sidebar}
+          search={search}
           locale={locale}
           locales={locales}
           translations={translations}

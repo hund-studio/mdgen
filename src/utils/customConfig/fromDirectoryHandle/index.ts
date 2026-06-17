@@ -4,6 +4,7 @@ const fromDirectoryHandle = async (directoryHandle: FileSystemDirectoryHandle) =
     style: null,
     locales: [],
     defaultLocale: null,
+    search: true,
   };
 
   for await (const handle of directoryHandle.values()) {
@@ -23,6 +24,9 @@ const fromDirectoryHandle = async (directoryHandle: FileSystemDirectoryHandle) =
             }
             if (typeof parsed.defaultLocale === "string") {
               config.defaultLocale = parsed.defaultLocale;
+            }
+            if (typeof parsed.search === "boolean") {
+              config.search = parsed.search;
             }
           } catch (error) {
             console.error("Invalid .mdgen/config.json:", error);

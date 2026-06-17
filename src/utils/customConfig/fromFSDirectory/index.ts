@@ -9,6 +9,7 @@ const fromFSDirectory = async (basePath: string): Promise<[boolean, FSConfig]> =
     style: null,
     locales: [],
     defaultLocale: null,
+    search: true,
   };
 
   try {
@@ -34,6 +35,9 @@ const fromFSDirectory = async (basePath: string): Promise<[boolean, FSConfig]> =
                 }
                 if (typeof parsed.defaultLocale === "string") {
                   config.defaultLocale = parsed.defaultLocale;
+                }
+                if (typeof parsed.search === "boolean") {
+                  config.search = parsed.search;
                 }
               } catch (error) {
                 console.error(utils.cli.print.sl.red, "Invalid .mdgen/config.json:", error);
