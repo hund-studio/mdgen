@@ -12,7 +12,7 @@ const chmod = (path: string): Plugin => ({
 
 const r = (p: string) => resolve(__dirname, p);
 const outDir = "dist-cli";
-const entry = r("dist-cli/cli.mjs");
+const entry = r("dist-cli/cli.js");
 
 export default defineConfig({
   resolve: { alias: { "@static": r("src/static") } },
