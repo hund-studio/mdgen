@@ -57,8 +57,8 @@ export const writeAssets = async (
   const iconsSchemaDir = path.join(assetsDir, "icons/schema");
   await fs.mkdir(iconsSchemaDir, { recursive: true });
   await fs.writeFile(path.join(iconsSchemaDir, "auto.svg"), staticIconsSchemaAuto);
-  await fs.writeFile(path.join(iconsSchemaDir, "light.svg"), staticIconsSchemaDark);
-  await fs.writeFile(path.join(iconsSchemaDir, "dark.svg"), staticIconsSchemaLight);
+  await fs.writeFile(path.join(iconsSchemaDir, "light.svg"), staticIconsSchemaLight);
+  await fs.writeFile(path.join(iconsSchemaDir, "dark.svg"), staticIconsSchemaDark);
 
   if (config?.brand) {
     await fs.writeFile(path.join(assetsDir, config.brand.name), config.brand.file);
