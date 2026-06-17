@@ -47,7 +47,7 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--color-lightgray);
+    background: var(--mdgen-color-border);
     border-radius: 100px;
     height: 10px;
     border: 0.5rem solid transparent;
@@ -61,7 +61,7 @@
 
 .card {
   width: 250px;
-  background-color: var(--color-lightgray);
+  background-color: var(--mdgen-color-border);
   border-radius: 0.35em;
   padding: 0.5rem;
   display: flex;
@@ -79,7 +79,7 @@
   }
 
   &-caption {
-    background-color: var(--color-white);
+    background-color: var(--mdgen-color-body);
     padding: 0.25rem 0.5rem;
     border-radius: 0.35em;
   }

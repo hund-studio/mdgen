@@ -1,0 +1,62 @@
+/*
+ * mdgen — custom styles
+ *
+ * This file (.mdgen/style.css) is injected AFTER the default stylesheet, so
+ * anything here wins by the cascade. In most cases you only need to redefine a
+ * few design tokens — no need to fight selectors.
+ *
+ * Uncomment and tweak. Everything below mirrors the built-in defaults.
+ */
+
+/* Shape & typography (theme-independent) */
+/*
+:root {
+  --mdgen-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mdgen-font-family-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --mdgen-font-size: 16px;
+  --mdgen-line-height: 1.55;
+
+  --mdgen-radius-sm: 0.25rem;
+  --mdgen-radius: 0.5rem;
+
+  --mdgen-sidebar-width: 300px;
+  --mdgen-content-max-width: 1024px;
+}
+*/
+
+/* Light theme colors */
+/*
+:root,
+[data-schema="light"] {
+  --mdgen-color-body: #ffffff;
+  --mdgen-color-surface: #f8f9fa;
+  --mdgen-color-text: #212529;
+  --mdgen-color-dimmed: #868e96;
+  --mdgen-color-border: #dee2e6;
+  --mdgen-color-hover: #f1f3f5;
+
+  --mdgen-primary: #228be6;
+  --mdgen-primary-hover: #1c7ed6;
+  --mdgen-primary-light: #e7f5ff;
+}
+*/
+
+/* Dark theme colors (applied for the OS preference and the explicit toggle) */
+/*
+@media (prefers-color-scheme: dark) {
+  :root {
+    --mdgen-color-body: #1a1b1e;
+    --mdgen-primary: #4dabf7;
+  }
+}
+[data-schema="dark"] {
+  --mdgen-color-body: #1a1b1e;
+  --mdgen-primary: #4dabf7;
+}
+*/
+
+/* Example: switch the accent to Mantine "pink" */
+/*
+:root { --mdgen-primary: #e64980; --mdgen-primary-hover: #d6336c; --mdgen-primary-light: #fff0f6; }
+[data-schema="dark"] { --mdgen-primary: #f783ac; --mdgen-primary-light: rgba(230, 73, 128, 0.18); }
+*/
