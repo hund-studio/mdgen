@@ -81,4 +81,13 @@ async function dev() {
     });
 }
 
+// Termina il CLI watcher figlio quando questo processo riceve un segnale
+// (es. turbo che ferma il task su Ctrl+C), così non resta orfano.
+function shutdown(signal: NodeJS.Signals) {
+  if (cliProcess?.pid) treeKill(cliProcess.pid, "SIGKILL");
+  process.exit(signal === "SIGINT" ? 130 : 143);
+}
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+
 dev().catch(console.error);
