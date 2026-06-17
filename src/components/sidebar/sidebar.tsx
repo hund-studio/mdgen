@@ -77,11 +77,49 @@ const Entries: FC<{ tree: BrowserDirectoryEntry | FSDirectoryEntry; path: string
   });
 };
 
+const LanguageSwitcher: FC<{
+  locale?: string | null;
+  locales?: string[];
+  translations?: Record<string, string | null>;
+}> = ({ locale, locales, translations }) => {
+  // Render client-side only: the equivalent-page hrefs aren't known at SSR time,
+  // so deferring avoids a hydration mismatch.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted || !locales || locales.length < 2) return null;
+
+  return (
+    <nav className="page-aside-languages">
+      <ul>
+        {locales.map((code) => {
+          const href = translations?.[code] ?? null;
+          const isCurrent = code === locale;
+
+          return (
+            <li key={code}>
+              {href && !isCurrent ? (
+                // Hard navigation: reloads per-locale manifest/search + runtime.
+                <a href={href}>{code}</a>
+              ) : (
+                <span className={isCurrent ? "active" : "disabled"}>{code}</span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+};
+
 const Sidebar: FC<{
   db?: SearchDB;
   tree: BrowserDirectoryEntry | FSDirectoryEntry;
   path: string;
-}> = ({ db, tree, path }) => {
+  locale?: string | null;
+  locales?: string[];
+  translations?: Record<string, string | null>;
+}> = ({ db, tree, path, locale, locales, translations }) => {
   const [schema, setSchema] = useLocalStorage("schema", "auto");
 
   if (!tree.children.length) return;
@@ -94,6 +132,7 @@ const Sidebar: FC<{
     <aside className="page-aside">
       <div className="page-aside-inner">
         <Search db={db} />
+        <LanguageSwitcher locale={locale} locales={locales} translations={translations} />
         <nav>
           <ul>
             <Entries path={path} tree={tree} />

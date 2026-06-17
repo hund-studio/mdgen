@@ -9,12 +9,22 @@ const Page: FC<{
   sidebar: ComponentProps<typeof Sidebar>["tree"];
   content: string;
   path?: string;
-}> = ({ db, sidebar, content, path }) => {
+  locale?: string | null;
+  locales?: string[];
+  translations?: Record<string, string | null>;
+}> = ({ db, sidebar, content, path, locale, locales, translations }) => {
   path = path || window.location.pathname;
 
   return (
     <div id="page">
-      <Sidebar path={path} db={db} tree={sidebar} />
+      <Sidebar
+        path={path}
+        db={db}
+        tree={sidebar}
+        locale={locale}
+        locales={locales}
+        translations={translations}
+      />
       <main className="page-content" id="md">
         <div className="page-content-inner">
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ a: Link }}>

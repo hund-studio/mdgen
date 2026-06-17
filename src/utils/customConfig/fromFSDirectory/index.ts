@@ -7,6 +7,8 @@ const fromFSDirectory = async (basePath: string): Promise<[boolean, FSConfig]> =
   const config: FSConfig = {
     brand: null,
     style: null,
+    locales: [],
+    defaultLocale: null,
   };
 
   try {
@@ -24,6 +26,20 @@ const fromFSDirectory = async (basePath: string): Promise<[boolean, FSConfig]> =
           const filePath = path.join(configPath, file.name);
 
           switch (file.name) {
+            case "config.json": {
+              try {
+                const parsed = JSON.parse(await fs.readFile(filePath, "utf-8"));
+                if (Array.isArray(parsed.locales)) {
+                  config.locales = parsed.locales.filter((l: unknown) => typeof l === "string");
+                }
+                if (typeof parsed.defaultLocale === "string") {
+                  config.defaultLocale = parsed.defaultLocale;
+                }
+              } catch (error) {
+                console.error(utils.cli.print.sl.red, "Invalid .mdgen/config.json:", error);
+              }
+              break;
+            }
             case "style.css": {
               config.style = await fs.readFile(filePath, "utf-8");
               break;

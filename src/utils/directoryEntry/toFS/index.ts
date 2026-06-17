@@ -15,6 +15,80 @@ import staticIconsSchemaDark from "@static/assets/icons/schema/dark.svg?raw";
 import staticIconsSchemaLight from "@static/assets/icons/schema/light.svg?raw";
 import type utils from "../..";
 
+type Config = Awaited<ReturnType<typeof utils.customConfig.fromFSDirectory>>[1];
+
+type I18nContext = {
+  /** Locale this subtree belongs to (e.g. `it-IT`). */
+  locale: string;
+  /** All available locales, in declared order. */
+  locales: string[];
+  /** locale → set of root-relative `.html` keys present in that locale. */
+  routeSets: Record<string, Set<string>>;
+};
+
+const joinPaths = (...parts: string[]) =>
+  "/" + parts.join("/").replace(/^\/+/, "").replace(/\/+/g, "/");
+
+/**
+ * Writes the shared static assets (runtime, styles, icons, brand) into a
+ * directory. Called once per site at the public root, even when the content is
+ * split across locale subfolders.
+ */
+export const writeAssets = async (
+  outputDir: string,
+  { config, publicUrl }: { config?: Config; publicUrl: string }
+) => {
+  await fs.mkdir(outputDir, { recursive: true });
+  await fs.writeFile(path.join(outputDir, "icon.png"), staticIcon);
+
+  const assetsDir = path.join(outputDir, "assets");
+  await fs.mkdir(assetsDir, { recursive: true });
+
+  const jsTemplate = Handlebars.compile(JSTemplate);
+  await fs.writeFile(path.join(assetsDir, "main.js"), jsTemplate({ publicUrl }));
+
+  const cssTemplate = Handlebars.compile(CSSTemplate);
+  await fs.writeFile(path.join(assetsDir, "static.css"), cssTemplate({ publicUrl }));
+
+  const iconsDir = path.join(assetsDir, "icons");
+  await fs.mkdir(iconsDir, { recursive: true });
+  await fs.writeFile(path.join(iconsDir, "caret.svg"), staticIconsCaret);
+
+  const iconsSchemaDir = path.join(assetsDir, "icons/schema");
+  await fs.mkdir(iconsSchemaDir, { recursive: true });
+  await fs.writeFile(path.join(iconsSchemaDir, "auto.svg"), staticIconsSchemaAuto);
+  await fs.writeFile(path.join(iconsSchemaDir, "light.svg"), staticIconsSchemaDark);
+  await fs.writeFile(path.join(iconsSchemaDir, "dark.svg"), staticIconsSchemaLight);
+
+  if (config?.brand) {
+    await fs.writeFile(path.join(assetsDir, config.brand.name), config.brand.file);
+  }
+  if (config?.style) {
+    await fs.writeFile(path.join(assetsDir, "custom.css"), config.style);
+  }
+};
+
+const buildRuntime = (entryHref: string, publicUrl: string, i18n?: I18nContext): MdgenRuntime => {
+  if (!i18n) {
+    return { publicUrl, locale: null, locales: [], translations: {} };
+  }
+
+  // Strip the leading `/<locale>/` to get the locale-relative html key.
+  const prefix = `/${i18n.locale}/`;
+  const relKey = entryHref.startsWith(prefix)
+    ? entryHref.slice(prefix.length)
+    : entryHref.replace(/^\//, "");
+
+  const translations: Record<string, string | null> = {};
+  for (const locale of i18n.locales) {
+    translations[locale] = i18n.routeSets[locale]?.has(relKey)
+      ? joinPaths(publicUrl, locale, relKey)
+      : null;
+  }
+
+  return { publicUrl, locale: i18n.locale, locales: i18n.locales, translations };
+};
+
 const toFS = async (
   directoryEntry: FSDirectoryEntry,
   {
@@ -23,46 +97,24 @@ const toFS = async (
     tree,
     publicUrl,
     manifest = {},
+    emitAssets,
+    i18n,
   }: {
-    config?: Awaited<ReturnType<typeof utils.customConfig.fromFSDirectory>>[1];
+    config?: Config;
     outputDir: string;
     tree?: FSDirectoryEntry;
     publicUrl: string;
     manifest?: Record<string, string>;
+    /** Write shared assets on the root call (defaults to true). */
+    emitAssets?: boolean;
+    i18n?: I18nContext;
   }
 ) => {
   await fs.mkdir(outputDir, { recursive: true });
 
-  if (!tree) {
-    await fs.writeFile(path.join(outputDir, "icon.png"), staticIcon);
-
-    const assetsDir = path.join(outputDir, "assets");
-    await fs.mkdir(assetsDir, { recursive: true });
-
-    const jsTemplate = Handlebars.compile(JSTemplate);
-    await fs.writeFile(path.join(assetsDir, "main.js"), jsTemplate({ publicUrl }));
-
-    const cssTemplate = Handlebars.compile(CSSTemplate);
-    await fs.writeFile(path.join(assetsDir, "static.css"), cssTemplate({ publicUrl }));
-
-    const iconsDir = path.join(assetsDir, "icons");
-    await fs.mkdir(iconsDir, { recursive: true });
-
-    await fs.writeFile(path.join(iconsDir, "caret.svg"), staticIconsCaret);
-
-    const iconsSchemaDir = path.join(assetsDir, "icons/schema");
-    await fs.mkdir(iconsSchemaDir, { recursive: true });
-
-    await fs.writeFile(path.join(iconsSchemaDir, "auto.svg"), staticIconsSchemaAuto);
-    await fs.writeFile(path.join(iconsSchemaDir, "light.svg"), staticIconsSchemaDark);
-    await fs.writeFile(path.join(iconsSchemaDir, "dark.svg"), staticIconsSchemaLight);
-
-    if (config?.brand) {
-      await fs.writeFile(path.join(assetsDir, config.brand.name), config.brand.file);
-    }
-    if (config?.style) {
-      await fs.writeFile(path.join(assetsDir, "custom.css"), config.style);
-    }
+  const isRoot = !tree;
+  if (isRoot && (emitAssets ?? true)) {
+    await writeAssets(outputDir, { config, publicUrl });
   }
 
   for (const entry of directoryEntry.children) {
@@ -74,6 +126,8 @@ const toFS = async (
         tree: tree || directoryEntry,
         publicUrl,
         manifest,
+        emitAssets,
+        i18n,
       });
       continue;
     }
@@ -110,6 +164,7 @@ const toFS = async (
     }
 
     const currentPath = relativeHref;
+    const runtime = buildRuntime(entry.href, publicUrl, i18n);
 
     const htmlContent = htmlTemplate({
       body: renderToString(
@@ -128,6 +183,7 @@ const toFS = async (
       ),
       content: entry.content,
       data: JSON.stringify(pageTree),
+      runtime: JSON.stringify(runtime),
       style: !!config?.style,
       publicUrl,
     });
@@ -136,7 +192,7 @@ const toFS = async (
     await fs.writeFile(path.join(outputDir, entry.name), htmlContent);
   }
 
-  if (!tree) {
+  if (isRoot) {
     await fs.writeFile(path.join(outputDir, "manifest.json"), JSON.stringify(manifest, null, 2));
   }
 };

@@ -7,11 +7,27 @@ import { StrictMode, useEffect, useState, type FC } from "react";
 import Page from "./components/page/page";
 
 const publicUrl = "{{{publicUrl}}}".replace(/\/$/, "") || "/";
+const cleanBase = publicUrl === "/" ? "" : publicUrl;
 const dataElement = document.getElementById("data");
 const contentElement = document.getElementById("content");
+const runtimeElement = document.getElementById("runtime");
 
 let tree = dataElement ? JSON.parse(dataElement.textContent.trim()) : {};
 let initialContent = contentElement ? contentElement.textContent.trim() : "";
+
+const runtime: MdgenRuntime = (() => {
+  const fallback: MdgenRuntime = { publicUrl, locale: null, locales: [], translations: {} };
+  const raw = runtimeElement?.textContent?.trim();
+  if (!raw) return fallback;
+  try {
+    return { ...fallback, ...JSON.parse(raw) };
+  } catch {
+    return fallback;
+  }
+})();
+
+// Per-locale assets live under `/<locale>/`; without i18n everything is at the root.
+const localeBase = runtime.locale ? `${cleanBase}/${runtime.locale}` : cleanBase;
 
 const App: FC = () => {
   const [db, setDb] = useState<SearchDB>();
@@ -23,8 +39,8 @@ const App: FC = () => {
     const initApp = async () => {
       try {
         const [searchRes, manifestRes] = await Promise.all([
-          fetch(`${publicUrl}/search.json`),
-          fetch(`${publicUrl}/manifest.json`),
+          fetch(`${localeBase}/search.json`),
+          fetch(`${localeBase}/manifest.json`),
         ]);
 
         const rawData = await searchRes.json();
@@ -50,7 +66,8 @@ const App: FC = () => {
       if (!contentPath) return;
 
       try {
-        const response = await fetch(`${publicUrl}/${contentPath}`);
+        // `contentPath` already carries the locale prefix when i18n is enabled.
+        const response = await fetch(`${cleanBase}/${contentPath}`);
         const data = await response.text();
         setContent(data);
       } catch (e) {
@@ -63,7 +80,16 @@ const App: FC = () => {
     }
   }, [location.pathname, manifest]);
 
-  return <Page db={db} sidebar={tree} content={content} />;
+  return (
+    <Page
+      db={db}
+      sidebar={tree}
+      content={content}
+      locale={runtime.locale}
+      locales={runtime.locales}
+      translations={runtime.translations}
+    />
+  );
 };
 
 createRoot(document.getElementById("root")!).render(

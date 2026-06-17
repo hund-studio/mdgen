@@ -7,6 +7,63 @@ import utils from "./utils";
 
 const { print } = utils.cli;
 
+const joinUrl = (...parts: string[]) =>
+  "/" + parts.join("/").replace(/^\/+/, "").replace(/\/+/g, "/");
+
+/** Collects the locale-relative `.html` keys (e.g. `guide/index.html`) of a tree. */
+const collectRouteSet = (tree: FSDirectoryEntry, locale: string): Set<string> => {
+  const prefix = `/${locale}/`;
+  const set = new Set<string>();
+
+  const walk = (node: FSDirectoryEntry) => {
+    for (const child of node.children) {
+      if ("children" in child) {
+        walk(child);
+      } else if ("href" in child) {
+        const key = child.href.startsWith(prefix)
+          ? child.href.slice(prefix.length)
+          : child.href.replace(/^\//, "");
+        set.add(key);
+      }
+    }
+  };
+
+  walk(tree);
+  return set;
+};
+
+/** Static landing page at the site root that redirects to the best-matching locale. */
+const renderRootRedirect = (publicUrl: string, locales: string[], defaultLocale: string) => {
+  const targets = Object.fromEntries(locales.map((l) => [l, joinUrl(publicUrl, l) + "/"]));
+  const fallback = joinUrl(publicUrl, defaultLocale) + "/";
+
+  return `<!DOCTYPE html>
+<html lang="${defaultLocale}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=${fallback}" />
+    <script>
+      (function () {
+        var targets = ${JSON.stringify(targets)};
+        var fallback = ${JSON.stringify(fallback)};
+        var langs = navigator.languages || [navigator.language || ""];
+        for (var i = 0; i < langs.length; i++) {
+          var tag = langs[i];
+          if (targets[tag]) { location.replace(targets[tag]); return; }
+          var base = tag.split("-")[0].toLowerCase();
+          for (var code in targets) {
+            if (code.split("-")[0].toLowerCase() === base) { location.replace(targets[code]); return; }
+          }
+        }
+        location.replace(fallback);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
+`;
+};
+
 const generate = async (
   options: OptionValues,
   { verbose }: { verbose: string } = { verbose: "all" }
@@ -27,7 +84,6 @@ const generate = async (
     console.log(print.separator);
   }
 
-  const db = await utils.db.create();
   const sourceDir = path.resolve(options.source);
   const outputDir = path.resolve(options.outDir, options.name);
 
@@ -50,19 +106,75 @@ const generate = async (
 
     if (isVerbose) console.log(print.separator);
 
-    // const tree = await utils.directoryEntry.fromFSDirectory(sourceDir, { db, publicUrl });
-    const tree = await utils.directoryEntry.fromFSDirectory(sourceDir, { db });
-
     console.log(`${print.sl.yellow}${print.sl.orange}`, "[gen] Generating HTML...");
 
-    await utils.directoryEntry.toFS(tree, {
-      outputDir,
-      config,
-      publicUrl,
-    });
+    const locales = config.locales ?? [];
 
-    const searchIndex = await save(db);
-    await fs.writeFile(path.join(outputDir, "search.json"), JSON.stringify(searchIndex));
+    if (locales.length) {
+      const defaultLocale = config.defaultLocale ?? locales[0];
+
+      // 1. Build a tree per locale (hrefs scoped under `/<locale>/`), each with its own index.
+      const built: { locale: string; db: Awaited<ReturnType<typeof utils.db.create>>; tree: FSDirectoryEntry }[] = [];
+      for (const locale of locales) {
+        const localeSource = path.join(sourceDir, locale);
+        try {
+          await fs.access(localeSource);
+        } catch {
+          console.warn(`${print.sl.yellow}${print.sl.red}`, `[gen] Missing locale folder: ${locale}`);
+          continue;
+        }
+
+        const db = await utils.db.create();
+        const tree = await utils.directoryEntry.fromFSDirectory(localeSource, {
+          db,
+          publicUrl: joinUrl(locale),
+        });
+        built.push({ locale, db, tree });
+      }
+
+      const presentLocales = built.map((b) => b.locale);
+      const routeSets: Record<string, Set<string>> = Object.fromEntries(
+        built.map(({ locale, tree }) => [locale, collectRouteSet(tree, locale)])
+      );
+
+      // 2. Shared assets at the public root (once for all locales).
+      await utils.directoryEntry.writeAssets(outputDir, { config, publicUrl });
+
+      // 3. Emit each locale into its own subfolder + per-locale search index.
+      for (const { locale, db, tree } of built) {
+        await utils.directoryEntry.toFS(tree, {
+          outputDir: path.join(outputDir, locale),
+          config,
+          publicUrl,
+          emitAssets: false,
+          i18n: { locale, locales: presentLocales, routeSets },
+        });
+
+        const searchIndex = await save(db);
+        await fs.writeFile(path.join(outputDir, locale, "search.json"), JSON.stringify(searchIndex));
+      }
+
+      // 4. Root landing page that redirects to the best-matching locale.
+      const redirectLocale = presentLocales.includes(defaultLocale)
+        ? defaultLocale
+        : presentLocales[0];
+      await fs.writeFile(
+        path.join(outputDir, "index.html"),
+        renderRootRedirect(publicUrl, presentLocales, redirectLocale)
+      );
+    } else {
+      const db = await utils.db.create();
+      const tree = await utils.directoryEntry.fromFSDirectory(sourceDir, { db });
+
+      await utils.directoryEntry.toFS(tree, {
+        outputDir,
+        config,
+        publicUrl,
+      });
+
+      const searchIndex = await save(db);
+      await fs.writeFile(path.join(outputDir, "search.json"), JSON.stringify(searchIndex));
+    }
 
     console.log(
       `${print.sl.yellow}${print.sl.green}`,
