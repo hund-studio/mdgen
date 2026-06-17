@@ -4,7 +4,8 @@
   left: 0;
   height: 100%;
   width: 100%;
-  background: #2f4f4fa8;
+  background: var(--mdgen-overlay);
+  backdrop-filter: blur(2px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -61,15 +62,15 @@
 
 .card {
   width: 250px;
-  background-color: var(--mdgen-color-border);
-  border-radius: 0.35em;
+  background-color: var(--mdgen-color-surface);
+  border-radius: var(--mdgen-radius);
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
   flex-grow: 0;
   flex-shrink: 0;
   gap: 0.5rem;
-  border: 1px solid #101b1b;
+  border: 1px solid var(--mdgen-color-border);
 
   scroll-snap-align: center;
 

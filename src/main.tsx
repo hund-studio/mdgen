@@ -1,15 +1,17 @@
 import "./styles/page.scss";
 import { createRoot } from "react-dom/client";
-import { save } from "@orama/orama";
 import { saveAs } from "file-saver";
-import { StrictMode } from "react";
+import { lazy, StrictMode, Suspense } from "react";
 import { tools } from "./styles/modules";
 import { useEffect, useRef, useState } from "react";
-import Carousel from "./components/carousel/carousel";
-import JSZip from "jszip";
-import PreviewModal from "./components/previewModal/previewModal";
 import PreviewProvider from "./context/preview";
-import utils from "./utils";
+
+// Heavy, interaction-only chunks: keep them out of the landing bundle.
+// Carousel + PreviewModal pull in react-markdown, remark-gfm, motion and the
+// search highlighter; the directory pipeline (orama, jszip, utils) is imported
+// on demand inside the handlers.
+const Carousel = lazy(() => import("./components/carousel/carousel"));
+const PreviewModal = lazy(() => import("./components/previewModal/previewModal"));
 
 function App() {
   // FS
@@ -48,6 +50,8 @@ function App() {
     if (!root) return;
 
     (async () => {
+      const { default: utils } = await import("./utils");
+
       const config = await utils.customConfig.fromDirectoryHandle(root);
       setConfig(config);
 
@@ -60,6 +64,12 @@ function App() {
   };
 
   const generateDirectoryZIP = async (tree: BrowserDirectoryEntry) => {
+    const [{ default: JSZip }, { save }, { default: utils }] = await Promise.all([
+      import("jszip"),
+      import("@orama/orama"),
+      import("./utils"),
+    ]);
+
     const zip = new JSZip();
     const root = await utils.directoryEntry.toZIP(tree, { parentDirectory: zip, config });
     if (!root) return;
@@ -147,30 +157,24 @@ function App() {
           - 0.0.0-beta
         </div>
       </div>
-      {(() => {
-        if (!instructions) return;
-
-        return <Carousel onClose={() => setInstructions(false)} />;
-      })()}
-      {(() => {
-        if (!preview) return;
-        if (!tree) return;
-
-        return (
+      {instructions ? (
+        <Suspense fallback={null}>
+          <Carousel onClose={() => setInstructions(false)} />
+        </Suspense>
+      ) : null}
+      {preview && tree ? (
+        <Suspense fallback={null}>
           <PreviewProvider tree={tree} db={db}>
             <PreviewModal
               onClose={() => setPreview(false)}
               loadRootDirectory={loadRootDirectory}
               downloadGenerated={downloadGenerated}
             >
-              {(() => {
-                if (!config?.style) return;
-                return <style>{config.style}</style>;
-              })()}
+              {config?.style ? <style>{config.style}</style> : null}
             </PreviewModal>
           </PreviewProvider>
-        );
-      })()}
+        </Suspense>
+      ) : null}
     </>
   );
 }
