@@ -1,0 +1,19 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "dev": {
+      "persistent": true,
+      "cache": false,
+      "with": ["@hund.studio/mdgen#dev:static", "@hund.studio/mdgen#dev:preview"]
+    },
+    "dev:static": {
+      "persistent": true,
+      "cache": false
+    },
+    "dev:preview": {
+      "persistent": true,
+      "cache": false
+    }
+  }
+}
