@@ -2,6 +2,9 @@ type BrowserDirectoryEntry = {
   name: string;
   slug: string;
   path: string;
+  label?: string;
+  order?: number;
+  hidden?: boolean;
   children: BrowserTree[];
 };
 
@@ -9,6 +12,9 @@ type FSDirectoryEntry = {
   name: string;
   slug: string;
   path: string;
+  label?: string;
+  order?: number;
+  hidden?: boolean;
   children: FSTree[];
 };
 
@@ -30,6 +36,9 @@ type PageEntry = {
   href: string;
   content: string;
   title: string | null;
+  label?: string;
+  order?: number;
+  hidden?: boolean;
 };
 
 type BrowserTree = BrowserDirectoryEntry | PageEntry | BrowserAssetEntry;

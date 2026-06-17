@@ -19,7 +19,7 @@ const PageEntry: FC<{ tree: PageEntry; path: string }> = ({ tree, path }) => {
   return (
     <li>
       <Link className={activeClass} href={tree.href}>
-        {tree.title || tree.name}
+        {tree.label || tree.title || tree.name}
       </Link>
     </li>
   );
@@ -45,7 +45,7 @@ const DirectoryEntry: FC<{ tree: BrowserDirectoryEntry | FSDirectoryEntry; path:
   return (
     <li className="dropdown">
       <div className="dropdown-label" onClick={() => setOpen((prev) => !prev)}>
-        {tree.name}
+        {tree.label || tree.name}
         <motion.div
           initial={!isActiveOrContainsActive ? { rotate: 180 } : { rotate: 0 }}
           animate={open ? { rotate: 0 } : { rotate: 180 }}
@@ -70,6 +70,7 @@ const Entries: FC<{ tree: BrowserDirectoryEntry | FSDirectoryEntry; path: string
   path,
 }) => {
   return tree.children.map((entry, index) => {
+    if ("hidden" in entry && entry.hidden) return null;
     if ("children" in entry) return <DirectoryEntry path={path} tree={entry} key={index} />;
     if (!("href" in entry)) return <AssetEntry path={path} tree={entry} key={index} />;
     return <PageEntry path={path} tree={entry} key={index} />;

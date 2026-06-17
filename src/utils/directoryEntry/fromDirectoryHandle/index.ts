@@ -1,7 +1,14 @@
 import { insert } from "@orama/orama";
 import slugify from "slugify";
+import sortChildren from "../sortChildren";
+import { extractTitle, parseFrontmatter } from "../../markdown";
 
 const slugOptions = { lower: true };
+
+const isIndexFile = (name: string) => {
+  const lower = name.toLowerCase();
+  return lower === "index.md" || lower === "readme.md";
+};
 
 const fromDirectoryHandle = async (
   directoryHandle: FileSystemDirectoryHandle,
@@ -15,7 +22,7 @@ const fromDirectoryHandle = async (
     return false;
   })();
 
-  const tree: BrowserTree = {
+  const tree: BrowserDirectoryEntry = {
     name: directoryHandle.name,
     slug: slugify(directoryHandle.name, slugOptions),
     path: parentHref,
@@ -28,24 +35,21 @@ const fromDirectoryHandle = async (
       case "file":
         const file = await handle.getFile();
         if (slugName.endsWith(".md")) {
-          // @todo repeated
-          const textContent = await file.text();
+          const raw = await file.text();
+          const { data, body } = parseFrontmatter(raw);
 
           let href = slugName.replace(/\.[^/.]+$/, ".html");
           if (parentHref) href = [parentHref, href].join("/");
 
-          let title: string | null = null;
-          const [firstLine] = textContent.split("\n");
-          if (firstLine?.startsWith("#")) {
-            title = firstLine.replace(/^#\s*/, "").trim();
-          }
-
           const entry: PageEntry = {
-            content: textContent,
+            content: body,
             href,
             name: slugName.replace(/\.[^/.]+$/, ".html"),
             slug: slugName.replace(/\.[^/.]+$/, ".html"),
-            title,
+            title: data.title ?? extractTitle(body),
+            label: data.label,
+            order: data.order,
+            hidden: data.hidden,
           };
 
           if (!hasIndex) {
@@ -56,14 +60,19 @@ const fromDirectoryHandle = async (
             }
           }
 
+          if (isIndexFile(handle.name)) {
+            if (data.label !== undefined) tree.label = data.label;
+            if (data.order !== undefined) tree.order = data.order;
+            if (data.hidden !== undefined) tree.hidden = data.hidden;
+          }
+
           if (db) {
             insert(db, {
               title: entry.title || entry.slug,
-              content: textContent,
+              content: body,
               href: entry.href,
             });
           }
-          //
 
           tree.children.push(entry);
         } else {
@@ -78,30 +87,14 @@ const fromDirectoryHandle = async (
       case "directory":
         if (handle.name.startsWith(".")) continue;
 
-        // @todo repeated
-        const directoryPath = (() => {
-          if (!!parentHref.length) {
-            return [parentHref, slugName].join("/");
-          }
-
-          return slugName;
-        })();
-        //
+        const directoryPath = parentHref.length ? [parentHref, slugName].join("/") : slugName;
 
         tree.children.push(await fromDirectoryHandle(handle, { parentHref: directoryPath, db }));
         break;
     }
   }
 
-  // @todo repeated
-  tree.children.sort((a, b) => {
-    const isADirectory = "children" in a;
-    const isBDirectory = "children" in b;
-    if (!isADirectory && isBDirectory) return -1;
-    if (isADirectory && !isBDirectory) return 1;
-    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-  });
-  //
+  sortChildren(tree.children);
 
   return tree;
 };

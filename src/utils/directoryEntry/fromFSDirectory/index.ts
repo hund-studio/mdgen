@@ -2,14 +2,16 @@ import { insert } from "@orama/orama";
 import slugify from "slugify";
 import fs from "fs/promises";
 import path from "path";
+import sortChildren from "../sortChildren";
+import { extractTitle, parseFrontmatter } from "../../markdown";
 
 const SLUG_OPTS = { lower: true };
 
 const joinPaths = (...parts: string[]) => parts.join("/").replace(/\/+/g, "/");
 
-const extractTitle = (content: string): string | null => {
-  const [firstLine] = content.split("\n");
-  return firstLine?.startsWith("#") ? firstLine.replace(/^#\s*/, "").trim() : null;
+const isIndexFile = (name: string) => {
+  const lower = name.toLowerCase();
+  return lower === "index.md" || lower === "readme.md";
 };
 
 const fromFSDirectory = async (
@@ -26,7 +28,7 @@ const fromFSDirectory = async (
 
   const hasIndex = items.some((name) => name.toLowerCase() === "index.md");
 
-  const tree: FSTree = {
+  const tree: FSDirectoryEntry = {
     name: dirName,
     slug: slugify(dirName, SLUG_OPTS),
     path: currentPath,
@@ -53,7 +55,8 @@ const fromFSDirectory = async (
     }
 
     if (itemName.toLowerCase().endsWith(".md")) {
-      const textContent = await fs.readFile(itemPath, "utf-8");
+      const raw = await fs.readFile(itemPath, "utf-8");
+      const { data, body } = parseFrontmatter(raw);
       let fileName = slugName.replace(/\.md$/, ".html");
 
       if (!hasIndex && fileName === "readme.html") {
@@ -64,14 +67,25 @@ const fromFSDirectory = async (
         name: fileName,
         slug: fileName,
         href: joinPaths(currentPath, fileName),
-        title: extractTitle(textContent),
-        content: textContent,
+        title: data.title ?? extractTitle(body),
+        content: body,
+        label: data.label,
+        order: data.order,
+        hidden: data.hidden,
       };
+
+      // The folder's own index/readme drives the folder node's sidebar label
+      // and ordering among its siblings.
+      if (isIndexFile(itemName)) {
+        if (data.label !== undefined) tree.label = data.label;
+        if (data.order !== undefined) tree.order = data.order;
+        if (data.hidden !== undefined) tree.hidden = data.hidden;
+      }
 
       if (db) {
         await insert(db, {
           title: entry.title || entry.slug,
-          content: textContent,
+          content: body,
           href: entry.href,
         });
       }
@@ -86,13 +100,7 @@ const fromFSDirectory = async (
     }
   }
 
-  tree.children.sort((a, b) => {
-    const isADir = "children" in a;
-    const isBDir = "children" in b;
-
-    if (isADir !== isBDir) return isADir ? 1 : -1;
-    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-  });
+  sortChildren(tree.children);
 
   return tree;
 };
