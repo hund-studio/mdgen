@@ -9,6 +9,8 @@
 
 html,
 body {
+  background-color: var(--mdgen-color-body);
+  color: var(--mdgen-color-text);
   font-family: var(--mdgen-font-family);
   font-size: var(--mdgen-font-size);
   line-height: var(--mdgen-line-height);

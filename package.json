@@ -26,6 +26,7 @@
     "build": "tsx scripts/build.ts",
     "copy:readme": "cp docs/readme.md ./README.md",
     "dev": "vite --config vite.config.tool.ts",
+    "docs": "node dist-cli/cli.js -s examples/docs -o public -n docs -u /docs/",
     "dev:preview": "mkdir -p ./dist-md && echo '➜ Preview doc: http://localhost:8080/docs/' && exec live-server ./dist-md --port=8080 --no-browser --quiet",
     "dev:static": "tsx scripts/dev.ts",
     "lint": "eslint .",

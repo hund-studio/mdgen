@@ -5,10 +5,17 @@ import { extractTitle, parseFrontmatter } from "../../markdown";
 
 const slugOptions = { lower: true };
 
+const joinPaths = (...parts: string[]) => parts.join("/").replace(/\/+/g, "/");
+
 const fromDirectoryHandle = async (
   directoryHandle: FileSystemDirectoryHandle,
   { parentHref = "", db }: { parentHref?: string; db?: SearchDB } = {}
 ) => {
+  // Hrefs are root-absolute (start at "/") so `Link` resolves them as-is. With a
+  // relative href, `resolveHref` would re-join it with the current page's
+  // directory and the locale prefix would compound on each click
+  // (`/en-us/en-us/…`). Mirrors `fromFSDirectory` with `publicUrl: "/"`.
+  const currentPath = parentHref || "/";
   const hasIndex = await (async () => {
     for await (const handle of directoryHandle.values()) {
       if (handle.kind === "directory") continue;
@@ -20,7 +27,7 @@ const fromDirectoryHandle = async (
   const tree: BrowserDirectoryEntry = {
     name: directoryHandle.name,
     slug: slugify(directoryHandle.name, slugOptions),
-    path: parentHref,
+    path: currentPath,
     children: [],
   };
 
@@ -33,8 +40,7 @@ const fromDirectoryHandle = async (
           const raw = await file.text();
           const { data, body } = parseFrontmatter(raw);
 
-          let href = slugName.replace(/\.[^/.]+$/, ".html");
-          if (parentHref) href = [parentHref, href].join("/");
+          const href = joinPaths(currentPath, slugName.replace(/\.[^/.]+$/, ".html"));
 
           const entry: PageEntry = {
             content: body,
@@ -83,7 +89,7 @@ const fromDirectoryHandle = async (
       case "directory":
         if (handle.name.startsWith(".")) continue;
 
-        const directoryPath = parentHref.length ? [parentHref, slugName].join("/") : slugName;
+        const directoryPath = joinPaths(currentPath, slugName);
 
         tree.children.push(await fromDirectoryHandle(handle, { parentHref: directoryPath, db }));
         break;

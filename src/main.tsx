@@ -93,17 +93,17 @@ function App() {
           target="_blank"
           href="https://developer.mozilla.org/en-US/docs/Web/API/Window/showDirectoryPicker"
         >
-          <img src="/availability.svg" alt="availability" className={`${tools["availability"]}`} />
+          <div className={`${tools["availability"]}`} role="img" aria-label="availability" />
         </a>
         <div className={`${tools["buttons"]} ${tools["vertical"]}`}>
           <button
             className={`${tools["button"]} ${tools["button--thin"]}`}
             onClick={() => setInstructions(true)}
           >
-            📖 Quick Start
+            Quick Start
           </button>
           <button className={`${tools["button"]} ${tools["button--3d"]}`} onClick={directoryPicker}>
-            📁 {root ? <>Change directory</> : <>Pick a directory</>}
+            {root ? <>Change directory</> : <>Pick a directory</>}
           </button>
           {(() => {
             if (!root) return;
@@ -114,13 +114,13 @@ function App() {
                   className={`${tools["button"]} ${tools["button--3d"]}`}
                   onClick={() => setPreview(true)}
                 >
-                  🔍 Open preview
+                  Open preview
                 </button>
                 <button
                   className={`${tools["button"]} ${tools["button--3d"]}`}
                   onClick={downloadGenerated}
                 >
-                  📄 Download HTML
+                  Download HTML
                 </button>
               </div>
             );
@@ -129,17 +129,11 @@ function App() {
             if (!!root) return;
 
             return (
-              <div className={`${tools["card"]} ${tools["buttons"]} ${tools["vertical"]}`}>
+              <div className={`${tools["starter"]}`}>
                 <p className={`${tools["small"]} ${tools["nom"]}`}>Download a starter example:</p>
-                <div className={`${tools["buttons"]} ${tools["center"]}`}>
-                  <a href="/basic.zip" download className={`${tools["a"]}`}>
-                    📑 Basic doc
-                  </a>
-                  <a href="/blog.zip" download className={`${tools["a"]}`}>
-                    ✒️ Blog
-                  </a>
-                  <a href="/dnd-adventure.zip" download className={`${tools["a"]}`}>
-                    🐉 DnD Adventure
+                <div className={`${tools["examples"]}`}>
+                  <a href="/docs.zip" download className={`${tools["a"]}`}>
+                    Basic doc
                   </a>
                 </div>
               </div>
@@ -147,11 +141,15 @@ function App() {
           })()}
         </div>
         <div className={`${tools["small"]}`}>
-          <a href="https://hund.studio" target="_blank">
+          <a href="https://hund.studio" target="_blank" className={`${tools["a"]}`}>
             hund.studio
           </a>{" "}
           -{" "}
-          <a href="https://github.com/hund-studio/mdgen" target="_blank">
+          <a
+            href="https://github.com/hund-studio/mdgen"
+            target="_blank"
+            className={`${tools["a"]}`}
+          >
             GitHub
           </a>{" "}
           - 0.0.0-beta
@@ -164,7 +162,7 @@ function App() {
       ) : null}
       {preview && tree ? (
         <Suspense fallback={null}>
-          <PreviewProvider tree={tree} db={db}>
+          <PreviewProvider tree={tree} db={db} config={config}>
             <PreviewModal
               onClose={() => setPreview(false)}
               loadRootDirectory={loadRootDirectory}
@@ -182,5 +180,5 @@ function App() {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
-  </StrictMode>
+  </StrictMode>,
 );

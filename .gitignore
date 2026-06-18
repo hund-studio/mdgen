@@ -18,6 +18,10 @@ dist-ssr
 # via vite.config.static.ts, outDir=src/static con emptyOutDir). Sorgente: public-static/.
 src/static/
 
+# Documentazione compilata servita dal tool sotto /docs (npm run docs).
+# Generata da examples/docs via CLI; non versionata.
+public/docs/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

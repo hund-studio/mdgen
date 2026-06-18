@@ -1,3 +1,0 @@
-# Blog example
-
-TBD

@@ -3,25 +3,58 @@ order: 1
 label: Introduction
 ---
 
-# Full documentation
+# mdgen documentation
 
-> This file doubles as both the documentation of the **mdgen** tool and an example to preview the final output.
+> This project is at the same time the **official documentation** of mdgen and a **downloadable example** to preview what the final output looks like. Open it in the web tool or generate it with the CLI to explore it.
 
-## Why mdgen
+## What mdgen is
 
-This tool was born because, too often, we write small internal tools that need documentation which is easy to browse and, ideally, easy to publish online.
-Until recently we relied on solutions like Docusaurus or other frameworks to generate docs, but paid a high price in time spent on maintenance and upgrades.
+**mdgen** turns a folder of Markdown (`.md`) files into a static **HTML**
+documentation site. It works in two ways:
 
-Out of that need we came up with **mdgen**, a static HTML generator that works from any folder containing `.md` files.
-To make it easy (and fast) to use even for non-technical people, we leveraged the browser's Filesystem API to build a tool that, once you pick the folder with your `.md` files, produces a zip containing the generated HTML files.
+- **entirely in your browser** (serverless, via the Filesystem API — your files
+  never leave your machine);
+- as a **CLI**, for fast, scriptable builds (for example inside NPM scripts).
 
-Of course, right after finishing the first version we realised we also needed a CLI tool to use directly, for instance from NPM scripts.
+## Why it exists
+
+Too often we write small internal tools that need documentation which is easy to
+browse and, ideally, easy to publish online. Until recently we relied on
+solutions like Docusaurus or other frameworks, but paid a high price in time
+spent on maintenance and upgrades.
+
+Out of that need we built **mdgen**: a static HTML generator that works from any
+folder containing `.md` files. To make it easy (and fast) to use even for
+non-technical people, we leveraged the browser's Filesystem API: once you pick
+the folder, the tool produces a zip containing the generated HTML files. Right
+after the first version, the CLI followed, to use directly from scripts.
 
 ## How it works
 
-The core idea is very simple (which is also why it is probably not the right tool for complex documentation): statically render the `.md` files with React after reading their content. Because of that, the tool does not require a strict structure to follow and can be organised quite freely (much like you would in tools such as Obsidian).
+The core idea is deliberately simple (which is also why it is probably not the
+right tool for very complex documentation): read the `.md` files and statically
+render them with React. Because of that, mdgen does not require a strict
+structure and can be organised quite freely — much like you would in tools such
+as Obsidian.
 
-For more precise usage instructions, have a look at:
+## Where to start
 
-- [The guide for the web tool](./web.md)
-- [The guide for the CLI tool](./cli.md)
+- [Web tool](./web.md) — generate without installing anything.
+- [CLI tool](./cli.md) — fast, scriptable builds.
+- [Authoring](./authoring/index.md) — frontmatter, folders and the sidebar.
+- [Configuration](./configuration/index.md) — the `.mdgen` folder, i18n, theming, components.
+- [Status & roadmap](./roadmap.md) — what's here and what's coming.
+
+## Key features
+
+- **Serverless & secure**: in the browser, no data leaves your device.
+- **Frontmatter**: order, rename and hide entries with a few lines.
+- **Multilingual (i18n)**: locale folders, per-language sidebar/search and a
+  built-in language switcher.
+- **Fuzzy search**: built-in [Orama](https://oramasearch.com/) index (toggleable).
+- **Theming**: Mantine-inspired design tokens, light/dark/system toggle, fully
+  overridable from a single CSS file.
+- **React components**: interactive components in the page, with Markdown staying
+  as a graceful fallback.
+- **Markdown support**: GFM (tables, checkboxes, …).
+- **Smart fallback**: detects `index.md`, or falls back to `readme.md`.

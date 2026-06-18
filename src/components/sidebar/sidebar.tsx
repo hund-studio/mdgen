@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
-import { useEffect, useRef, useState, type FC } from "react";
+import { use, useEffect, useRef, useState, type FC } from "react";
 import { useLocalStorage } from "usehooks-ts";
+import { previewContext } from "../../context/preview";
 import Link from "../link/link";
 import Search from "../search/search";
 
@@ -137,6 +138,7 @@ const LanguageSwitcher: FC<{
 }> = ({ locale, locales, translations }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const preview = use(previewContext);
 
   // Translations are known at build time, so the switcher is server-rendered;
   // the click-outside listener only matters on the client when the menu is open.
@@ -170,7 +172,16 @@ const LanguageSwitcher: FC<{
                     .filter(Boolean)
                     .join(" ")}
                   onClick={(event) => {
-                    if (disabled || isCurrent) event.preventDefault();
+                    if (disabled || isCurrent) {
+                      event.preventDefault();
+                      return;
+                    }
+                    // In the in-tool preview there is no real navigation: switch
+                    // the previewed page instead of following the href.
+                    if (preview && href) {
+                      event.preventDefault();
+                      preview.setCurrent(href);
+                    }
                   }}
                 >
                   {displayName(code)}

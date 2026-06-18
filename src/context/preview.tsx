@@ -13,18 +13,17 @@ export const previewContext = createContext<
       current: string;
       setCurrent: Dispatch<SetStateAction<string>>;
       tree: BrowserDirectoryEntry;
+      config?: BrowserConfig;
     }
   | undefined
 >(undefined);
 
-const PreviewProvider: FC<PropsWithChildren<{ db?: SearchDB; tree: BrowserDirectoryEntry }>> = ({
-  children,
-  tree,
-  db,
-}) => {
+const PreviewProvider: FC<
+  PropsWithChildren<{ db?: SearchDB; tree: BrowserDirectoryEntry; config?: BrowserConfig }>
+> = ({ children, tree, db, config }) => {
   const [current, setCurrent] = useState("/");
   return (
-    <previewContext.Provider value={{ db, tree, current, setCurrent }}>
+    <previewContext.Provider value={{ db, tree, current, setCurrent, config }}>
       {children}
     </previewContext.Provider>
   );
