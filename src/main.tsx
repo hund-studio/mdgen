@@ -6,12 +6,15 @@ import { tools } from "./styles/modules";
 import { useEffect, useRef, useState } from "react";
 import PreviewProvider from "./context/preview";
 
-// Heavy, interaction-only chunks: keep them out of the landing bundle.
-// Carousel + PreviewModal pull in react-markdown, remark-gfm, motion and the
-// search highlighter; the directory pipeline (orama, jszip, utils) is imported
-// on demand inside the handlers.
-const Carousel = lazy(() => import("./components/carousel/carousel"));
+// The preview modal is a heavy, interaction-only chunk (react-markdown,
+// remark-gfm, motion, the search highlighter); keep it out of the landing
+// bundle. The directory pipeline (orama, jszip, utils) is imported on demand
+// inside the handlers.
 const PreviewModal = lazy(() => import("./components/previewModal/previewModal"));
+
+// Browser quick start: the "Web tool" page of the generated docs (served under
+// /docs), opened in a new tab.
+const QUICKSTART_URL = "/docs/en-US/web.html";
 
 function App() {
   // FS
@@ -26,7 +29,6 @@ function App() {
 
   // UI
   const [preview, setPreview] = useState(false);
-  const [instructions, setInstructions] = useState(false);
 
   const directoryPicker = async () => {
     const rootHandle = await showDirectoryPicker({ mode: "read" });
@@ -96,12 +98,14 @@ function App() {
           <div className={`${tools["availability"]}`} role="img" aria-label="availability" />
         </a>
         <div className={`${tools["buttons"]} ${tools["vertical"]}`}>
-          <button
+          <a
             className={`${tools["button"]} ${tools["button--thin"]}`}
-            onClick={() => setInstructions(true)}
+            href={QUICKSTART_URL}
+            target="_blank"
+            rel="noreferrer"
           >
             Quick Start
-          </button>
+          </a>
           <button className={`${tools["button"]} ${tools["button--3d"]}`} onClick={directoryPicker}>
             {root ? <>Change directory</> : <>Pick a directory</>}
           </button>
@@ -152,14 +156,9 @@ function App() {
           >
             GitHub
           </a>{" "}
-          - 0.0.0-beta
+          - v{__MDGEN_VERSION__}
         </div>
       </div>
-      {instructions ? (
-        <Suspense fallback={null}>
-          <Carousel onClose={() => setInstructions(false)} />
-        </Suspense>
-      ) : null}
       {preview && tree ? (
         <Suspense fallback={null}>
           <PreviewProvider tree={tree} db={db} config={config}>
