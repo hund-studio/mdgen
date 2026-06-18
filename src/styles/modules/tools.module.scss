@@ -29,6 +29,7 @@
   justify-content: center;
   min-height: 40px;
   padding: 0.5rem 0.85rem;
+  text-decoration: none; // some buttons are <a> (e.g. Quick Start)
 
   @media (hover: hover) {
     &:hover {
